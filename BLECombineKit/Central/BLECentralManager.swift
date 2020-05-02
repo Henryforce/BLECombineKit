@@ -17,7 +17,6 @@ public protocol BLECentralManagerProtocol {
 
 public final class BLECentralManager {
     
-//    public let manager: CBCentralManager
     public let manager: CBCentralManagerWrapper
     
     public var state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
@@ -26,31 +25,21 @@ public final class BLECentralManager {
     private var scannedPeripherals = [UUID: BLEPeripheral]()
     private var cancellables = [AnyCancellable]()
     
-//    public init(
-//        centralManager: CBCentralManager,
-//        managerDelegate: BLECentralManagerDelegate = BLECentralManagerDelegate()
-//    ) {
-//        self.manager = centralManager
-//        self.delegate = managerDelegate
-//
-//        self.manager.delegate = self.delegate
-//
-//        subscribeToDelegate()
-//    }
-    
-    init(
-        centralManager: CBCentralManagerWrapper,
-        managerDelegate: BLECentralManagerDelegate = BLECentralManagerDelegate()
-    ) {
+    init(centralManager: CBCentralManagerWrapper,
+        managerDelegate: BLECentralManagerDelegate = BLECentralManagerDelegate()) {
         self.manager = centralManager
         self.delegate = managerDelegate
         
-//        self.manager.delegate = self.delegate
         if let centralManager = centralManager as? CBCentralManagerWrapperImpl {
             centralManager.setupDelegate(managerDelegate)
         }
         
         subscribeToDelegate()
+    }
+    
+    public convenience init(with centralManager: CBCentralManager) {
+        let centralManagerWrapper = CBCentralManagerWrapperImpl(with: centralManager)
+        self.init(centralManager: centralManagerWrapper, managerDelegate: BLECentralManagerDelegate())
     }
     
     func observeUpdateState() {
@@ -119,9 +108,6 @@ extension BLECentralManager: BLECentralManagerProtocol {
     }
     
     public func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?) {
-//        if let peripheral = peripheralWrapper.peripheral {
-//            manager.connect(peripheral, options: options)
-//        }
         manager.connect(peripheralWrapper, options: options)
     }
     
