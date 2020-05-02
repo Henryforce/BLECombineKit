@@ -1,0 +1,85 @@
+//
+//  CBManagerWrapper.swift
+//  BLECombineKit
+//
+//  Created by Henry Javier Serrano Echeverria on 2/5/20.
+//  Copyright © 2020 Henry Serrano. All rights reserved.
+//
+
+import Foundation
+import CoreBluetooth
+
+public protocol CBCentralManagerWrapper {
+    var manager: CBCentralManager? { get }
+    var isScanning: Bool { get }
+    
+    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheral]
+    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheral]
+    func scanForPeripherals(withServices serviceUUIDs: [CBUUID]?, options: [String : Any]?)
+    func stopScan()
+//    func connect(_ peripheral: CBPeripheral, options: [String : Any]?)
+    func connect(_ peripheral: CBPeripheralWrapper, options: [String : Any]?)
+//    func cancelPeripheralConnection(_ peripheral: CBPeripheral)
+    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper)
+    func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
+}
+
+final class CBCentralManagerWrapperImpl: CBCentralManagerWrapper {
+    
+    var manager: CBCentralManager? {
+        wrappedManager
+    }
+    
+    var isScanning: Bool {
+        wrappedManager.isScanning
+    }
+    
+    let wrappedManager: CBCentralManager
+    
+    init(with manager: CBCentralManager) {
+        self.wrappedManager = manager
+    }
+    
+    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheral] {
+        wrappedManager.retrievePeripherals(withIdentifiers: identifiers)
+    }
+    
+    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheral] {
+        wrappedManager.retrieveConnectedPeripherals(withServices: serviceUUIDs)
+    }
+    
+    func scanForPeripherals(withServices serviceUUIDs: [CBUUID]?, options: [String : Any]?) {
+        wrappedManager.scanForPeripherals(withServices: serviceUUIDs, options: options)
+    }
+    
+    func stopScan() {
+        wrappedManager.stopScan()
+    }
+    
+//    func connect(_ peripheral: CBPeripheral, options: [String : Any]?) {
+//        wrappedManager.connect(peripheral, options: options)
+//    }
+    func connect(_ peripheral: CBPeripheralWrapper, options: [String : Any]?) {
+        if let peripheral = peripheral as? CBPeripheralWrapperImpl, let realPeripheral = peripheral.peripheral {
+            wrappedManager.connect(realPeripheral, options: options)
+        }
+    }
+    
+//    func cancelPeripheralConnection(_ peripheral: CBPeripheral) {
+//        wrappedManager.cancelPeripheralConnection(peripheral)
+//    }
+    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) {
+        if let peripheral = peripheral as? CBPeripheralWrapperImpl, let realPeripheral = peripheral.peripheral {
+            wrappedManager.cancelPeripheralConnection(realPeripheral)
+        }
+    }
+    
+    func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
+        wrappedManager.registerForConnectionEvents(options: options)
+    }
+    
+    func setupDelegate(_ delegate: CBCentralManagerDelegate) {
+        wrappedManager.delegate = delegate
+    }
+    
+}
