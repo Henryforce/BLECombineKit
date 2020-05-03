@@ -15,14 +15,14 @@ class BLECentralManagerTests: XCTestCase {
 
     var sut: BLECentralManager!
     var delegate: BLECentralManagerDelegate!
-    var cbCentralManagerMock: CBCentralManagerMock!
+    var cbCentralManagerMock: CBCentralManagerWrapperMock!
     var disposable = Set<AnyCancellable>()
     
     override func setUpWithError() throws {
         delegate = BLECentralManagerDelegate()
-        cbCentralManagerMock = CBCentralManagerMock()
+        cbCentralManagerMock = CBCentralManagerWrapperMock()
         
-        sut = BLECentralManager(centralManager: cbCentralManagerMock, managerDelegate: delegate)
+        sut = BLECentralManagerImpl(centralManager: cbCentralManagerMock, managerDelegate: delegate)
     }
 
     override func tearDownWithError() throws {
@@ -34,24 +34,24 @@ class BLECentralManagerTests: XCTestCase {
     func testScanForPeripheralsReturns() throws {
         let expectation = XCTestExpectation(description: self.debugDescription)
         let peripheralMock = CBPeripheralWrapperMock()
-        var expectedPeripheral: BLEPeripheral?
+        var expectedScanResult: BLEScanResult?
         
         let scanForPeripheralsObservable = sut.scanForPeripherals(withServices: [], options: nil)
         
         scanForPeripheralsObservable
             .sink(receiveCompletion: { error in
                 XCTFail()
-            }, receiveValue: { peripheral in
-                expectedPeripheral = peripheral
+            }, receiveValue: { scanResult in
+                expectedScanResult = scanResult
                 expectation.fulfill()
             })
             .store(in: &disposable)
         
         XCTAssertTrue(cbCentralManagerMock.scanForPeripheralsWasCalled)
-        XCTAssertNil(expectedPeripheral)
+        XCTAssertNil(expectedScanResult)
         delegate.didDiscoverAdvertisementData.send((peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber.init(value: 0)))
         wait(for: [expectation], timeout: 0.1)
-        XCTAssertNotNil(expectedPeripheral)
+        XCTAssertNotNil(expectedScanResult)
     }
     
     func testConnectCallsCentralManager() throws {
@@ -60,6 +60,26 @@ class BLECentralManagerTests: XCTestCase {
         sut.connect(peripheralWrapper: peripheral, options: nil)
         
         XCTAssertTrue(cbCentralManagerMock.connectWasCalled)
+    }
+    
+    func testStopScanCallsCentralManager() throws {
+        sut.stopScan()
+        
+        XCTAssertTrue(cbCentralManagerMock.stopScanWasCalled)
+    }
+    
+    func testCancelPeripheralConnectionCallsCentralManager() throws {
+        let peripheral = CBPeripheralWrapperMock()
+        
+        _ = sut.cancelPeripheralConnection(peripheral)
+        
+        XCTAssertTrue(cbCentralManagerMock.cancelPeripheralConnectionWasCalled)
+    }
+    
+    func testRegisterForConnectionEventsCallsCentralManager() {
+        sut.registerForConnectionEvents(options: nil)
+        
+        XCTAssertTrue(cbCentralManagerMock.registerForConnectionEventsWasCalled)
     }
 
 }

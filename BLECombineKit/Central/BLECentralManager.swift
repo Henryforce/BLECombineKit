@@ -10,24 +10,36 @@ import Foundation
 import CoreBluetooth
 import Combine
 
-public protocol BLECentralManagerProtocol {
-    func scanForPeripherals(withServices services: [CBUUID]?, options: [String: Any]?) -> AnyPublisher<BLEPeripheral, BLEError>
+public protocol BLECentralManager {
+    var centralManager: CBCentralManagerWrapper { get }
+    var isScanning: Bool { get }
+    
+    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError>
+    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError>
+    func scanForPeripherals(withServices services: [CBUUID]?, options: [String: Any]?) -> AnyPublisher<BLEScanResult, BLEError>
+    func stopScan()
     func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?)
+    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError>
+    func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
 }
 
-public final class BLECentralManager {
+final class BLECentralManagerImpl {
     
-    public let manager: CBCentralManagerWrapper
+    let centralManager: CBCentralManagerWrapper
     
-    public var state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
+    var state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
     let delegate: BLECentralManagerDelegate
     
     private var scannedPeripherals = [UUID: BLEPeripheral]()
     private var cancellables = [AnyCancellable]()
     
+    var isScanning: Bool {
+        centralManager.isScanning
+    }
+    
     init(centralManager: CBCentralManagerWrapper,
         managerDelegate: BLECentralManagerDelegate = BLECentralManagerDelegate()) {
-        self.manager = centralManager
+        self.centralManager = centralManager
         self.delegate = managerDelegate
         
         if let centralManager = centralManager as? CBCentralManagerWrapperImpl {
@@ -37,7 +49,7 @@ public final class BLECentralManager {
         subscribeToDelegate()
     }
     
-    public convenience init(with centralManager: CBCentralManager) {
+    convenience init(with centralManager: CBCentralManager) {
         let centralManagerWrapper = CBCentralManagerWrapperImpl(with: centralManager)
         self.init(centralManager: centralManagerWrapper, managerDelegate: BLECentralManagerDelegate())
     }
@@ -79,36 +91,83 @@ public final class BLECentralManager {
 
 // MARK: - CentralManagerProtocol
 
-extension BLECentralManager: BLECentralManagerProtocol {
+extension BLECentralManagerImpl: BLECentralManager {
     
-    public func scanForPeripherals(
-        withServices services: [CBUUID]?,
-        options: [String: Any]?
-    ) -> AnyPublisher<BLEPeripheral, BLEError> {
-            self.manager.scanForPeripherals(withServices: services, options: options)
-            
-            return self.delegate
-                .didDiscoverAdvertisementData
-                .tryMap { [weak self] peripheral, advertisementData, rssi in // TODO: use advData and rssi
-                    guard let self = self else { throw BLEError.deallocated }
-                    
-                    let peripheralDelegate = BLEPeripheralDelegate()
-                    if let peripheralWrapper = peripheral as? CBPeripheralWrapperImpl {
-                        peripheralWrapper.setupDelegate(peripheralDelegate)
-                    }
-                    
-                    let blePeripheral = BLEPeripheral(peripheral: peripheral, centralManager: self, delegate: peripheralDelegate)
-                    
-                    self.scannedPeripherals[peripheral.identifier] = blePeripheral
-                    
-                    return blePeripheral
+    public func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {
+        let retrievedPeripherals = centralManager.retrievePeripherals(withIdentifiers: identifiers)
+        return observePeripherals(from: retrievedPeripherals)
+    }
+    
+    public func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {
+        let retrievedPeripherals = centralManager.retrieveConnectedPeripherals(withServices: serviceUUIDs)
+        return observePeripherals(from: retrievedPeripherals)
+    }
+    
+    public func scanForPeripherals(withServices services: [CBUUID]?,
+                                   options: [String: Any]?) -> AnyPublisher<BLEScanResult, BLEError> {
+        self.centralManager.scanForPeripherals(withServices: services, options: options)
+        
+        return self.delegate
+            .didDiscoverAdvertisementData
+            .tryMap { [weak self] peripheral, advertisementData, rssi in
+                guard let self = self else { throw BLEError.deallocated }
+                
+                let peripheralDelegate = BLEPeripheralDelegate()
+                if let peripheralWrapper = peripheral as? CBPeripheralWrapperImpl {
+                    peripheralWrapper.setupDelegate(peripheralDelegate)
                 }
-                .mapError { $0 as? BLEError ?? BLEError.unknown}
-                .eraseToAnyPublisher()
+                
+                let blePeripheral = BLEPeripheral(peripheral: peripheral,
+                                                  centralManager: self,
+                                                  delegate: peripheralDelegate)
+                let scanResult = BLEScanResult(peripheral: blePeripheral,
+                                               advertisementData: advertisementData,
+                                               rssi: rssi)
+                
+                self.scannedPeripherals[peripheral.identifier] = blePeripheral
+                
+                return scanResult
+            }
+            .mapError { $0 as? BLEError ?? BLEError.unknown}
+            .eraseToAnyPublisher()
+    }
+    
+    public func stopScan() {
+        centralManager.stopScan()
     }
     
     public func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?) {
-        manager.connect(peripheralWrapper, options: options)
+        centralManager.connect(peripheralWrapper, options: options)
+    }
+    
+    public func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError> {
+        centralManager.cancelPeripheralConnection(peripheral)
+        
+        return delegate.didDisconnectPeripheral
+            .filter { $0.identifier == peripheral.identifier }
+            .map { _ in true }
+            .setFailureType(to: BLEError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    public func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
+        centralManager.registerForConnectionEvents(options: options)
+    }
+    
+    func observePeripherals(from retrievedPeripherals: [CBPeripheralWrapper]) -> AnyPublisher<BLEPeripheralProtocol, BLEError>{
+        let peripherals = retrievedPeripherals
+            .compactMap { peripheral -> BLEPeripheral? in
+                guard let peripheralWrapper = peripheral as? CBPeripheralWrapperImpl else { return nil }
+
+                let peripheralDelegate = BLEPeripheralDelegate()
+                peripheralWrapper.setupDelegate(peripheralDelegate)
+
+                return BLEPeripheral(peripheral: peripheralWrapper, centralManager: self, delegate: peripheralDelegate)
+            }
+        
+        return Publishers.Sequence.init(sequence: peripherals)
+            .setFailureType(to: BLEError.self)
+            .eraseToAnyPublisher()
     }
     
 }

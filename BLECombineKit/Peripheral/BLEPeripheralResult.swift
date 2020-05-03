@@ -12,7 +12,7 @@ protocol BLEPeripheralResult {
     associatedtype BLEResultType
     
     var value: BLEResultType { get }
-    var peripheral: BLEMainPeripheralProtocol { get }
+    var peripheral: BLEPeripheralProtocol { get }
     
-    init(value: BLEResultType, peripheral: BLEMainPeripheralProtocol)
+    init(value: BLEResultType, peripheral: BLEPeripheralProtocol)
 }
