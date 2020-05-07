@@ -24,11 +24,9 @@ public protocol BLEPeripheralProtocol {
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) -> AnyPublisher<Bool, BLEError>
 }
 
-// Internal class
-
 final public class BLEPeripheral: BLEPeripheralProtocol {
     
-    public let connectionState: CurrentValueSubject<Bool, Never>
+    let connectionState: CurrentValueSubject<Bool, Never>
     public let peripheral: CBPeripheralWrapper
     private let delegate: BLEPeripheralDelegate
     private let centralManager: BLECentralManager?
@@ -84,29 +82,6 @@ final public class BLEPeripheral: BLEPeripheralProtocol {
     }
     
     public func discoverServices(serviceUUIDs: [CBUUID]?) -> AnyPublisher<BLEService, BLEError> {
-//        let servicesMap = createUUIDsMap(from: serviceUUIDs)
-//        let serviceSubject = PassthroughSubject<BLEService, BLEError>()
-//
-//        self.delegate
-//            .didDiscoverServices
-//            .handleEvents { [weak self]  _ in
-//                guard let self = self else { return }
-//                self.peripheral.discoverServices(serviceUUIDs)
-//            }
-//            .tryFilter { [weak self] in
-//                guard let self = self else { throw BLEError.deallocated }
-//                return $0.identifier == self.peripheral.identifier
-//            }
-//            .sink(receiveCompletion: { event in
-//                print(event)
-//            }, receiveValue: { [weak self] peripheral in
-//                guard let self = self, let services = peripheral.services else { return }
-//                self.dispatchServices(from: services, and: servicesMap, in: serviceSubject)
-//            })
-//            .store(in: &disposable)
-//
-//        return serviceSubject.eraseToAnyPublisher()
-        
         return delegate
             .didDiscoverServices
             .handleEvents { [weak self]  _ in
@@ -130,30 +105,6 @@ final public class BLEPeripheral: BLEPeripheralProtocol {
     }
     
     public func discoverCharacteristics(characteristicUUIDs: [CBUUID]?, for service: CBService) -> AnyPublisher<BLECharacteristic, BLEError> {
-//
-//        let characteristicsMap = createUUIDsMap(from: characteristicUUIDs)
-//        let characteristicSubject = PassthroughSubject<BLECharacteristic, BLEError>()
-//
-//        self.delegate
-//            .didDiscoverCharacteristics
-//            .handleEvents { [weak self] _ in
-//                guard let self = self else { return }
-//                self.peripheral.discoverCharacteristics(characteristicUUIDs, for: service)
-//            }
-//            .tryFilter { [weak self] in
-//                guard let self = self else { throw BLEError.deallocated }
-//                return $0.peripheral.identifier == self.peripheral.identifier
-//            }
-//            .sink(receiveCompletion: { event in
-//                print(event)
-//            }, receiveValue: { [weak self] result in
-//                guard let self = self, let characteristics = result.service.characteristics else { return }
-//                self.dispatchCharacteristics(from: characteristics, and: characteristicsMap, in: characteristicSubject)
-//            })
-//            .store(in: &disposable)
-//
-//        return characteristicSubject.eraseToAnyPublisher()
-        
         return delegate
             .didDiscoverCharacteristics
             .handleEvents { [weak self]  _ in
@@ -223,40 +174,5 @@ final public class BLEPeripheral: BLEPeripheralProtocol {
                     .eraseToAnyPublisher()
             }.eraseToAnyPublisher()
     }
-    
-//    func createUUIDsMap(from uuids:[CBUUID]?) -> [CBUUID: Bool]? {
-//        var characteristicsMap: [CBUUID: Bool]?
-//        if let uuids = uuids {
-//            characteristicsMap = [:]
-//            uuids.forEach({ cbuuid in
-//                characteristicsMap?[cbuuid] = true
-//            })
-//        }
-//        return characteristicsMap
-//    }
-//
-//    func dispatchServices(from services: [CBService],
-//                          and servicesMap: [CBUUID: Bool]?,
-//                          in publisher: PassthroughSubject<BLEService, BLEError>) {
-//        services
-//            .filter { service in
-//                guard let services = servicesMap else { return true }
-//                return services[service.uuid] ?? false
-//            }
-//            .map { BLEService(value: $0, peripheral: self) }
-//            .forEach { publisher.send($0) }
-//    }
-//
-//    func dispatchCharacteristics(from characteristics: [CBCharacteristic],
-//                                 and characteristicsMap: [CBUUID: Bool]?,
-//                                 in publisher: PassthroughSubject<BLECharacteristic, BLEError>) {
-//        characteristics
-//            .filter { characteristic in
-//                guard let characteristics = characteristicsMap else { return true }
-//                return characteristics[characteristic.uuid] ?? false
-//            }
-//            .map { BLECharacteristic(value: $0, peripheral: self) }
-//            .forEach { publisher.send($0) }
-//    }
     
 }
