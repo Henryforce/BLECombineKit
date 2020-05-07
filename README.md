@@ -1,6 +1,6 @@
 # BLECombineKit
 
-[![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) [![Build Status](https://travis-ci.com/Henryforce/BLECombineKit.svg?branch=master)](https://travis-ci.com/Henryforce/BLECombineKit) 
+![badge-platforms][] [![badge-ci][]][travis] [![badge-codecov][]][codecov]
 
 CoreBluetooth abstraction layer for iOS, macOS, TvOS and WatchOS development environments. Powered by Combine.
 
@@ -45,3 +45,10 @@ To integrate CombineBluetoothKit into your Xcode project using Carthage  specify
 github "Henryforce/BLECombineKit"
 ```
 Then, run `carthage update` to build framework and drag `CombineBluetoothKit.framework` into your Xcode project.
+
+[badge-platforms]: https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20iOS%20%7C%20tvOS%20%7C%20watchOS-lightgrey.svg
+[badge-codecov]: https://codecov.io/gh/codecov/example-swift/branch/master/graphs/badge.svg
+[badge-ci]: https://travis-ci.com/Henryforce/BLECombineKit.svg?branch=master
+
+[codecov]: https://codecov.io/gh/Henryforce/BLECombineKit/branch/master
+[travis]: https://travis-ci.com/Henryforce/BLECombineKit
