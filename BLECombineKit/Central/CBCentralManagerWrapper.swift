@@ -13,13 +13,11 @@ public protocol CBCentralManagerWrapper {
     var manager: CBCentralManager? { get }
     var isScanning: Bool { get }
     
-    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheral]
-    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheral]
+    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper]
+    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper]
     func scanForPeripherals(withServices serviceUUIDs: [CBUUID]?, options: [String : Any]?)
     func stopScan()
-//    func connect(_ peripheral: CBPeripheral, options: [String : Any]?)
     func connect(_ peripheral: CBPeripheralWrapper, options: [String : Any]?)
-//    func cancelPeripheralConnection(_ peripheral: CBPeripheral)
     func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper)
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
 }
@@ -40,12 +38,16 @@ final class CBCentralManagerWrapperImpl: CBCentralManagerWrapper {
         self.wrappedManager = manager
     }
     
-    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheral] {
-        wrappedManager.retrievePeripherals(withIdentifiers: identifiers)
+    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
+        wrappedManager
+            .retrievePeripherals(withIdentifiers: identifiers)
+            .map { CBPeripheralWrapperImpl(peripheral: $0) }
     }
     
-    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheral] {
-        wrappedManager.retrieveConnectedPeripherals(withServices: serviceUUIDs)
+    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper] {
+        wrappedManager
+            .retrieveConnectedPeripherals(withServices: serviceUUIDs)
+            .map { CBPeripheralWrapperImpl(peripheral: $0) }
     }
     
     func scanForPeripherals(withServices serviceUUIDs: [CBUUID]?, options: [String : Any]?) {
@@ -56,18 +58,12 @@ final class CBCentralManagerWrapperImpl: CBCentralManagerWrapper {
         wrappedManager.stopScan()
     }
     
-//    func connect(_ peripheral: CBPeripheral, options: [String : Any]?) {
-//        wrappedManager.connect(peripheral, options: options)
-//    }
     func connect(_ peripheral: CBPeripheralWrapper, options: [String : Any]?) {
         if let peripheral = peripheral as? CBPeripheralWrapperImpl, let realPeripheral = peripheral.peripheral {
             wrappedManager.connect(realPeripheral, options: options)
         }
     }
     
-//    func cancelPeripheralConnection(_ peripheral: CBPeripheral) {
-//        wrappedManager.cancelPeripheralConnection(peripheral)
-//    }
     func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) {
         if let peripheral = peripheral as? CBPeripheralWrapperImpl, let realPeripheral = peripheral.peripheral {
             wrappedManager.cancelPeripheralConnection(realPeripheral)

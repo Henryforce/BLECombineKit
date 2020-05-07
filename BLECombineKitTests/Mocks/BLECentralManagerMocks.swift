@@ -11,40 +11,85 @@ import CoreBluetooth
 import BLECombineKit
 import Combine
 
-final class BLECentralManagerMock: BLECentralManagerProtocol {
-    var scanForPeripheralsWasCalled = false
-    func scanForPeripherals(withServices services: [CBUUID]?, options: [String : Any]?) -> AnyPublisher<BLEPeripheral, BLEError> {
-        scanForPeripheralsWasCalled = true
-        
-        let peripheral = CBPeripheralWrapperMock()
-        let blePeripheral = BLEPeripheral(peripheral: peripheral, centralManager: nil)
-        return Just
-            .init(blePeripheral)
+final class BLECentralManagerMock: BLECentralManager {
+    
+    var centralManager: CBCentralManagerWrapper = CBCentralManagerWrapperMock()
+    
+    var isScanning: Bool = false
+    
+    var retrievePeripheralsWasCalled = false
+    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {
+        retrievePeripheralsWasCalled = true
+        return Just.init(BLEPeripheralMock())
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()
     }
     
+    var retrieveConnectedPeripheralsWasCalled = false
+    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {
+        retrieveConnectedPeripheralsWasCalled = true
+        return Just.init(BLEPeripheralMock())
+            .setFailureType(to: BLEError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    var scanForPeripheralsWasCalled = false
+    func scanForPeripherals(withServices services: [CBUUID]?, options: [String : Any]?) -> AnyPublisher<BLEScanResult, BLEError> {
+        scanForPeripheralsWasCalled = true
+        
+        let blePeripheral = BLEPeripheralMock()
+        let advertisementData: [String: Any] = [:]
+        let rssi = NSNumber.init(value: 0)
+        
+        let bleScanResult = BLEScanResult(peripheral: blePeripheral,
+                                          advertisementData: advertisementData,
+                                          rssi: rssi)
+        
+        return Just
+            .init(bleScanResult)
+            .setFailureType(to: BLEError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    var stopScanWasCalled = false
+    func stopScan() {
+        stopScanWasCalled = true
+    }
+    
     var connectWasCalled = false
-    public func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?) {
+    func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?) {
         connectWasCalled = true
     }
+    
+    var cancelPeripheralConnectionWasCalled = false
+    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError> {
+        cancelPeripheralConnectionWasCalled = true
+        
+        return Just.init(false).setFailureType(to: BLEError.self).eraseToAnyPublisher()
+    }
+    
+    var registerForConnectionEventsWasCalled = false
+    func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
+        registerForConnectionEventsWasCalled = true
+    }
+    
 }
 
-final class CBCentralManagerMock: CBCentralManagerWrapper {
+final class CBCentralManagerWrapperMock: CBCentralManagerWrapper {
     var manager: CBCentralManager?
     
     var isScanning: Bool = false
     
     var retrievePeripheralsWasCalled = false
-    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheral] {
+    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
         retrievePeripheralsWasCalled = true
-        return []
+        return [CBPeripheralWrapperMock()]
     }
     
     var retrieveConnectedPeripheralsWasCalled = false
-    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheral] {
+    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper] {
         retrieveConnectedPeripheralsWasCalled = true
-        return []
+        return [CBPeripheralWrapperMock()]
     }
     
     var scanForPeripheralsWasCalled = false
@@ -62,14 +107,14 @@ final class CBCentralManagerMock: CBCentralManagerWrapper {
         connectWasCalled = true
     }
     
-    var cancelPeripheralConnection = false
+    var cancelPeripheralConnectionWasCalled = false
     func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) {
-        cancelPeripheralConnection = true
+        cancelPeripheralConnectionWasCalled = true
     }
     
-    var registerForConnectionEvents = false
+    var registerForConnectionEventsWasCalled = false
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
-        registerForConnectionEvents = true
+        registerForConnectionEventsWasCalled = true
     }
     
 }

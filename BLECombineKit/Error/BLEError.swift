@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreBluetooth
 
 public enum BLEError: Error {
     
@@ -25,9 +26,16 @@ public enum BLEError: Error {
     
     // Peripheral
     case connectionFailure
+    case disconnectionFailed
+    
+    case servicesFoundError(Error?)
+    case characteristicsFoundError(Error?)
     
     // Data
     case invalidData
     case dataConversionFailed
+    
+    // Write
+    case writeFailed(Error)
     
 }

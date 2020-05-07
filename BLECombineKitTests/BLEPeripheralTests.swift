@@ -33,6 +33,17 @@ class BLEPeripheralTests: XCTestCase {
         peripheralMock = nil
         sut = nil
     }
+    
+    func testObserveConnectionState() {
+        let expectation = XCTestExpectation(description: self.debugDescription)
+        sut.observeConnectionState()
+            .sink(receiveValue: { value in
+                expectation.fulfill()
+            })
+            .store(in: &disposable)
+        
+        wait(for: [expectation], timeout: 0.1)
+    }
 
     func testConnectCallsCentralManagerToConnectPeripheral() throws {
         _ = sut.connect(with: nil)
@@ -79,7 +90,7 @@ class BLEPeripheralTests: XCTestCase {
         
         XCTAssertTrue(peripheralMock.discoverServicesWasCalled)
         XCTAssertNil(expectedService)
-        delegate.didDiscoverServices.send(peripheralMock)
+        delegate.didDiscoverServices.send((peripheral: peripheralMock, error: nil))
         wait(for: [expectation], timeout: 0.1)
         XCTAssertNotNil(expectedService)
     }
@@ -105,7 +116,7 @@ class BLEPeripheralTests: XCTestCase {
         
         XCTAssertTrue(peripheralMock.discoverCharacteristicsWasCalled)
         XCTAssertNil(expectedCharacteristic)
-        delegate.didDiscoverCharacteristics.send((peripheral: peripheralMock, service: service))
+        delegate.didDiscoverCharacteristics.send((peripheral: peripheralMock, service: service, error: nil))
         wait(for: [expectation], timeout: 0.1)
         XCTAssertNotNil(expectedCharacteristic)
     }
@@ -127,8 +138,9 @@ class BLEPeripheralTests: XCTestCase {
             })
             .store(in: &disposable)
         
+        XCTAssertTrue(peripheralMock.readValueForCharacteristicWasCalled)
         XCTAssertNil(expectedData)
-        delegate.didUpdateValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic))
+        delegate.didUpdateValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil))
         wait(for: [expectation], timeout: 0.1)
         XCTAssertNotNil(expectedData)
     }
@@ -152,7 +164,7 @@ class BLEPeripheralTests: XCTestCase {
         
         XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
         XCTAssertNil(expectedData)
-        delegate.didUpdateValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic))
+        delegate.didUpdateValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil))
         wait(for: [expectation], timeout: 0.1)
         XCTAssertNotNil(expectedData)
     }
@@ -172,10 +184,76 @@ class BLEPeripheralTests: XCTestCase {
             })
             .store(in: &disposable)
         
+        XCTAssertTrue(peripheralMock.readRSSIWasCalled)
         XCTAssertNil(expectedData)
-        delegate.didReadRSSI.send((peripheral: peripheralMock, rssi: NSNumber.init(value: 0)))
+        delegate.didReadRSSI.send((peripheral: peripheralMock, rssi: NSNumber.init(value: 0), error: nil))
         wait(for: [expectation], timeout: 0.1)
         XCTAssertNotNil(expectedData)
+    }
+    
+    func testWriteValueWithoutResponseReturnsImmediately() {
+        var expectedResult: Bool?
+        var completion: Subscribers.Completion<BLEError>?
+        
+        let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
+        
+        sut.writeValue(Data(), for: mutableCharacteristic, type: .withoutResponse)
+            .sink(receiveCompletion: { event in
+                completion = event
+            }, receiveValue: { result in
+                expectedResult = result
+            })
+            .store(in: &disposable)
+        
+        XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
+        XCTAssertNotNil(expectedResult)
+        XCTAssertNotNil(completion)
+    }
+    
+    func testWriteValueWithResponseReturnsOnDelegateCall() {
+        let expectation = XCTestExpectation(description: self.debugDescription)
+        var expectedResult: Bool?
+        
+        let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
+        
+        sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
+            .sink(receiveCompletion: { error in
+                XCTFail()
+            }, receiveValue: { result in
+                expectedResult = result
+                expectation.fulfill()
+            })
+            .store(in: &disposable)
+        
+        XCTAssertNil(expectedResult)
+        delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil))
+        XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
+        wait(for: [expectation], timeout: 0.1)
+        XCTAssertNotNil(expectedResult)
+    }
+    
+    func testWriteValueWithResponseReturnsErrorOnDelegateErrorCall() {
+        let expectation = XCTestExpectation(description: self.debugDescription)
+        
+        let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
+        
+        sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
+            .sink(receiveCompletion: { error in
+                expectation.fulfill()
+            }, receiveValue: { _ in
+                XCTFail()
+            })
+            .store(in: &disposable)
+        
+        delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: BLEError.unknown))
+        XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
+        wait(for: [expectation], timeout: 0.1)
+    }
+    
+    func testDisconnectCallsCentralManager() throws {
+        _ = sut.disconnect()
+        
+        XCTAssertTrue(centralManagerMock.cancelPeripheralConnectionWasCalled)
     }
     
     func testConvenienceInit() {

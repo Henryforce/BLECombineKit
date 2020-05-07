@@ -11,14 +11,16 @@ import CoreBluetooth
 import BLECombineKit
 import Combine
 
-final class BLEPeripheralMock: BLEMainPeripheralProtocol {
-    var connectionState: CurrentValueSubject<Bool, Never>
+final class BLEPeripheralMock: BLEPeripheralProtocol {
     
     var peripheral: CBPeripheralWrapper
     
     init() {
-        self.connectionState = CurrentValueSubject<Bool, Never>(false)
         self.peripheral = CBPeripheralWrapperMock()
+    }
+    
+    public func observeConnectionState() -> AnyPublisher<Bool, Never> {
+        return Just.init(true).eraseToAnyPublisher()
     }
     
     var connectWasCalled = false
@@ -28,6 +30,12 @@ final class BLEPeripheralMock: BLEMainPeripheralProtocol {
         return Just.init(blePeripheral)
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()
+    }
+    
+    var disconnectWasCalled = false
+    func disconnect() -> AnyPublisher<Bool, BLEError> {
+        disconnectWasCalled = true
+        return Just.init(false).setFailureType(to: BLEError.self).eraseToAnyPublisher()
     }
     
     var discoverServiceWasCalled = false
@@ -76,6 +84,11 @@ final class BLEPeripheralMock: BLEMainPeripheralProtocol {
             .eraseToAnyPublisher()
     }
     
+    var writeValueWasCalled = false
+    func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) -> AnyPublisher<Bool, BLEError> {
+        writeValueWasCalled = true
+        return Just.init(true).setFailureType(to: BLEError.self).eraseToAnyPublisher()
+    }
     
 }
 
@@ -96,8 +109,9 @@ final class CBPeripheralWrapperMock: CBPeripheralWrapper {
         return [mutableService]
     }
     
+    var readRSSIWasCalled = false
     func readRSSI() {
-        
+        readRSSIWasCalled = true
     }
     
     var discoverServicesWasCalled = false
@@ -114,16 +128,18 @@ final class CBPeripheralWrapperMock: CBPeripheralWrapper {
         discoverCharacteristicsWasCalled = true
     }
     
+    var readValueForCharacteristicWasCalled = false
     func readValue(for characteristic: CBCharacteristic) {
-        
+        readValueForCharacteristicWasCalled = true
     }
     
     func maximumWriteValueLength(for type: CBCharacteristicWriteType) -> Int {
         return 0
     }
     
+    var writeValueForCharacteristicWasCalled = false
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) {
-        
+        writeValueForCharacteristicWasCalled = true
     }
     
     var setNotifyValueWasCalled = false
@@ -135,12 +151,14 @@ final class CBPeripheralWrapperMock: CBPeripheralWrapper {
         
     }
     
+    var readValueForDescriptorWasCalled = false
     func readValue(for descriptor: CBDescriptor) {
-        
+        readValueForDescriptorWasCalled = true
     }
     
+    var writeValueForDescriptorWasCalled = false
     func writeValue(_ data: Data, for descriptor: CBDescriptor) {
-        
+        writeValueForDescriptorWasCalled = true
     }
     
     func openL2CAPChannel(_ PSM: CBL2CAPPSM) {
