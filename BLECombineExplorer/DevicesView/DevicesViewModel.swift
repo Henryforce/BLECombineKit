@@ -27,24 +27,7 @@ final class DevicesViewModel: ObservableObject {
     }
     
     func startScanning() {
-        
-        let centralManager = BLECombineKit.buildCentralManager(with: CBCentralManager())
-
         centralManager.scanForPeripherals(withServices: nil, options: nil)
-            .first()
-            .flatMap { $0.peripheral.discoverServices(serviceUUIDs: nil) }
-            .flatMap { $0.discoverCharacteristics(characteristicUUIDs: nil) }
-            .flatMap { $0.observeValue() }
-            .sink(receiveCompletion: { completion in
-                print(completion)
-            }, receiveValue: { data in
-                print(data.value)
-            })
-            .store(in: &disposables)
-            
-        
-        centralManager.scanForPeripherals(withServices: nil, options: nil)
-            .first()
             .sink(receiveCompletion: { completion in
                 print(completion)
             }, receiveValue: { [weak self] scanResult in

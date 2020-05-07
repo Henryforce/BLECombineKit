@@ -27,6 +27,8 @@
 		39AC6401245D18460024D677 /* BLEServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC6400245D18460024D677 /* BLEServiceTests.swift */; };
 		39AC6403245D19D70024D677 /* BLECharacteristicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC6402245D19D70024D677 /* BLECharacteristicTests.swift */; };
 		39B65AE32463ABEB00E96FDE /* BLECombineKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B65AE22463ABEB00E96FDE /* BLECombineKitTests.swift */; };
+		39B65AE62463DD8D00E96FDE /* CharacteristicDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B65AE52463DD8D00E96FDE /* CharacteristicDetailView.swift */; };
+		39B65AE82463DE1500E96FDE /* CharacteristicDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B65AE72463DE1500E96FDE /* CharacteristicDetailViewModel.swift */; };
 		39BE8C19245D21DF004F73DD /* BLECentralManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BE8C18245D21DF004F73DD /* BLECentralManagerTests.swift */; };
 		39BE8C1B245D23A1004F73DD /* CBCentralManagerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BE8C1A245D23A1004F73DD /* CBCentralManagerWrapper.swift */; };
 		39BE8C62245D5E19004F73DD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BE8C61245D5E19004F73DD /* AppDelegate.swift */; };
@@ -118,6 +120,8 @@
 		39AC6400245D18460024D677 /* BLEServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEServiceTests.swift; sourceTree = "<group>"; };
 		39AC6402245D19D70024D677 /* BLECharacteristicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECharacteristicTests.swift; sourceTree = "<group>"; };
 		39B65AE22463ABEB00E96FDE /* BLECombineKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECombineKitTests.swift; sourceTree = "<group>"; };
+		39B65AE52463DD8D00E96FDE /* CharacteristicDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacteristicDetailView.swift; sourceTree = "<group>"; };
+		39B65AE72463DE1500E96FDE /* CharacteristicDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacteristicDetailViewModel.swift; sourceTree = "<group>"; };
 		39BE8C18245D21DF004F73DD /* BLECentralManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECentralManagerTests.swift; sourceTree = "<group>"; };
 		39BE8C1A245D23A1004F73DD /* CBCentralManagerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBCentralManagerWrapper.swift; sourceTree = "<group>"; };
 		39BE8C5F245D5E19004F73DD /* BLECombineExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BLECombineExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -304,14 +308,24 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
+		39B65AE42463DD5500E96FDE /* CharacteristicDetailView */ = {
+			isa = PBXGroup;
+			children = (
+				39B65AE52463DD8D00E96FDE /* CharacteristicDetailView.swift */,
+				39B65AE72463DE1500E96FDE /* CharacteristicDetailViewModel.swift */,
+			);
+			path = CharacteristicDetailView;
+			sourceTree = "<group>";
+		};
 		39BE8C60245D5E19004F73DD /* BLECombineExplorer */ = {
 			isa = PBXGroup;
 			children = (
+				39BE8C61245D5E19004F73DD /* AppDelegate.swift */,
 				39E7B703245ED67A0065044C /* Utils */,
 				39E7B700245ED5FE0065044C /* DevicesView */,
 				39E7B6FF245ED5660065044C /* ServicesView */,
 				39E7B6FA245ED0F20065044C /* CharacteristicsView */,
-				39BE8C61245D5E19004F73DD /* AppDelegate.swift */,
+				39B65AE42463DD5500E96FDE /* CharacteristicDetailView */,
 				39BE8C63245D5E19004F73DD /* SceneDelegate.swift */,
 				39BE8C65245D5E19004F73DD /* ContentView.swift */,
 				39BE8C67245D5E19004F73DD /* Assets.xcassets */,
@@ -645,6 +659,8 @@
 				39E7B702245ED60B0065044C /* DevicesView.swift in Sources */,
 				39E7B6FC245ED1010065044C /* CharacteristicsView.swift in Sources */,
 				39BE8C66245D5E19004F73DD /* ContentView.swift in Sources */,
+				39B65AE62463DD8D00E96FDE /* CharacteristicDetailView.swift in Sources */,
+				39B65AE82463DE1500E96FDE /* CharacteristicDetailViewModel.swift in Sources */,
 				39E7B705245ED6840065044C /* ActionState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -929,7 +945,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.henryforce.BLECombineExplorer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -949,7 +965,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.henryforce.BLECombineExplorer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
