@@ -23,7 +23,7 @@ public protocol BLECentralManager {
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
 }
 
-final class BLECentralManagerImpl {
+final class BLECentralManagerImpl: BLECentralManager {
     
     let centralManager: CBCentralManagerWrapper
     
@@ -78,20 +78,6 @@ final class BLECentralManagerImpl {
             }
             .store(in: &cancellables)
     }
-    
-    // MARK: - Private methods
-    
-    private func subscribeToDelegate() {
-        observeUpdateState()
-        observeDidConnectPeripheral()
-        observeDidDisconnectPeripheral()
-    }
-    
-}
-
-// MARK: - CentralManagerProtocol
-
-extension BLECentralManagerImpl: BLECentralManager {
     
     public func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {
         let retrievedPeripherals = centralManager.retrievePeripherals(withIdentifiers: identifiers)
@@ -168,6 +154,14 @@ extension BLECentralManagerImpl: BLECentralManager {
         return Publishers.Sequence.init(sequence: peripherals)
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()
+    }
+    
+    // MARK: - Private methods
+    
+    private func subscribeToDelegate() {
+        observeUpdateState()
+        observeDidConnectPeripheral()
+        observeDidDisconnectPeripheral()
     }
     
 }

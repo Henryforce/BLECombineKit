@@ -1,6 +1,6 @@
 # BLECombineKit
 
-![badge-platforms][] [![badge-ci][]][travis] [![badge-codecov][]][codecov] [![badge-carthage][]][carthage]
+![badge-platforms][] [![badge-ci][]][travis] [![badge-codecov][]][codecov] [![badge-carthage][]][carthage] [![badge-spm][]][spm]
 
 CoreBluetooth abstraction layer for iOS, macOS, TvOS and WatchOS development environments. Powered by Combine.
 
@@ -11,7 +11,7 @@ CoreBluetooth abstraction layer for iOS, macOS, TvOS and WatchOS development env
 
 As simple as creating a CBCentralManager and let the reactive magic of Combine do the rest:
 
-```
+```swift
 import CoreBluetooth
 import Combine
 import BLECombineKit
@@ -46,11 +46,21 @@ github "Henryforce/BLECombineKit"
 ```
 Then, run `carthage update` to build framework and drag `CombineBluetoothKit.framework` into your Xcode project.
 
+## Swift Package Manager
+
+In Xcode, select File --> Swift Packages --> Add Package Dependency and then add the following url:
+
+```swift
+https://github.com/Henryforce/BLECombineKit
+```
+
 [badge-platforms]: https://img.shields.io/badge/platforms-macOS%20%7C%20iOS%20%7C%20tvOS%20%7C%20watchOS-lightgrey.svg
 [badge-codecov]: https://codecov.io/gh/codecov/example-swift/branch/master/graphs/badge.svg
 [badge-ci]: https://travis-ci.com/Henryforce/BLECombineKit.svg?branch=master
 [badge-carthage]: https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat
+[badge-spm]: https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg
 
 [codecov]: https://codecov.io/gh/Henryforce/BLECombineKit/branch/master
 [travis]: https://travis-ci.com/Henryforce/BLECombineKit
 [carthage]: https://github.com/Carthage/Carthage
+[spm]: https://github.com/apple/swift-package-manager
