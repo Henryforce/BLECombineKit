@@ -25,7 +25,7 @@ final class CharacteristicsViewModel: ObservableObject {
         
         name = service.value.uuid.uuidString
         
-        service.discoverCharacteristics(characteristicUUIDs: nil)
+        service.discoverCharacteristics(characteristicUUIDs: [])
             .sink(receiveCompletion: { event in
                 print(event) // todo: handle error
             }, receiveValue: { [weak self] characteristic in

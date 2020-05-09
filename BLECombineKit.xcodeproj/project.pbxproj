@@ -82,6 +82,7 @@
 /* Begin PBXFileReference section */
 		395224B524658CA300B51A25 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		395224B624658CBD00B51A25 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		397341E824667D130045B541 /* BLECombineExplorer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BLECombineExplorer.entitlements; sourceTree = "<group>"; };
 		397B8A84245EBFAA0059C104 /* ServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesView.swift; sourceTree = "<group>"; };
 		39AC63C4245D07A70024D677 /* BLECombineKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BLECombineKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		39AC63C7245D07A70024D677 /* BLECombineKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLECombineKit.h; sourceTree = "<group>"; };
@@ -283,6 +284,7 @@
 		39BE8C60245D5E19004F73DD /* BLECombineExplorer */ = {
 			isa = PBXGroup;
 			children = (
+				397341E824667D130045B541 /* BLECombineExplorer.entitlements */,
 				39BE8C61245D5E19004F73DD /* AppDelegate.swift */,
 				39E7B703245ED67A0065044C /* Utils */,
 				39E7B700245ED5FE0065044C /* DevicesView */,
@@ -791,6 +793,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BLECombineExplorer/BLECombineExplorer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"BLECombineExplorer/Preview Content\"";
 				DEVELOPMENT_TEAM = LY87V7AVCG;
@@ -802,8 +805,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.henryforce.BLECombineExplorer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -811,6 +815,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BLECombineExplorer/BLECombineExplorer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"BLECombineExplorer/Preview Content\"";
 				DEVELOPMENT_TEAM = LY87V7AVCG;
@@ -822,8 +827,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.henryforce.BLECombineExplorer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

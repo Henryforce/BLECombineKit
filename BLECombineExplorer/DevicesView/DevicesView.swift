@@ -22,7 +22,7 @@ struct DevicesView: View {
                 EmptyView()
             }
             List {
-                ForEach(viewModel.peripherals, id: \.name) { item in
+                ForEach(viewModel.peripherals, id: \.identifier) { item in
                     ItemView(peripheral: item)
                         .onTapGesture {
                             self.itemViewWasTapped(with: item)
