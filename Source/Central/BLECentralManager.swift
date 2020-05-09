@@ -64,8 +64,11 @@ final class BLECentralManagerImpl: BLECentralManager {
     func observeDidConnectPeripheral() {
         delegate
             .didConnectPeripheral
-            .sink { [weak self] in
-                self?.scannedPeripherals[$0.identifier]?.connectionState.send(true)
+            .sink { [weak self] result in
+                guard let self = self else { return }
+                if let scannedPeripheral = self.scannedPeripherals[result.identifier] {
+                    scannedPeripheral.connectionState.send(true)
+                }
             }
             .store(in: &cancellables)
     }
@@ -73,8 +76,11 @@ final class BLECentralManagerImpl: BLECentralManager {
     func observeDidDisconnectPeripheral() {
         delegate
             .didDisconnectPeripheral
-            .sink { [weak self] in
-                self?.scannedPeripherals[$0.identifier]?.connectionState.send(false)
+            .sink { [weak self] result in
+                guard let self = self else { return }
+                if let scannedPeripheral = self.scannedPeripherals[result.identifier] {
+                    scannedPeripheral.connectionState.send(false)
+                }
             }
             .store(in: &cancellables)
     }
@@ -110,7 +116,9 @@ final class BLECentralManagerImpl: BLECentralManager {
                                                advertisementData: advertisementData,
                                                rssi: rssi)
                 
-                self.scannedPeripherals[peripheral.identifier] = blePeripheral
+                if self.scannedPeripherals[peripheral.identifier] == nil {
+                    self.scannedPeripherals[peripheral.identifier] = blePeripheral
+                }
                 
                 return scanResult
             }

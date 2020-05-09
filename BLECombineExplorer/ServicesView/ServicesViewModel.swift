@@ -30,13 +30,12 @@ final class ServicesViewModel: ObservableObject {
         name = peripheral.peripheral.name ?? "Unknown"
         
         peripheral.connect(with: [:])
-            .flatMap { $0.discoverServices(serviceUUIDs: nil) }
+            .flatMap { $0.discoverServices(serviceUUIDs: []) }
             .sink(receiveCompletion: { event in
                 print(event) // todo: handle error
             }, receiveValue: { [weak self] service in
                 guard let self = self else { return }
                 self.services.append(service)
-
             })
             .store(in: &disposables)
     }
