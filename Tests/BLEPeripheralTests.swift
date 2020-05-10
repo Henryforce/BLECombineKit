@@ -73,9 +73,32 @@ class BLEPeripheralTests: XCTestCase {
         XCTAssertTrue(expectedPeripheral?.connectionState.value ?? false)
     }
     
-    func testDiscoverServiceReturns() throws {
+    func testDiscoverServicesReturnsWhenPeripheralAlreadyFoundServices() throws {
         let expectation = XCTestExpectation(description: self.debugDescription)
         var expectedService: BLEService?
+        
+        let mutableService = CBMutableService(type: CBUUID.init(), primary: true)
+        peripheralMock.mockedServices = [mutableService]
+        
+        let servicesObservable = sut.discoverServices(serviceUUIDs: nil)
+        
+        servicesObservable
+            .sink(receiveCompletion: { error in
+            }, receiveValue: { service in
+                expectedService = service
+                expectation.fulfill()
+            })
+            .store(in: &disposable)
+        
+        XCTAssertFalse(peripheralMock.discoverServicesWasCalled)
+        XCTAssertNotNil(expectedService)
+    }
+    
+    func testDiscoverServicesReturnsDelegateObservable() throws {
+        let expectation = XCTestExpectation(description: self.debugDescription)
+        var expectedService: BLEService?
+        
+        peripheralMock.mockedServices = nil
         
         let servicesObservable = sut.discoverServices(serviceUUIDs: nil)
         
@@ -88,9 +111,14 @@ class BLEPeripheralTests: XCTestCase {
             })
             .store(in: &disposable)
         
+        
         XCTAssertTrue(peripheralMock.discoverServicesWasCalled)
         XCTAssertNil(expectedService)
+        
+        let mutableService = CBMutableService(type: CBUUID.init(), primary: true)
+        peripheralMock.mockedServices = [mutableService]
         delegate.didDiscoverServices.send((peripheral: peripheralMock, error: nil))
+        
         wait(for: [expectation], timeout: 0.1)
         XCTAssertNotNil(expectedService)
     }

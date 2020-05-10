@@ -116,9 +116,7 @@ final class BLECentralManagerImpl: BLECentralManager {
                                                advertisementData: advertisementData,
                                                rssi: rssi)
                 
-                if self.scannedPeripherals[peripheral.identifier] == nil {
-                    self.scannedPeripherals[peripheral.identifier] = blePeripheral
-                }
+                self.scannedPeripherals[peripheral.identifier] = blePeripheral
                 
                 return scanResult
             }

@@ -35,6 +35,7 @@ struct DevicesView: View {
     }
     
     private func itemViewWasTapped(with item: ScannedPeripheralItem) {
+        servicesViewModel.reset()
         viewModel.stopScan()
         servicesViewModel.scanResult = viewModel.blePeripheralMap[item.identifier]
         servicesViewModel.startObservingServices()

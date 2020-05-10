@@ -21,8 +21,6 @@ final class ServicesViewModel: ObservableObject {
     private var disposables = Set<AnyCancellable>()
     
     func startObservingServices() {
-        reset()
-        
         guard let scanResult = scanResult else { return }
         
         let peripheral = scanResult.peripheral
@@ -30,7 +28,10 @@ final class ServicesViewModel: ObservableObject {
         name = peripheral.peripheral.name ?? "Unknown"
         
         peripheral.connect(with: [:])
-            .flatMap { $0.discoverServices(serviceUUIDs: []) }
+            .first()
+            .flatMap {
+                $0.discoverServices(serviceUUIDs: nil)
+            }
             .sink(receiveCompletion: { event in
                 print(event) // todo: handle error
             }, receiveValue: { [weak self] service in
@@ -47,6 +48,7 @@ final class ServicesViewModel: ObservableObject {
         name = "-"
         disposables.removeAll()
         services.removeAll()
+        scanResult = nil
     }
     
 }

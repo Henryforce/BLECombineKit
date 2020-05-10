@@ -35,17 +35,17 @@ final class DevicesViewModel: ObservableObject {
                 
                 let identifier = scanResult.peripheral.peripheral.identifier
 
-                if self.blePeripheralMap[identifier] == nil {
-                    self.blePeripheralMap[identifier] = scanResult
-                }
+                self.blePeripheralMap[identifier] = scanResult
                 
                 let scannedPeripheralItem = ScannedPeripheralItem(rssi: scanResult.rssi.doubleValue,
                                       name: scanResult.peripheral.peripheral.name ?? "Unknown",
                                       identifier: scanResult.peripheral.peripheral.identifier)
                 
-                if let savedPeripheral = self.peripheralMap[identifier], savedPeripheral.rssi != scannedPeripheralItem.rssi {
-                    self.peripheralMap.updateValue(scannedPeripheralItem, forKey: identifier)
-                    self.peripherals = self.peripheralMap.values.map { $0 }.sorted{ $0.rssi > $1.rssi }
+                if let savedPeripheral = self.peripheralMap[identifier] {
+                    if savedPeripheral.rssi != scannedPeripheralItem.rssi {
+                        self.peripheralMap.updateValue(scannedPeripheralItem, forKey: identifier)
+                        self.peripherals = self.peripheralMap.values.map { $0 }.sorted{ $0.rssi > $1.rssi }
+                    }
                 } else {
                     self.peripheralMap[identifier] = scannedPeripheralItem
                     self.peripherals = self.peripheralMap.values.map { $0 }.sorted{ $0.rssi > $1.rssi }
@@ -55,8 +55,8 @@ final class DevicesViewModel: ObservableObject {
     }
     
     func stopScan() {
-        canUpdate = false
         centralManager.stopScan()
+        canUpdate = false
     }
     
     struct Constants {

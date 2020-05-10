@@ -82,12 +82,17 @@ final public class BLEPeripheral: BLEPeripheralProtocol {
     }
     
     public func discoverServices(serviceUUIDs: [CBUUID]?) -> AnyPublisher<BLEService, BLEError> {
+        
+        if let services = peripheral.services, !services.isEmpty {
+            return Publishers.Sequence.init(sequence: services).setFailureType(to: BLEError.self)
+                .map { BLEService(value: $0, peripheral: self) }
+                .eraseToAnyPublisher()
+        }
+        
+        peripheral.discoverServices(serviceUUIDs)
+        
         return delegate
             .didDiscoverServices
-            .handleEvents { [weak self]  _ in
-               guard let self = self else { return }
-               self.peripheral.discoverServices(serviceUUIDs)
-            }
             .tryFilter { [weak self] in
                 guard let self = self else { throw BLEError.deallocated }
                 return $0.peripheral.identifier == self.peripheral.identifier
@@ -105,12 +110,10 @@ final public class BLEPeripheral: BLEPeripheralProtocol {
     }
     
     public func discoverCharacteristics(characteristicUUIDs: [CBUUID]?, for service: CBService) -> AnyPublisher<BLECharacteristic, BLEError> {
+        peripheral.discoverCharacteristics(characteristicUUIDs, for: service)
+        
         return delegate
             .didDiscoverCharacteristics
-            .handleEvents { [weak self]  _ in
-               guard let self = self else { return }
-               self.peripheral.discoverCharacteristics(characteristicUUIDs, for: service)
-            }
             .tryFilter { [weak self] in
                 guard let self = self else { throw BLEError.deallocated }
                 return $0.peripheral.identifier == self.peripheral.identifier

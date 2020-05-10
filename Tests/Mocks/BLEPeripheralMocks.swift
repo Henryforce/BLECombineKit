@@ -102,11 +102,9 @@ final class CBPeripheralWrapperMock: CBPeripheralWrapper {
     
     var name: String? = "MockedPeripheral"
     
+    var mockedServices: [CBService]?
     var services: [CBService]? {
-        let mutableService = CBMutableService(type: CBUUID.init(), primary: true)
-        let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
-        mutableService.characteristics = [mutableCharacteristic]
-        return [mutableService]
+        return mockedServices
     }
     
     var readRSSIWasCalled = false
