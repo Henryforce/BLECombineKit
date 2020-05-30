@@ -81,5 +81,49 @@ class BLECentralManagerTests: XCTestCase {
         
         XCTAssertTrue(cbCentralManagerMock.registerForConnectionEventsWasCalled)
     }
+    
+    func testRetrievePeripheralsReturns() throws {
+        var didFinishRetrievingPeripherals = false
+        
+        let scanForPeripheralsObservable = sut.retrievePeripherals(withIdentifiers: [])
+        
+        scanForPeripheralsObservable
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure:
+                    XCTFail()
+                case .finished:
+                    didFinishRetrievingPeripherals = true
+                }
+            }, receiveValue: { peripheral in
+                XCTFail("Mocked peripherals cannot contain CBPeripherals")
+            })
+            .store(in: &disposable)
+        
+        XCTAssertTrue(cbCentralManagerMock.retrievePeripheralsWasCalled)
+        XCTAssertTrue(didFinishRetrievingPeripherals)
+    }
+    
+    func testRetrieveConnectedPeripheralsReturns() throws {
+        var didFinishRetrievingPeripherals = false
+        
+        let scanForPeripheralsObservable = sut.retrieveConnectedPeripherals(withServices: [])
+        
+        scanForPeripheralsObservable
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure:
+                    XCTFail()
+                case .finished:
+                    didFinishRetrievingPeripherals = true
+                }
+            }, receiveValue: { peripheral in
+                XCTFail("Mocked peripherals cannot contain CBPeripherals")
+            })
+            .store(in: &disposable)
+        
+        XCTAssertTrue(cbCentralManagerMock.retrieveConnectedPeripheralsWasCalled)
+        XCTAssertTrue(didFinishRetrievingPeripherals)
+    }
 
 }

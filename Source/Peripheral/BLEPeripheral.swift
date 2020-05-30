@@ -20,7 +20,8 @@ public protocol BLEPeripheralProtocol {
     func discoverServices(serviceUUIDs: [CBUUID]?) -> AnyPublisher<BLEService, BLEError>
     func discoverCharacteristics(characteristicUUIDs: [CBUUID]?, for service: CBService) -> AnyPublisher<BLECharacteristic, BLEError>
     func observeValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError>
-    func observeValueUpdateAndSetNotification(for characteristicUUID: CBCharacteristic) -> AnyPublisher<BLEData, BLEError>
+    func observeValueUpdateAndSetNotification(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError>
+    func setNotifyValue(_ enabled: Bool, for characteristic: CBCharacteristic)
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) -> AnyPublisher<Bool, BLEError>
 }
 
@@ -138,12 +139,16 @@ final public class BLEPeripheral: BLEPeripheralProtocol {
             }.eraseToAnyPublisher()
     }
     
-    public func observeValueUpdateAndSetNotification(for characteristicUUID: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
-        return buildDeferredValuePublisher(for: characteristicUUID)
+    public func observeValueUpdateAndSetNotification(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
+        return buildDeferredValuePublisher(for: characteristic)
             .handleEvents { [weak self] _ in
                 guard let self = self else { return }
-                self.peripheral.setNotifyValue(true, for: characteristicUUID)
+                self.peripheral.setNotifyValue(true, for: characteristic)
             }.eraseToAnyPublisher()
+    }
+    
+    public func setNotifyValue(_ enabled: Bool, for characteristic: CBCharacteristic) {
+        peripheral.setNotifyValue(false, for: characteristic)
     }
     
     public func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) -> AnyPublisher<Bool, BLEError> {
