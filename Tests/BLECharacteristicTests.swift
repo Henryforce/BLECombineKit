@@ -44,7 +44,7 @@ class BLECharacteristicTests: XCTestCase {
         let cbCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         let sut = BLECharacteristic(value: cbCharacteristic, peripheral: blePeripheralMock)
         
-        sut.setNotifyValue(true, for: cbCharacteristic)
+        sut.setNotifyValue(true)
         
         XCTAssertTrue(blePeripheralMock.setNotifyValueWasCalled)
     }
