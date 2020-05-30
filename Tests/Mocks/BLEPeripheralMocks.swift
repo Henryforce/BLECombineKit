@@ -76,6 +76,11 @@ final class BLEPeripheralMock: BLEPeripheralProtocol {
             .eraseToAnyPublisher()
     }
     
+    var setNotifyValueWasCalled = false
+    func setNotifyValue(_ enabled: Bool, for characteristic: CBCharacteristic) {
+        setNotifyValueWasCalled = true
+    }
+    
     var observeRSSIValueWasCalled = false
     func observeRSSIValue() -> AnyPublisher<NSNumber, BLEError> {
         observeRSSIValueWasCalled = true

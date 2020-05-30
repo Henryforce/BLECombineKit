@@ -197,6 +197,14 @@ class BLEPeripheralTests: XCTestCase {
         XCTAssertNotNil(expectedData)
     }
     
+    func testSetNotifyValue() {
+        let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
+        
+        sut.setNotifyValue(true, for: mutableCharacteristic)
+        
+        XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
+    }
+    
     func testObserveRSSIValueReturns() throws {
         let expectation = XCTestExpectation(description: self.debugDescription)
         var expectedData: NSNumber?
@@ -280,8 +288,31 @@ class BLEPeripheralTests: XCTestCase {
     
     func testDisconnectCallsCentralManager() throws {
         _ = sut.disconnect()
-        
+
         XCTAssertTrue(centralManagerMock.cancelPeripheralConnectionWasCalled)
+    }
+    
+    func testDisconnectCallsCentralManagerButReturnsFalseWhenManagerIsNil() throws {
+        var disconnectionFailed = false
+        centralManagerMock = nil
+        sut = BLEPeripheral(peripheral: peripheralMock, centralManager: centralManagerMock, delegate: delegate)
+        
+        sut.disconnect()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    if case .disconnectionFailed = error {
+                        disconnectionFailed = true
+                    }
+                case .finished:
+                    XCTFail()
+                }
+            }, receiveValue: { result in
+                XCTFail()
+            })
+            .store(in: &disposable)
+        
+        XCTAssertTrue(disconnectionFailed)
     }
     
     func testConvenienceInit() {

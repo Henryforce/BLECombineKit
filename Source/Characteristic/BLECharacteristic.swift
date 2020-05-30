@@ -26,4 +26,8 @@ public struct BLECharacteristic: BLEPeripheralResult {
     public func observeValueUpdateAndSetNotification() -> AnyPublisher<BLEData, BLEError> {
         return peripheral.observeValueUpdateAndSetNotification(for: value)
     }
+    
+    public func setNotifyValue(_ enabled: Bool, for characteristic: CBCharacteristic) {
+        peripheral.setNotifyValue(enabled, for: characteristic)
+    }
 }
