@@ -7,6 +7,14 @@ CoreBluetooth abstraction layer for iOS, macOS, TvOS and WatchOS development env
 - SwiftUI compatible
 - Apple's APIs dependencies only
 
+Per Apple's docs, https://developer.apple.com/documentation/combine, Combine (and BLECombineKit) is only supported on:
+
+iOS 13.0+
+macOS 11.0+ Beta
+Mac Catalyst 13.0+
+tvOS 13.0+
+watchOS 6.0+
+
 # How to use [Work in Progress]
 
 As simple as creating a CBCentralManager and let the reactive magic of Combine do the rest:
