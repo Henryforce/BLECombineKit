@@ -15,13 +15,13 @@ class BLEPeripheralTests: XCTestCase {
 
     var sut: BLEPeripheral!
     var delegate: BLEPeripheralDelegate!
-    var centralManagerMock: BLECentralManagerMock!
+    var centralManagerMock: MockBLECentralManager!
     var peripheralMock: CBPeripheralWrapperMock!
     var disposable = Set<AnyCancellable>()
     
     override func setUpWithError() throws {
         delegate = BLEPeripheralDelegate()
-        centralManagerMock = BLECentralManagerMock()
+        centralManagerMock = MockBLECentralManager()
         peripheralMock = CBPeripheralWrapperMock()
         
         sut = BLEPeripheral(peripheral: peripheralMock, centralManager: centralManagerMock, delegate: delegate)
@@ -48,7 +48,7 @@ class BLEPeripheralTests: XCTestCase {
     func testConnectCallsCentralManagerToConnectPeripheral() throws {
         _ = sut.connect(with: nil)
 
-        XCTAssertTrue(centralManagerMock.connectWasCalled)
+        XCTAssertEqual(centralManagerMock.connectWasCalledCount, 1)
     }
     
     func testConnectCallsCentralManagerToConnectPeripheralAndReturnsWhenConnectionStateIsTrue() throws {
@@ -66,7 +66,7 @@ class BLEPeripheralTests: XCTestCase {
             })
             .store(in: &disposable)
         
-        XCTAssertTrue(centralManagerMock.connectWasCalled)
+        XCTAssertEqual(centralManagerMock.connectWasCalledCount, 1)
         XCTAssertNil(expectedPeripheral)
         sut.connectionState.send(true)
         wait(for: [expectation], timeout: 0.1)
@@ -289,7 +289,7 @@ class BLEPeripheralTests: XCTestCase {
     func testDisconnectCallsCentralManager() throws {
         _ = sut.disconnect()
 
-        XCTAssertTrue(centralManagerMock.cancelPeripheralConnectionWasCalled)
+        XCTAssertEqual(centralManagerMock.cancelPeripheralConnectionWasCalledCount, 1)
     }
     
     func testDisconnectCallsCentralManagerButReturnsFalseWhenManagerIsNil() throws {

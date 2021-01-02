@@ -30,7 +30,7 @@ public protocol CBPeripheralWrapper {
     func openL2CAPChannel(_ PSM: CBL2CAPPSM)
 }
 
-final class CBPeripheralWrapperImpl: CBPeripheralWrapper {
+final class StandardCBPeripheralWrapper: CBPeripheralWrapper {
     
     var peripheral: CBPeripheral? {
         self.wrappedPeripheral
