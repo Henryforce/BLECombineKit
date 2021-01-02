@@ -19,7 +19,7 @@ final class CharacteristicDetailViewModel: ObservableObject {
     
     var characteristic: BLECharacteristic?
     
-    private var disposables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
     
     func setup() {
         guard let characteristic = characteristic else { return }
@@ -27,7 +27,8 @@ final class CharacteristicDetailViewModel: ObservableObject {
     }
     
     func readValue() {
-        disposables.removeAll()
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
         
         guard let characteristic = characteristic else { return }
         
@@ -42,8 +43,7 @@ final class CharacteristicDetailViewModel: ObservableObject {
                 
                 self.encodedData = encodedData
                 self.hexData = hexData
-            })
-            .store(in: &disposables)
+            }).store(in: &cancellables)
     }
     
 }

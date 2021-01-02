@@ -12,7 +12,7 @@ import Combine
 
 public struct BLEService: BLEPeripheralResult {
     public let value: CBService
-    public let peripheral: BLEPeripheralProtocol
+    private let peripheral: BLEPeripheralProtocol
     
     public init(value: CBService, peripheral: BLEPeripheralProtocol) {
        self.value = value

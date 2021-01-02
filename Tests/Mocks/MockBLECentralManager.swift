@@ -20,7 +20,7 @@ final class MockBLECentralManager: BLECentralManager {
     var retrievePeripheralsWasCalledCount = 0
     func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {
         retrievePeripheralsWasCalledCount += 1
-        return Just.init(BLEPeripheralMock())
+        return Just.init(MockBLEPeripheral())
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()
     }
@@ -28,7 +28,7 @@ final class MockBLECentralManager: BLECentralManager {
     var retrieveConnectedPeripheralsWasCalledCount = 0
     func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {
         retrieveConnectedPeripheralsWasCalledCount += 1
-        return Just.init(BLEPeripheralMock())
+        return Just.init(MockBLEPeripheral())
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()
     }
@@ -37,7 +37,7 @@ final class MockBLECentralManager: BLECentralManager {
     func scanForPeripherals(withServices services: [CBUUID]?, options: [String : Any]?) -> AnyPublisher<BLEScanResult, BLEError> {
         scanForPeripheralsWasCalledCount += 1
         
-        let blePeripheral = BLEPeripheralMock()
+        let blePeripheral = MockBLEPeripheral()
         let advertisementData: [String: Any] = [:]
         let rssi = NSNumber.init(value: 0)
         

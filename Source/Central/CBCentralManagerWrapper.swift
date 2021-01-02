@@ -22,7 +22,7 @@ public protocol CBCentralManagerWrapper {
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
 }
 
-final class CBCentralManagerWrapperImpl: CBCentralManagerWrapper {
+final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
     
     var manager: CBCentralManager? {
         wrappedManager

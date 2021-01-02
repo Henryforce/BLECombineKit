@@ -12,7 +12,7 @@ import Combine
 
 public struct BLECharacteristic: BLEPeripheralResult {
     public let value: CBCharacteristic
-    public let peripheral: BLEPeripheralProtocol
+    private let peripheral: BLEPeripheralProtocol
     
     public init(value: CBCharacteristic, peripheral: BLEPeripheralProtocol) {
        self.value = value
@@ -20,11 +20,11 @@ public struct BLECharacteristic: BLEPeripheralResult {
     }
     
     public func observeValue() -> AnyPublisher<BLEData, BLEError> {
-        return peripheral.observeValue(for: value)
+        peripheral.observeValue(for: value)
     }
     
     public func observeValueUpdateAndSetNotification() -> AnyPublisher<BLEData, BLEError> {
-        return peripheral.observeValueUpdateAndSetNotification(for: value)
+        peripheral.observeValueUpdateAndSetNotification(for: value)
     }
     
     public func setNotifyValue(_ enabled: Bool) {

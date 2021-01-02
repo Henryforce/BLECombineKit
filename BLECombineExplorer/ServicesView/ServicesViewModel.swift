@@ -18,7 +18,7 @@ final class ServicesViewModel: ObservableObject {
     
     var scanResult: BLEScanResult?
     
-    private var disposables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
     
     func startObservingServices() {
         guard let scanResult = scanResult else { return }
@@ -29,24 +29,22 @@ final class ServicesViewModel: ObservableObject {
         
         peripheral.connect(with: [:])
             .first()
-            .flatMap {
-                $0.discoverServices(serviceUUIDs: nil)
-            }
+            .flatMap { $0.discoverServices(serviceUUIDs: nil) }
             .sink(receiveCompletion: { event in
                 print(event) // todo: handle error
             }, receiveValue: { [weak self] service in
                 guard let self = self else { return }
                 self.services.append(service)
-            })
-            .store(in: &disposables)
+            }).store(in: &cancellables)
     }
     
     func reset() {
         if let scanResult = scanResult {
-            _ = scanResult.peripheral.disconnect()
+            scanResult.peripheral.disconnect()
         }
         name = "-"
-        disposables.removeAll()
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
         services.removeAll()
         scanResult = nil
     }

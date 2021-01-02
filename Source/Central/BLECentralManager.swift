@@ -10,7 +10,7 @@ import Foundation
 import CoreBluetooth
 import Combine
 
-public protocol BLECentralManager {
+public protocol BLECentralManager: AnyObject {
     var centralManager: CBCentralManagerWrapper { get }
     var isScanning: Bool { get }
     
@@ -47,7 +47,7 @@ final class StandardBLECentralManager: BLECentralManager {
         self.delegate = managerDelegate
         self.peripheralBuilder = peripheralBuilder
         
-        if let centralManager = centralManager as? CBCentralManagerWrapperImpl {
+        if let centralManager = centralManager as? StandardCBCentralManagerWrapper {
             centralManager.setupDelegate(managerDelegate)
         }
         
@@ -55,7 +55,7 @@ final class StandardBLECentralManager: BLECentralManager {
     }
     
     convenience init(with centralManager: CBCentralManager) {
-        let centralManagerWrapper = CBCentralManagerWrapperImpl(with: centralManager)
+        let centralManagerWrapper = StandardCBCentralManagerWrapper(with: centralManager)
         self.init(centralManager: centralManagerWrapper, managerDelegate: BLECentralManagerDelegate())
     }
     
@@ -74,8 +74,7 @@ final class StandardBLECentralManager: BLECentralManager {
                 if let scannedPeripheral = self.scannedPeripherals[result.identifier] {
                     scannedPeripheral.connectionState.send(true)
                 }
-            }
-            .store(in: &cancellables)
+            }.store(in: &cancellables)
     }
     
     func observeDidDisconnectPeripheral() {
@@ -86,8 +85,7 @@ final class StandardBLECentralManager: BLECentralManager {
                 if let scannedPeripheral = self.scannedPeripherals[result.identifier] {
                     scannedPeripheral.connectionState.send(false)
                 }
-            }
-            .store(in: &cancellables)
+            }.store(in: &cancellables)
     }
     
     public func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {

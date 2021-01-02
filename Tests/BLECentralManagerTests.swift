@@ -41,7 +41,7 @@ class BLECentralManagerTests: XCTestCase {
     func testScanForPeripheralsReturns() throws {
         // Given
         let expectation = XCTestExpectation(description: self.debugDescription)
-        let peripheralMock = CBPeripheralWrapperMock()
+        let peripheralMock = MockCBPeripheralWrapper()
         var expectedScanResult: BLEScanResult?
         
         // When
@@ -62,7 +62,7 @@ class BLECentralManagerTests: XCTestCase {
     
     func testConnectCallsCentralManager() throws {
         // Given
-        let peripheral = CBPeripheralWrapperMock()
+        let peripheral = MockCBPeripheralWrapper()
         
         // When
         sut.connect(peripheralWrapper: peripheral, options: nil)
@@ -81,7 +81,7 @@ class BLECentralManagerTests: XCTestCase {
     
     func testCancelPeripheralConnectionCallsCentralManager() throws {
         // Given
-        let peripheral = CBPeripheralWrapperMock()
+        let peripheral = MockCBPeripheralWrapper()
         
         // When
         _ = sut.cancelPeripheralConnection(peripheral)

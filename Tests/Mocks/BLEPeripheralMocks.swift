@@ -11,12 +11,12 @@ import CoreBluetooth
 import BLECombineKit
 import Combine
 
-final class BLEPeripheralMock: BLEPeripheralProtocol {
+final class MockBLEPeripheral: BLEPeripheralProtocol {
     
     var peripheral: CBPeripheralWrapper
     
     init() {
-        self.peripheral = CBPeripheralWrapperMock()
+        self.peripheral = MockCBPeripheralWrapper()
     }
     
     public func observeConnectionState() -> AnyPublisher<Bool, Never> {
@@ -97,7 +97,7 @@ final class BLEPeripheralMock: BLEPeripheralProtocol {
     
 }
 
-final class CBPeripheralWrapperMock: CBPeripheralWrapper {
+final class MockCBPeripheralWrapper: CBPeripheralWrapper {
     
     var peripheral: CBPeripheral?
     
