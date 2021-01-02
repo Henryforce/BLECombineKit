@@ -11,11 +11,11 @@ import XCTest
 
 class BLEDataTests: XCTestCase {
 
-    var mockupPeripheral: BLEPeripheralMock!
+    var mockupPeripheral: MockBLEPeripheral!
     
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        mockupPeripheral = BLEPeripheralMock()
+        mockupPeripheral = MockBLEPeripheral()
     }
 
     override func tearDownWithError() throws {

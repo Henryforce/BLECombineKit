@@ -15,264 +15,265 @@ class BLEPeripheralTests: XCTestCase {
 
     var sut: BLEPeripheral!
     var delegate: BLEPeripheralDelegate!
-    var centralManagerMock: MockBLECentralManager!
-    var peripheralMock: CBPeripheralWrapperMock!
+    var centralManager: MockBLECentralManager!
+    var peripheralMock: MockCBPeripheralWrapper!
     var disposable = Set<AnyCancellable>()
     
     override func setUpWithError() throws {
         delegate = BLEPeripheralDelegate()
-        centralManagerMock = MockBLECentralManager()
-        peripheralMock = CBPeripheralWrapperMock()
+        centralManager = MockBLECentralManager()
+        peripheralMock = MockCBPeripheralWrapper()
         
-        sut = BLEPeripheral(peripheral: peripheralMock, centralManager: centralManagerMock, delegate: delegate)
+        sut = BLEPeripheral(
+            peripheral: peripheralMock,
+            centralManager: centralManager,
+            delegate: delegate
+        )
     }
 
     override func tearDownWithError() throws {
         delegate = nil
-        centralManagerMock = nil
+        centralManager = nil
         peripheralMock = nil
         sut = nil
     }
     
     func testObserveConnectionState() {
-        let expectation = XCTestExpectation(description: self.debugDescription)
+        // Given
+        let expectation = XCTestExpectation(description: #function)
+        
+        // When
         sut.observeConnectionState()
             .sink(receiveValue: { value in
                 expectation.fulfill()
             })
             .store(in: &disposable)
         
+        // Then
         wait(for: [expectation], timeout: 0.1)
     }
 
     func testConnectCallsCentralManagerToConnectPeripheral() throws {
+        // When
         _ = sut.connect(with: nil)
 
-        XCTAssertEqual(centralManagerMock.connectWasCalledCount, 1)
+        // Then
+        XCTAssertEqual(centralManager.connectWasCalledCount, 1)
     }
     
     func testConnectCallsCentralManagerToConnectPeripheralAndReturnsWhenConnectionStateIsTrue() throws {
-        let expectation = XCTestExpectation(description: self.debugDescription)
+        // Given
+        let expectation = XCTestExpectation(description: #function)
         var expectedPeripheral: BLEPeripheral?
         
-        let peripheralConnectedObservable = sut.connect(with: nil)
-        
-        peripheralConnectedObservable
-            .sink(receiveCompletion: { error in
-                XCTFail()
+        // When
+        sut.connect(with: nil)
+            .sink(receiveCompletion: { completion in
+                expectation.fulfill()
             }, receiveValue: { peripheral in
                 expectedPeripheral = peripheral
-                expectation.fulfill()
             })
             .store(in: &disposable)
-        
-        XCTAssertEqual(centralManagerMock.connectWasCalledCount, 1)
-        XCTAssertNil(expectedPeripheral)
         sut.connectionState.send(true)
-        wait(for: [expectation], timeout: 0.1)
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
         XCTAssertTrue(expectedPeripheral?.connectionState.value ?? false)
+        XCTAssertEqual(centralManager.connectWasCalledCount, 1)
     }
     
     func testDiscoverServicesReturnsWhenPeripheralAlreadyFoundServices() throws {
-        let expectation = XCTestExpectation(description: self.debugDescription)
+        // Given
+        let expectation = XCTestExpectation(description: #function)
         var expectedService: BLEService?
-        
         let mutableService = CBMutableService(type: CBUUID.init(), primary: true)
         peripheralMock.mockedServices = [mutableService]
         
-        let servicesObservable = sut.discoverServices(serviceUUIDs: nil)
-        
-        servicesObservable
+        // When
+        sut.discoverServices(serviceUUIDs: nil)
             .sink(receiveCompletion: { error in
+                expectation.fulfill()
             }, receiveValue: { service in
                 expectedService = service
-                expectation.fulfill()
-            })
-            .store(in: &disposable)
+            }).store(in: &disposable)
         
+        // Then
+        wait(for: [expectation], timeout: 0.005)
         XCTAssertFalse(peripheralMock.discoverServicesWasCalled)
         XCTAssertNotNil(expectedService)
     }
     
     func testDiscoverServicesReturnsDelegateObservable() throws {
-        let expectation = XCTestExpectation(description: self.debugDescription)
+        // Given
+        let expectation = XCTestExpectation(description: #function)
+        let mutableService = CBMutableService(type: CBUUID.init(), primary: true)
         var expectedService: BLEService?
-        
         peripheralMock.mockedServices = nil
         
-        let servicesObservable = sut.discoverServices(serviceUUIDs: nil)
-        
-        servicesObservable
-            .sink(receiveCompletion: { error in
-                XCTFail()
+        // When
+        sut.discoverServices(serviceUUIDs: nil)
+            .sink(receiveCompletion: { completion in
+                guard case .finished = completion else { return }
+                expectation.fulfill()
             }, receiveValue: { service in
                 expectedService = service
-                expectation.fulfill()
-            })
-            .store(in: &disposable)
-        
-        
-        XCTAssertTrue(peripheralMock.discoverServicesWasCalled)
-        XCTAssertNil(expectedService)
-        
-        let mutableService = CBMutableService(type: CBUUID.init(), primary: true)
+            }).store(in: &disposable)
         peripheralMock.mockedServices = [mutableService]
         delegate.didDiscoverServices.send((peripheral: peripheralMock, error: nil))
         
-        wait(for: [expectation], timeout: 0.1)
+        // Then
+        wait(for: [expectation], timeout: 0.5)
         XCTAssertNotNil(expectedService)
+        XCTAssertTrue(peripheralMock.discoverServicesWasCalled)
     }
     
     func testDiscoverCharacteristicReturns() throws {
+        // Given
         let expectation = XCTestExpectation(description: self.debugDescription)
         var expectedCharacteristic: BLECharacteristic?
-        
         let service = CBMutableService.init(type: CBUUID.init(string: "0x0000"), primary: true)
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         service.characteristics = [mutableCharacteristic]
-        
-        let characteristicsObservable = sut.discoverCharacteristics(characteristicUUIDs: nil, for: service)
-        
-        characteristicsObservable
-            .sink(receiveCompletion: { error in
-                XCTFail()
+    
+        // When
+        sut.discoverCharacteristics(characteristicUUIDs: nil, for: service)
+            .sink(receiveCompletion: { completion in
+                guard case .finished = completion else { return }
+                expectation.fulfill()
             }, receiveValue: { characteristic in
                 expectedCharacteristic = characteristic
-                expectation.fulfill()
-            })
-            .store(in: &disposable)
-        
-        XCTAssertTrue(peripheralMock.discoverCharacteristicsWasCalled)
-        XCTAssertNil(expectedCharacteristic)
+            }).store(in: &disposable)
         delegate.didDiscoverCharacteristics.send((peripheral: peripheralMock, service: service, error: nil))
-        wait(for: [expectation], timeout: 0.1)
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedCharacteristic)
+        XCTAssertTrue(peripheralMock.discoverCharacteristicsWasCalled)
     }
     
     func testObserveValueReturns() throws {
+        // Given
         let expectation = XCTestExpectation(description: self.debugDescription)
         var expectedData: BLEData?
-        
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
-        let dataObservable = sut.observeValue(for: mutableCharacteristic)
-        
-        dataObservable
+        // When
+        sut.observeValue(for: mutableCharacteristic)
             .sink(receiveCompletion: { error in
-                XCTFail()
+                XCTFail("Observe Value should never complete")
             }, receiveValue: { data in
                 expectedData = data
                 expectation.fulfill()
-            })
-            .store(in: &disposable)
-        
-        XCTAssertTrue(peripheralMock.readValueForCharacteristicWasCalled)
-        XCTAssertNil(expectedData)
+            }).store(in: &disposable)
         delegate.didUpdateValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil))
-        wait(for: [expectation], timeout: 0.1)
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedData)
+        XCTAssertTrue(peripheralMock.readValueForCharacteristicWasCalled)
     }
     
     func testObserveValueUpdateAndSetNotificationReturns() throws {
+        // Given
         let expectation = XCTestExpectation(description: self.debugDescription)
         var expectedData: BLEData?
-        
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
-        let dataObservable = sut.observeValueUpdateAndSetNotification(for: mutableCharacteristic)
-        
-        dataObservable
+        // When
+        sut.observeValueUpdateAndSetNotification(for: mutableCharacteristic)
             .sink(receiveCompletion: { error in
-                XCTFail()
+                XCTFail("Observe Value Update and Set Notification should never complete")
             }, receiveValue: { data in
                 expectedData = data
                 expectation.fulfill()
-            })
-            .store(in: &disposable)
-        
-        XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
-        XCTAssertNil(expectedData)
+            }).store(in: &disposable)
         delegate.didUpdateValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil))
-        wait(for: [expectation], timeout: 0.1)
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedData)
+        XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
     }
     
     func testSetNotifyValue() {
+        // Given
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
+        // When
         sut.setNotifyValue(true, for: mutableCharacteristic)
         
+        // Then
         XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
     }
     
-    func testObserveRSSIValueReturns() throws {
+    func testObserveRSSIValueReturns() {
+        // Given
         let expectation = XCTestExpectation(description: self.debugDescription)
+        let dataToSend = NSNumber.init(value: 0)
         var expectedData: NSNumber?
         
-        let rssiObservable = sut.observeRSSIValue()
-            
-        rssiObservable
+        // When
+        sut.observeRSSIValue()
             .sink(receiveCompletion: { error in
-                XCTFail()
+                XCTFail("Observe RSSI Value should never complete")
             }, receiveValue: { data in
                 expectedData = data
                 expectation.fulfill()
-            })
-            .store(in: &disposable)
+            }).store(in: &disposable)
+        delegate.didReadRSSI.send((peripheral: peripheralMock, rssi: dataToSend, error: nil))
         
-        XCTAssertTrue(peripheralMock.readRSSIWasCalled)
-        XCTAssertNil(expectedData)
-        delegate.didReadRSSI.send((peripheral: peripheralMock, rssi: NSNumber.init(value: 0), error: nil))
-        wait(for: [expectation], timeout: 0.1)
-        XCTAssertNotNil(expectedData)
+        // Then
+        wait(for: [expectation], timeout: 0.005)
+        XCTAssertEqual(expectedData!, dataToSend)
     }
     
     func testWriteValueWithoutResponseReturnsImmediately() {
+        // Given
+        let expectation = XCTestExpectation(description: #function)
         var expectedResult: Bool?
-        var completion: Subscribers.Completion<BLEError>?
-        
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
+        // When
         sut.writeValue(Data(), for: mutableCharacteristic, type: .withoutResponse)
             .sink(receiveCompletion: { event in
-                completion = event
+                expectation.fulfill()
             }, receiveValue: { result in
                 expectedResult = result
-            })
-            .store(in: &disposable)
+            }).store(in: &disposable)
         
+        // Then
+        wait(for: [expectation], timeout: 0.005)
         XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
         XCTAssertNotNil(expectedResult)
-        XCTAssertNotNil(completion)
     }
     
     func testWriteValueWithResponseReturnsOnDelegateCall() {
-        let expectation = XCTestExpectation(description: self.debugDescription)
+        // Given
+        let expectation = XCTestExpectation(description: #function)
         var expectedResult: Bool?
-        
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
+        // When
         sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
             .sink(receiveCompletion: { error in
-                XCTFail()
+                expectation.fulfill()
             }, receiveValue: { result in
                 expectedResult = result
-                expectation.fulfill()
-            })
-            .store(in: &disposable)
-        
-        XCTAssertNil(expectedResult)
+            }).store(in: &disposable)
         delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil))
-        XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
-        wait(for: [expectation], timeout: 0.1)
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedResult)
+        XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
     }
     
     func testWriteValueWithResponseReturnsErrorOnDelegateErrorCall() {
-        let expectation = XCTestExpectation(description: self.debugDescription)
-        
+        // Given
+        let expectation = XCTestExpectation(description: #function)
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
+        // When
         sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
             .sink(receiveCompletion: { error in
                 expectation.fulfill()
@@ -280,46 +281,55 @@ class BLEPeripheralTests: XCTestCase {
                 XCTFail()
             })
             .store(in: &disposable)
-        
         delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: BLEError.unknown))
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
         XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
-        wait(for: [expectation], timeout: 0.1)
     }
     
     func testDisconnectCallsCentralManager() throws {
+        // When
         _ = sut.disconnect()
 
-        XCTAssertEqual(centralManagerMock.cancelPeripheralConnectionWasCalledCount, 1)
+        // Then
+        XCTAssertEqual(centralManager.cancelPeripheralConnectionWasCalledCount, 1)
     }
     
     func testDisconnectCallsCentralManagerButReturnsFalseWhenManagerIsNil() throws {
-        var disconnectionFailed = false
-        centralManagerMock = nil
-        sut = BLEPeripheral(peripheral: peripheralMock, centralManager: centralManagerMock, delegate: delegate)
+        // Given
+        let expectation = XCTestExpectation(description: #function)
+        centralManager = nil
+        sut = BLEPeripheral(peripheral: peripheralMock, centralManager: centralManager, delegate: delegate)
         
+        // When
         sut.disconnect()
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .failure(let error):
                     if case .disconnectionFailed = error {
-                        disconnectionFailed = true
+                        expectation.fulfill()
                     }
                 case .finished:
-                    XCTFail()
+                    XCTFail("Error should have been returned on completion")
                 }
             }, receiveValue: { result in
-                XCTFail()
+                XCTFail("No value should have been received")
             })
             .store(in: &disposable)
         
-        XCTAssertTrue(disconnectionFailed)
+        // Then
+        wait(for: [expectation], timeout: 0.005)
     }
     
     func testConvenienceInit() {
-        let peripheralMock = CBPeripheralWrapperMock()
+        // Given
+        let peripheralMock = MockCBPeripheralWrapper()
         
+        // When
         sut = BLEPeripheral.init(peripheral: peripheralMock, centralManager: nil)
         
+        // Then
         XCTAssertNotNil(sut)
     }
 

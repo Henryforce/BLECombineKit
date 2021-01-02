@@ -17,7 +17,7 @@ final class DevicesViewModel: ObservableObject {
     @Published var blePeripheralMap: [UUID: BLEScanResult] = [:]
     
     private let centralManager: BLECentralManager
-    private var disposables = Set<AnyCancellable>()
+    private var scanForPeripheralsCancellable: AnyCancellable?
     private var peripheralMap: [UUID: ScannedPeripheralItem] = [:]
     private var localPeripherals = [ScannedPeripheralItem]()
     private var canUpdate = true
@@ -27,7 +27,8 @@ final class DevicesViewModel: ObservableObject {
     }
     
     func startScanning() {
-        centralManager.scanForPeripherals(withServices: nil, options: nil)
+        scanForPeripheralsCancellable?.cancel()
+        scanForPeripheralsCancellable = centralManager.scanForPeripherals(withServices: nil, options: nil)
             .sink(receiveCompletion: { completion in
                 print(completion)
             }, receiveValue: { [weak self] scanResult in
@@ -51,7 +52,6 @@ final class DevicesViewModel: ObservableObject {
                     self.peripherals = self.peripheralMap.values.map { $0 }.sorted{ $0.rssi > $1.rssi }
                 }
             })
-            .store(in: &disposables)
     }
     
     func stopScan() {

@@ -12,10 +12,10 @@ import CoreBluetooth
 
 class BLEServiceTests: XCTestCase {
 
-    var blePeripheralMock: BLEPeripheralMock!
+    var blePeripheralMock: MockBLEPeripheral!
     
     override func setUpWithError() throws {
-        blePeripheralMock = BLEPeripheralMock()
+        blePeripheralMock = MockBLEPeripheral()
     }
 
     override func tearDownWithError() throws {

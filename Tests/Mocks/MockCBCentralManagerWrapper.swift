@@ -18,13 +18,13 @@ final class MockCBCentralManagerWrapper: CBCentralManagerWrapper {
     var retrievePeripheralsWasCalledCount = 0
     func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
         retrievePeripheralsWasCalledCount += 1
-        return [CBPeripheralWrapperMock()]
+        return [MockCBPeripheralWrapper()]
     }
     
     var retrieveConnectedPeripheralsWasCalledCount = 0
     func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper] {
         retrieveConnectedPeripheralsWasCalledCount += 1
-        return [CBPeripheralWrapperMock()]
+        return [MockCBPeripheralWrapper()]
     }
     
     var scanForPeripheralsWasCalledCount = 0

@@ -16,7 +16,7 @@ final class CharacteristicsViewModel: ObservableObject {
     
     var service: BLEService?
     
-    private var disposables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
     
     func startObservingCharacteristics() {
         reset()
@@ -32,13 +32,13 @@ final class CharacteristicsViewModel: ObservableObject {
                 guard let self = self else { return }
                 self.characteristics.append(characteristic)
 
-            })
-            .store(in: &disposables)
+            }).store(in: &cancellables)
     }
     
     func reset() {
         name = "-"
-        disposables.removeAll()
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
         characteristics.removeAll()
     }
     
