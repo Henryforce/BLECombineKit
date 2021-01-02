@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "BLECombineKit",
     platforms: [
-        .macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v5)
+        .macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)
     ],
     products: [
         .library(name: "BLECombineKit", targets: ["BLECombineKit"])
