@@ -42,7 +42,7 @@ final public class BLEPeripheral: BLEPeripheralProtocol {
     
     public convenience init(peripheral: CBPeripheralWrapper, centralManager: BLECentralManager?) {
         let delegate = BLEPeripheralDelegate()
-        if let peripheral = peripheral as? CBPeripheralWrapperImpl {
+        if let peripheral = peripheral as? StandardCBPeripheralWrapper {
             peripheral.setupDelegate(delegate)
         }
         self.init(peripheral: peripheral, centralManager: centralManager, delegate: delegate)
@@ -133,18 +133,18 @@ final public class BLEPeripheral: BLEPeripheralProtocol {
     
     public func observeValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
         return buildDeferredValuePublisher(for: characteristic)
-            .handleEvents { [weak self] _ in
+            .handleEvents(receiveRequest:  { [weak self] _ in
                 guard let self = self else { return }
                 self.peripheral.readValue(for: characteristic)
-            }.eraseToAnyPublisher()
+            }).eraseToAnyPublisher()
     }
     
     public func observeValueUpdateAndSetNotification(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
         return buildDeferredValuePublisher(for: characteristic)
-            .handleEvents { [weak self] _ in
+            .handleEvents(receiveRequest:  { [weak self] _ in
                 guard let self = self else { return }
                 self.peripheral.setNotifyValue(true, for: characteristic)
-            }.eraseToAnyPublisher()
+            }).eraseToAnyPublisher()
     }
     
     public func setNotifyValue(_ enabled: Bool, for characteristic: CBCharacteristic) {

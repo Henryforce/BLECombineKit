@@ -41,13 +41,13 @@ final class CBCentralManagerWrapperImpl: CBCentralManagerWrapper {
     func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
         wrappedManager
             .retrievePeripherals(withIdentifiers: identifiers)
-            .map { CBPeripheralWrapperImpl(peripheral: $0) }
+            .map { StandardCBPeripheralWrapper(peripheral: $0) }
     }
     
     func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper] {
         wrappedManager
             .retrieveConnectedPeripherals(withServices: serviceUUIDs)
-            .map { CBPeripheralWrapperImpl(peripheral: $0) }
+            .map { StandardCBPeripheralWrapper(peripheral: $0) }
     }
     
     func scanForPeripherals(withServices serviceUUIDs: [CBUUID]?, options: [String : Any]?) {
@@ -59,13 +59,13 @@ final class CBCentralManagerWrapperImpl: CBCentralManagerWrapper {
     }
     
     func connect(_ peripheral: CBPeripheralWrapper, options: [String : Any]?) {
-        if let peripheral = peripheral as? CBPeripheralWrapperImpl, let realPeripheral = peripheral.peripheral {
+        if let peripheral = peripheral as? StandardCBPeripheralWrapper, let realPeripheral = peripheral.peripheral {
             wrappedManager.connect(realPeripheral, options: options)
         }
     }
     
     func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) {
-        if let peripheral = peripheral as? CBPeripheralWrapperImpl, let realPeripheral = peripheral.peripheral {
+        if let peripheral = peripheral as? StandardCBPeripheralWrapper, let realPeripheral = peripheral.peripheral {
             wrappedManager.cancelPeripheralConnection(realPeripheral)
         }
     }

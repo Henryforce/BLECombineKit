@@ -23,9 +23,10 @@ public protocol BLECentralManager {
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
 }
 
-final class BLECentralManagerImpl: BLECentralManager {
+final class StandardBLECentralManager: BLECentralManager {
     
     let centralManager: CBCentralManagerWrapper
+    let peripheralBuilder: BLEPeripheralBuilder
     
     var state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
     let delegate: BLECentralManagerDelegate
@@ -37,10 +38,14 @@ final class BLECentralManagerImpl: BLECentralManager {
         centralManager.isScanning
     }
     
-    init(centralManager: CBCentralManagerWrapper,
-        managerDelegate: BLECentralManagerDelegate = BLECentralManagerDelegate()) {
+    init(
+        centralManager: CBCentralManagerWrapper,
+        managerDelegate: BLECentralManagerDelegate = BLECentralManagerDelegate(),
+        peripheralBuilder: BLEPeripheralBuilder = StandardBLEPeripheralBuilder()
+    ) {
         self.centralManager = centralManager
         self.delegate = managerDelegate
+        self.peripheralBuilder = peripheralBuilder
         
         if let centralManager = centralManager as? CBCentralManagerWrapperImpl {
             centralManager.setupDelegate(managerDelegate)
@@ -105,7 +110,7 @@ final class BLECentralManagerImpl: BLECentralManager {
                 guard let self = self else { throw BLEError.deallocated }
                 
                 let peripheralDelegate = BLEPeripheralDelegate()
-                if let peripheralWrapper = peripheral as? CBPeripheralWrapperImpl {
+                if let peripheralWrapper = peripheral as? StandardCBPeripheralWrapper {
                     peripheralWrapper.setupDelegate(peripheralDelegate)
                 }
                 
@@ -149,12 +154,7 @@ final class BLECentralManagerImpl: BLECentralManager {
     func observePeripherals(from retrievedPeripherals: [CBPeripheralWrapper]) -> AnyPublisher<BLEPeripheralProtocol, BLEError>{
         let peripherals = retrievedPeripherals
             .compactMap { peripheral -> BLEPeripheral? in
-                guard let peripheralWrapper = peripheral as? CBPeripheralWrapperImpl else { return nil }
-
-                let peripheralDelegate = BLEPeripheralDelegate()
-                peripheralWrapper.setupDelegate(peripheralDelegate)
-
-                return BLEPeripheral(peripheral: peripheralWrapper, centralManager: self, delegate: peripheralDelegate)
+                peripheralBuilder.build(from: peripheral, centralManager: self)
             }
         
         return Publishers.Sequence.init(sequence: peripherals)

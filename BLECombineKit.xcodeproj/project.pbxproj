@@ -23,7 +23,7 @@
 		39AC63F9245D130F0024D677 /* BLECentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC63F8245D130E0024D677 /* BLECentralManager.swift */; };
 		39AC63FD245D13350024D677 /* BLEPeripheralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC63FA245D13350024D677 /* BLEPeripheralTests.swift */; };
 		39AC63FE245D13350024D677 /* BLEPeripheralMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC63FB245D13350024D677 /* BLEPeripheralMocks.swift */; };
-		39AC63FF245D13350024D677 /* BLECentralManagerMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC63FC245D13350024D677 /* BLECentralManagerMocks.swift */; };
+		39AC63FF245D13350024D677 /* MockBLECentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC63FC245D13350024D677 /* MockBLECentralManager.swift */; };
 		39AC6401245D18460024D677 /* BLEServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC6400245D18460024D677 /* BLEServiceTests.swift */; };
 		39AC6403245D19D70024D677 /* BLECharacteristicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC6402245D19D70024D677 /* BLECharacteristicTests.swift */; };
 		39B65AE32463ABEB00E96FDE /* BLECombineKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B65AE22463ABEB00E96FDE /* BLECombineKitTests.swift */; };
@@ -42,6 +42,9 @@
 		39BE8C96245D6E16004F73DD /* ServicesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BE8C95245D6E16004F73DD /* ServicesViewModel.swift */; };
 		39BE8C98245D7315004F73DD /* BLECombineKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39AC63C4245D07A70024D677 /* BLECombineKit.framework */; };
 		39BE8C9C245D7394004F73DD /* BLECombineKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 39AC63C4245D07A70024D677 /* BLECombineKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		39DE680A25A03A8900EABBE9 /* BLEPeripheralBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DE680925A03A8900EABBE9 /* BLEPeripheralBuilder.swift */; };
+		39DE681125A03F3700EABBE9 /* MockBLEPeripheralBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DE680D25A03F1C00EABBE9 /* MockBLEPeripheralBuilder.swift */; };
+		39DE681925A049FD00EABBE9 /* MockCBCentralManagerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DE681825A049FD00EABBE9 /* MockCBCentralManagerWrapper.swift */; };
 		39E7B6FC245ED1010065044C /* CharacteristicsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7B6FB245ED1010065044C /* CharacteristicsView.swift */; };
 		39E7B6FE245ED11E0065044C /* CharacteristicsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7B6FD245ED11E0065044C /* CharacteristicsViewModel.swift */; };
 		39E7B702245ED60B0065044C /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7B701245ED60B0065044C /* DevicesView.swift */; };
@@ -104,7 +107,7 @@
 		39AC63F8245D130E0024D677 /* BLECentralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLECentralManager.swift; sourceTree = "<group>"; };
 		39AC63FA245D13350024D677 /* BLEPeripheralTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEPeripheralTests.swift; sourceTree = "<group>"; };
 		39AC63FB245D13350024D677 /* BLEPeripheralMocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEPeripheralMocks.swift; sourceTree = "<group>"; };
-		39AC63FC245D13350024D677 /* BLECentralManagerMocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLECentralManagerMocks.swift; sourceTree = "<group>"; };
+		39AC63FC245D13350024D677 /* MockBLECentralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockBLECentralManager.swift; sourceTree = "<group>"; };
 		39AC6400245D18460024D677 /* BLEServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEServiceTests.swift; sourceTree = "<group>"; };
 		39AC6402245D19D70024D677 /* BLECharacteristicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECharacteristicTests.swift; sourceTree = "<group>"; };
 		39B65AE22463ABEB00E96FDE /* BLECombineKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECombineKitTests.swift; sourceTree = "<group>"; };
@@ -123,6 +126,9 @@
 		39BE8C91245D5E54004F73DD /* BLEScanResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEScanResult.swift; sourceTree = "<group>"; };
 		39BE8C93245D6DED004F73DD /* DevicesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesViewModel.swift; sourceTree = "<group>"; };
 		39BE8C95245D6E16004F73DD /* ServicesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesViewModel.swift; sourceTree = "<group>"; };
+		39DE680925A03A8900EABBE9 /* BLEPeripheralBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEPeripheralBuilder.swift; sourceTree = "<group>"; };
+		39DE680D25A03F1C00EABBE9 /* MockBLEPeripheralBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBLEPeripheralBuilder.swift; sourceTree = "<group>"; };
+		39DE681825A049FD00EABBE9 /* MockCBCentralManagerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCBCentralManagerWrapper.swift; sourceTree = "<group>"; };
 		39E7B6FB245ED1010065044C /* CharacteristicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacteristicsView.swift; sourceTree = "<group>"; };
 		39E7B6FD245ED11E0065044C /* CharacteristicsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacteristicsViewModel.swift; sourceTree = "<group>"; };
 		39E7B701245ED60B0065044C /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
@@ -218,6 +224,7 @@
 				39AC63E8245D12A80024D677 /* BLEPeripheral.swift */,
 				39AC63E9245D12A90024D677 /* BLEPeripheralDelegate.swift */,
 				39AC63EA245D12A90024D677 /* BLEPeripheralResult.swift */,
+				39DE680925A03A8900EABBE9 /* BLEPeripheralBuilder.swift */,
 			);
 			path = Peripheral;
 			sourceTree = "<group>";
@@ -269,8 +276,10 @@
 		39AC6404245D1ACC0024D677 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
-				39AC63FC245D13350024D677 /* BLECentralManagerMocks.swift */,
+				39AC63FC245D13350024D677 /* MockBLECentralManager.swift */,
 				39AC63FB245D13350024D677 /* BLEPeripheralMocks.swift */,
+				39DE680D25A03F1C00EABBE9 /* MockBLEPeripheralBuilder.swift */,
+				39DE681825A049FD00EABBE9 /* MockCBCentralManagerWrapper.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -437,7 +446,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1140;
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1230;
 				ORGANIZATIONNAME = "Henry Serrano";
 				TargetAttributes = {
 					39AC63C3245D07A70024D677 = {
@@ -509,6 +518,7 @@
 				39AC63F4245D12D00024D677 /* ManagerState.swift in Sources */,
 				39BE8C92245D5E54004F73DD /* BLEScanResult.swift in Sources */,
 				39AC63EC245D12A90024D677 /* BLEPeripheralDelegate.swift in Sources */,
+				39DE680A25A03A8900EABBE9 /* BLEPeripheralBuilder.swift in Sources */,
 				39AC63ED245D12A90024D677 /* BLEPeripheralResult.swift in Sources */,
 				39AC63E7245D12950024D677 /* BLEError.swift in Sources */,
 				39AC63F9245D130F0024D677 /* BLECentralManager.swift in Sources */,
@@ -528,7 +538,9 @@
 				39AC63FD245D13350024D677 /* BLEPeripheralTests.swift in Sources */,
 				39AC63FE245D13350024D677 /* BLEPeripheralMocks.swift in Sources */,
 				39B65AE32463ABEB00E96FDE /* BLECombineKitTests.swift in Sources */,
-				39AC63FF245D13350024D677 /* BLECentralManagerMocks.swift in Sources */,
+				39AC63FF245D13350024D677 /* MockBLECentralManager.swift in Sources */,
+				39DE681125A03F3700EABBE9 /* MockBLEPeripheralBuilder.swift in Sources */,
+				39DE681925A049FD00EABBE9 /* MockCBCentralManagerWrapper.swift in Sources */,
 				39AC6401245D18460024D677 /* BLEServiceTests.swift in Sources */,
 				397EC81C248202DB00225661 /* BLEDataTests.swift in Sources */,
 				39AC6403245D19D70024D677 /* BLECharacteristicTests.swift in Sources */,
@@ -608,6 +620,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -671,6 +684,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

@@ -11,6 +11,6 @@ import CoreBluetooth
 
 public final class BLECombineKit {
     static public func buildCentralManager(with centralManager: CBCentralManager? = nil) -> some BLECentralManager {
-        return BLECentralManagerImpl(with: centralManager ?? CBCentralManager())
+        return StandardBLECentralManager(with: centralManager ?? CBCentralManager())
     }
 }

@@ -15,115 +15,129 @@ class BLECentralManagerTests: XCTestCase {
 
     var sut: BLECentralManager!
     var delegate: BLECentralManagerDelegate!
-    var cbCentralManagerMock: CBCentralManagerWrapperMock!
-    var disposable = Set<AnyCancellable>()
+    var centralManagerWrapper: MockCBCentralManagerWrapper!
+    var peripheralBuilder: MockBLEPeripheralBuilder!
+    var cancellables = Set<AnyCancellable>()
     
     override func setUpWithError() throws {
         delegate = BLECentralManagerDelegate()
-        cbCentralManagerMock = CBCentralManagerWrapperMock()
+        centralManagerWrapper = MockCBCentralManagerWrapper()
+        peripheralBuilder = MockBLEPeripheralBuilder()
         
-        sut = BLECentralManagerImpl(centralManager: cbCentralManagerMock, managerDelegate: delegate)
+        sut = StandardBLECentralManager(
+            centralManager: centralManagerWrapper,
+            managerDelegate: delegate,
+            peripheralBuilder: peripheralBuilder
+        )
     }
 
     override func tearDownWithError() throws {
         delegate = nil
-        cbCentralManagerMock = nil
+        centralManagerWrapper = nil
+        peripheralBuilder = nil
         sut = nil
     }
     
     func testScanForPeripheralsReturns() throws {
+        // Given
         let expectation = XCTestExpectation(description: self.debugDescription)
         let peripheralMock = CBPeripheralWrapperMock()
         var expectedScanResult: BLEScanResult?
         
-        let scanForPeripheralsObservable = sut.scanForPeripherals(withServices: [], options: nil)
-        
-        scanForPeripheralsObservable
+        // When
+        sut.scanForPeripherals(withServices: [], options: nil)
             .sink(receiveCompletion: { error in
-                XCTFail()
+                XCTFail("Scan for Peripherals should not complete")
             }, receiveValue: { scanResult in
                 expectedScanResult = scanResult
                 expectation.fulfill()
-            })
-            .store(in: &disposable)
-        
-        XCTAssertTrue(cbCentralManagerMock.scanForPeripheralsWasCalled)
-        XCTAssertNil(expectedScanResult)
+            }).store(in: &cancellables)
         delegate.didDiscoverAdvertisementData.send((peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber.init(value: 0)))
-        wait(for: [expectation], timeout: 0.1)
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedScanResult)
+        XCTAssertEqual(centralManagerWrapper.scanForPeripheralsWasCalledCount, 1)
     }
     
     func testConnectCallsCentralManager() throws {
+        // Given
         let peripheral = CBPeripheralWrapperMock()
         
+        // When
         sut.connect(peripheralWrapper: peripheral, options: nil)
         
-        XCTAssertTrue(cbCentralManagerMock.connectWasCalled)
+        // Then
+        XCTAssertEqual(centralManagerWrapper.connectWasCalledCount, 1)
     }
     
     func testStopScanCallsCentralManager() throws {
+        // When
         sut.stopScan()
         
-        XCTAssertTrue(cbCentralManagerMock.stopScanWasCalled)
+        // Then
+        XCTAssertEqual(centralManagerWrapper.stopScanWasCalledCount, 1)
     }
     
     func testCancelPeripheralConnectionCallsCentralManager() throws {
+        // Given
         let peripheral = CBPeripheralWrapperMock()
         
+        // When
         _ = sut.cancelPeripheralConnection(peripheral)
         
-        XCTAssertTrue(cbCentralManagerMock.cancelPeripheralConnectionWasCalled)
+        // Then
+        XCTAssertEqual(centralManagerWrapper.cancelPeripheralConnectionWasCalledCount, 1)
     }
     
     func testRegisterForConnectionEventsCallsCentralManager() {
+        // When
         sut.registerForConnectionEvents(options: nil)
         
-        XCTAssertTrue(cbCentralManagerMock.registerForConnectionEventsWasCalled)
+        // Then
+        XCTAssertEqual(centralManagerWrapper.registerForConnectionEventsWasCalledCount, 1)
     }
     
     func testRetrievePeripheralsReturns() throws {
-        var didFinishRetrievingPeripherals = false
+        // Given
+        var retrievedPeripheral: BLEPeripheralProtocol?
+        let peripheralExpectation = expectation(description: "PeripheralExpectation")
         
-        let scanForPeripheralsObservable = sut.retrievePeripherals(withIdentifiers: [])
-        
-        scanForPeripheralsObservable
+        // When
+        sut.retrievePeripherals(withIdentifiers: [])
             .sink(receiveCompletion: { completion in
-                switch completion {
-                case .failure:
-                    XCTFail()
-                case .finished:
-                    didFinishRetrievingPeripherals = true
-                }
+                guard case .finished = completion else { return }
+                peripheralExpectation.fulfill()
             }, receiveValue: { peripheral in
-                XCTFail("Mocked peripherals cannot contain CBPeripherals")
-            })
-            .store(in: &disposable)
+                retrievedPeripheral = peripheral
+            }).store(in: &cancellables)
         
-        XCTAssertTrue(cbCentralManagerMock.retrievePeripheralsWasCalled)
-        XCTAssertTrue(didFinishRetrievingPeripherals)
+        // Then
+        wait(for: [peripheralExpectation], timeout: 0.005)
+        XCTAssertNil(retrievedPeripheral) // BLEPeripheralBuilder is returning nil, so no peripherals returned
+        XCTAssertEqual(centralManagerWrapper.retrievePeripheralsWasCalledCount, 1)
+        XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
     }
     
     func testRetrieveConnectedPeripheralsReturns() throws {
-        var didFinishRetrievingPeripherals = false
+        // Given
+        var retrievedPeripheral: BLEPeripheralProtocol?
+        let peripheralExpectation = expectation(description: "PeripheralExpectation")
         
-        let scanForPeripheralsObservable = sut.retrieveConnectedPeripherals(withServices: [])
-        
-        scanForPeripheralsObservable
+        // When
+        sut.retrieveConnectedPeripherals(withServices: [])
             .sink(receiveCompletion: { completion in
-                switch completion {
-                case .failure:
-                    XCTFail()
-                case .finished:
-                    didFinishRetrievingPeripherals = true
-                }
+                guard case .finished = completion else { return }
+                peripheralExpectation.fulfill()
             }, receiveValue: { peripheral in
-                XCTFail("Mocked peripherals cannot contain CBPeripherals")
-            })
-            .store(in: &disposable)
+                retrievedPeripheral = peripheral
+            }).store(in: &cancellables)
         
-        XCTAssertTrue(cbCentralManagerMock.retrieveConnectedPeripheralsWasCalled)
-        XCTAssertTrue(didFinishRetrievingPeripherals)
+        // Then
+        wait(for: [peripheralExpectation], timeout: 0.005)
+        XCTAssertNil(retrievedPeripheral) // BLEPeripheralBuilder is returning nil, so no peripherals returned
+        XCTAssertEqual(centralManagerWrapper.retrieveConnectedPeripheralsWasCalledCount, 1)
+        XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
     }
 
 }
