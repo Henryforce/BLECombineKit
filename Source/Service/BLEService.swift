@@ -12,9 +12,9 @@ import Combine
 
 public struct BLEService: BLEPeripheralResult {
     public let value: CBService
-    private let peripheral: BLEPeripheralProtocol
+    private let peripheral: BLEPeripheral
     
-    public init(value: CBService, peripheral: BLEPeripheralProtocol) {
+    public init(value: CBService, peripheral: BLEPeripheral) {
        self.value = value
        self.peripheral = peripheral
     }

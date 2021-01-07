@@ -13,7 +13,7 @@ import Combine
 
 class BLEPeripheralTests: XCTestCase {
 
-    var sut: BLEPeripheral!
+    var sut: StandardBLEPeripheral!
     var delegate: BLEPeripheralDelegate!
     var centralManager: MockBLECentralManager!
     var peripheralMock: MockCBPeripheralWrapper!
@@ -24,7 +24,7 @@ class BLEPeripheralTests: XCTestCase {
         centralManager = MockBLECentralManager()
         peripheralMock = MockCBPeripheralWrapper()
         
-        sut = BLEPeripheral(
+        sut = StandardBLEPeripheral(
             peripheral: peripheralMock,
             centralManager: centralManager,
             delegate: delegate
@@ -64,14 +64,14 @@ class BLEPeripheralTests: XCTestCase {
     func testConnectCallsCentralManagerToConnectPeripheralAndReturnsWhenConnectionStateIsTrue() throws {
         // Given
         let expectation = XCTestExpectation(description: #function)
-        var expectedPeripheral: BLEPeripheral?
+        var expectedPeripheral: BLEPeripheralState?
         
         // When
         sut.connect(with: nil)
             .sink(receiveCompletion: { completion in
                 expectation.fulfill()
             }, receiveValue: { peripheral in
-                expectedPeripheral = peripheral
+                expectedPeripheral = peripheral as? BLEPeripheralState
             })
             .store(in: &disposable)
         sut.connectionState.send(true)
@@ -300,7 +300,7 @@ class BLEPeripheralTests: XCTestCase {
         // Given
         let expectation = XCTestExpectation(description: #function)
         centralManager = nil
-        sut = BLEPeripheral(peripheral: peripheralMock, centralManager: centralManager, delegate: delegate)
+        sut = StandardBLEPeripheral(peripheral: peripheralMock, centralManager: centralManager, delegate: delegate)
         
         // When
         sut.disconnect()
@@ -327,7 +327,7 @@ class BLEPeripheralTests: XCTestCase {
         let peripheralMock = MockCBPeripheralWrapper()
         
         // When
-        sut = BLEPeripheral.init(peripheral: peripheralMock, centralManager: nil)
+        sut = StandardBLEPeripheral.init(peripheral: peripheralMock, centralManager: nil)
         
         // Then
         XCTAssertNotNil(sut)

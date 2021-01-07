@@ -18,7 +18,7 @@ final class MockBLECentralManager: BLECentralManager {
     var isScanning: Bool = false
     
     var retrievePeripheralsWasCalledCount = 0
-    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {
+    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
         retrievePeripheralsWasCalledCount += 1
         return Just.init(MockBLEPeripheral())
             .setFailureType(to: BLEError.self)
@@ -26,7 +26,7 @@ final class MockBLECentralManager: BLECentralManager {
     }
     
     var retrieveConnectedPeripheralsWasCalledCount = 0
-    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheralProtocol, BLEError> {
+    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
         retrieveConnectedPeripheralsWasCalledCount += 1
         return Just.init(MockBLEPeripheral())
             .setFailureType(to: BLEError.self)

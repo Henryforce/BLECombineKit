@@ -25,7 +25,7 @@ final class StandardBLEPeripheralBuilder: BLEPeripheralBuilder {
         let peripheralDelegate = BLEPeripheralDelegate()
         peripheralWrapper.setupDelegate(peripheralDelegate)
         
-        return BLEPeripheral(
+        return StandardBLEPeripheral(
             peripheral: peripheralWrapper,
             centralManager: centralManager,
             delegate: peripheralDelegate

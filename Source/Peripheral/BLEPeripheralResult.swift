@@ -13,5 +13,5 @@ protocol BLEPeripheralResult {
     
     var value: BLEResultType { get }
     
-    init(value: BLEResultType, peripheral: BLEPeripheralProtocol)
+    init(value: BLEResultType, peripheral: BLEPeripheral)
 }

@@ -10,9 +10,9 @@ import Foundation
 
 public struct BLEData: BLEPeripheralResult {
     public let value: Data
-    public let peripheral: BLEPeripheralProtocol
+    public let peripheral: BLEPeripheral
     
-    public init(value: Data, peripheral: BLEPeripheralProtocol) {
+    public init(value: Data, peripheral: BLEPeripheral) {
         self.value = value
         self.peripheral = peripheral
     }
