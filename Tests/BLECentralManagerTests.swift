@@ -43,10 +43,12 @@ class BLECentralManagerTests: XCTestCase {
         let expectation = XCTestExpectation(description: self.debugDescription)
         let peripheralMock = MockCBPeripheralWrapper()
         var expectedScanResult: BLEScanResult?
+        let mockedPeripheral = MockBLEPeripheral()
+        peripheralBuilder.blePeripheral = mockedPeripheral
         
         // When
         sut.scanForPeripherals(withServices: [], options: nil)
-            .sink(receiveCompletion: { error in
+            .sink(receiveCompletion: { _ in
                 XCTFail("Scan for Peripherals should not complete")
             }, receiveValue: { scanResult in
                 expectedScanResult = scanResult
@@ -57,7 +59,43 @@ class BLECentralManagerTests: XCTestCase {
         // Then
         wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedScanResult)
+        XCTAssertNotNil(expectedScanResult?.peripheral)
         XCTAssertEqual(centralManagerWrapper.scanForPeripheralsWasCalledCount, 1)
+    }
+    
+    func testScanForPeripheralsReturnsScanResultsOnlyIfBuilderSuccessfullyBuilds() throws {
+        // Given
+        let arrayPeripheralBuilder = MockArrayBLEPeripheralBuilder()
+        sut = StandardBLECentralManager(
+            centralManager: centralManagerWrapper,
+            managerDelegate: delegate,
+            peripheralBuilder: arrayPeripheralBuilder
+        )
+        let expectation = XCTestExpectation(description: self.debugDescription)
+        let peripheralMock = MockCBPeripheralWrapper()
+        let mockedPeripheral = MockBLEPeripheral()
+        var scanCounter = 0
+        arrayPeripheralBuilder.blePeripherals = [mockedPeripheral, nil, mockedPeripheral]
+        
+        // When
+        sut.scanForPeripherals(withServices: [], options: nil)
+            .sink(receiveCompletion: { _ in
+                XCTFail("Scan for Peripherals should not complete")
+            }, receiveValue: { _ in
+                scanCounter += 1
+                if scanCounter >= 2 {
+                    expectation.fulfill()
+                }
+            }).store(in: &cancellables)
+        delegate.didDiscoverAdvertisementData.send((peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber.init(value: 0)))
+        delegate.didDiscoverAdvertisementData.send((peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber.init(value: 0)))
+        delegate.didDiscoverAdvertisementData.send((peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber.init(value: 0)))
+        
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
+        XCTAssertEqual(centralManagerWrapper.scanForPeripheralsWasCalledCount, 1)
+        XCTAssertEqual(arrayPeripheralBuilder.buildBLEPeripheralWasCalledCount, 3)
     }
     
     func testConnectCallsCentralManager() throws {
@@ -100,7 +138,7 @@ class BLECentralManagerTests: XCTestCase {
     
     func testRetrievePeripheralsReturns() throws {
         // Given
-        var retrievedPeripheral: BLEPeripheralProtocol?
+        var retrievedPeripheral: BLEPeripheral?
         let peripheralExpectation = expectation(description: "PeripheralExpectation")
         
         // When
@@ -121,7 +159,7 @@ class BLECentralManagerTests: XCTestCase {
     
     func testRetrieveConnectedPeripheralsReturns() throws {
         // Given
-        var retrievedPeripheral: BLEPeripheralProtocol?
+        var retrievedPeripheral: BLEPeripheral?
         let peripheralExpectation = expectation(description: "PeripheralExpectation")
         
         // When

@@ -8,11 +8,12 @@
 
 import Foundation
 import CoreBluetooth
-import BLECombineKit
 import Combine
+@testable import BLECombineKit
 
-final class MockBLEPeripheral: BLEPeripheralProtocol {
+final class MockBLEPeripheral: BLEPeripheral, BLEPeripheralState {
     
+    let connectionState = CurrentValueSubject<Bool, Never>(false)
     var peripheral: CBPeripheralWrapper
     
     init() {
@@ -26,7 +27,7 @@ final class MockBLEPeripheral: BLEPeripheralProtocol {
     var connectWasCalled = false
     func connect(with options: [String : Any]?) -> AnyPublisher<BLEPeripheral, BLEError> {
         connectWasCalled = true
-        let blePeripheral = BLEPeripheral(peripheral: peripheral, centralManager: nil)
+        let blePeripheral = StandardBLEPeripheral(peripheral: peripheral, centralManager: nil)
         return Just.init(blePeripheral)
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()

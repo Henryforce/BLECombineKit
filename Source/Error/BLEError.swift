@@ -25,9 +25,9 @@ public enum BLEError: Error {
     case bluetoothPoweredOff
     
     // Peripheral
+    case invalidPeripheral
     case connectionFailure
     case disconnectionFailed
-    
     case servicesFoundError(Error?)
     case characteristicsFoundError(Error?)
     
