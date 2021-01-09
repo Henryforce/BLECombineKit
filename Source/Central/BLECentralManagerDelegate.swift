@@ -16,6 +16,8 @@ public final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate
     let didFailToConnect = PassthroughSubject<CBPeripheralWrapper, Error>()
     let didDiscoverAdvertisementData = PassthroughSubject<DidDiscoverAdvertisementDataResult, Never>()
     let didUpdateState = PassthroughSubject<ManagerState, Never>()
+    let willRestoreState = PassthroughSubject<[String: Any], Never>()
+    let didUpdateANCSAuthorization = PassthroughSubject<CBPeripheralWrapper, Never>()
 
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
@@ -41,6 +43,15 @@ public final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate
     public func centralManagerDidUpdateState(_ central: CBCentralManager) {
         guard let state = ManagerState(rawValue: central.state.rawValue) else { return }
         didUpdateState.send(state)
+    }
+    
+    public func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]) {
+        willRestoreState.send(dict)
+    }
+    
+    public func centralManager(_ central: CBCentralManager, didUpdateANCSAuthorizationFor peripheral: CBPeripheral) {
+        let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
+        didUpdateANCSAuthorization.send(peripheralWrapper)
     }
 
 }

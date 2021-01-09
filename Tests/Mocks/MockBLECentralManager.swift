@@ -73,4 +73,18 @@ final class MockBLECentralManager: BLECentralManager {
         registerForConnectionEventsWasCalledCount += 1
     }
     
+    var observeWillRestoreStateWasCalledCount = 0
+    var observeWillRestoreStateDictionary = [String: Any]()
+    func observeWillRestoreState() -> AnyPublisher<[String: Any], Never> {
+        observeWillRestoreStateWasCalledCount += 1
+        return Just(observeWillRestoreStateDictionary).eraseToAnyPublisher()
+    }
+    
+    var observeDidUpdateANCSAuthorizationWasCalledCount = 0
+    var observeDidUpdateANCSAuthorizationPeripheral = MockBLEPeripheral()
+    func observeDidUpdateANCSAuthorization() -> AnyPublisher<BLEPeripheral, Never> {
+        observeDidUpdateANCSAuthorizationWasCalledCount += 1
+        return Just(observeDidUpdateANCSAuthorizationPeripheral).eraseToAnyPublisher()
+    }
+    
 }
