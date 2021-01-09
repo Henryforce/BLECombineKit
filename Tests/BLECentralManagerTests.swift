@@ -177,5 +177,50 @@ class BLECentralManagerTests: XCTestCase {
         XCTAssertEqual(centralManagerWrapper.retrieveConnectedPeripheralsWasCalledCount, 1)
         XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
     }
+    
+    func testWillRestoreStateReturnsWhenDelegateUpdates() {
+        // Given
+        let willRestoreStateExpectation = expectation(description: "PeripheralExpectation")
+        let stateDictionary = ["MockedKey": "MockValue"]
+        var observedStateDictionary: [String: Any]?
+        
+        // When
+        sut.observeWillRestoreState()
+            .sink(receiveCompletion: { completion in
+                XCTFail("observeWillRestoreState should never complete")
+            }, receiveValue: { stateDict in
+                observedStateDictionary = stateDict
+                willRestoreStateExpectation.fulfill()
+            }).store(in: &cancellables)
+        delegate.willRestoreState.send(stateDictionary)
+        
+        // Then
+        wait(for: [willRestoreStateExpectation], timeout: 0.005)
+        XCTAssertEqual(observedStateDictionary!["MockedKey"] as! String, stateDictionary["MockedKey"]!)
+    }
+    
+    func testObserveDidUpdateANCSAuthorizationWhenDelegateUpdates() {
+        // Given
+        let observeDidUpdateANCSAuthorizationExpectation = expectation(description: "PeripheralExpectation")
+        let mockedCBPeripheralWrapper = MockCBPeripheralWrapper()
+        peripheralBuilder.blePeripheral = MockBLEPeripheral()
+        var observedPeripheral: BLEPeripheral?
+        
+        // When
+        sut.observeDidUpdateANCSAuthorization()
+            .sink(receiveCompletion: { completion in
+                XCTFail("ObserveDidUpdateANCSAuthorization should never complete")
+            }, receiveValue: { peripheral in
+                observedPeripheral = peripheral
+                observeDidUpdateANCSAuthorizationExpectation.fulfill()
+            })
+            .store(in: &cancellables)
+        delegate.didUpdateANCSAuthorization.send(mockedCBPeripheralWrapper)
+        
+        // Then
+        wait(for: [observeDidUpdateANCSAuthorizationExpectation], timeout: 0.005)
+        XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
+        XCTAssertNotNil(observedPeripheral)
+    }
 
 }

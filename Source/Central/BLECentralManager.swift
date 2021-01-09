@@ -21,6 +21,8 @@ public protocol BLECentralManager: AnyObject {
     func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?)
     func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError>
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
+    func observeWillRestoreState() -> AnyPublisher<[String: Any], Never>
+    func observeDidUpdateANCSAuthorization() -> AnyPublisher<BLEPeripheral, Never>
 }
 
 final class StandardBLECentralManager: BLECentralManager {
@@ -146,6 +148,18 @@ final class StandardBLECentralManager: BLECentralManager {
     
     public func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
         centralManager.registerForConnectionEvents(options: options)
+    }
+    
+    public func observeWillRestoreState() -> AnyPublisher<[String: Any], Never> {
+        delegate.willRestoreState.eraseToAnyPublisher()
+    }
+    
+    public func observeDidUpdateANCSAuthorization() -> AnyPublisher<BLEPeripheral, Never> {
+        delegate.didUpdateANCSAuthorization
+            .compactMap { [weak self] peripheral in
+                guard let self = self else { return nil }
+                return self.peripheralBuilder.build(from: peripheral, centralManager: self)
+            }.eraseToAnyPublisher()
     }
     
     // MARK: - Private methods
