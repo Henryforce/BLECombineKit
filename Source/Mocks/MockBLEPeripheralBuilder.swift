@@ -7,7 +7,6 @@
 //
 
 import Foundation
-@testable import BLECombineKit
 
 public final class MockBLEPeripheralBuilder: BLEPeripheralBuilder {
     public init() { }
