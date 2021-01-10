@@ -8,6 +8,7 @@
 
 import XCTest
 import CoreBluetooth
+import BLECombineKitMocks
 @testable import BLECombineKit
 
 class BLECharacteristicTests: XCTestCase {
@@ -28,7 +29,7 @@ class BLECharacteristicTests: XCTestCase {
         
         _ = sut.observeValue()
         
-        XCTAssertTrue(blePeripheralMock.observeValueWasCalled)
+        XCTAssertEqual(blePeripheralMock.observeValueWasCalledCount, 1)
     }
     
     func testObserveValueUpdateWithNotificationCallsBLEPeripheral() throws {
@@ -37,7 +38,7 @@ class BLECharacteristicTests: XCTestCase {
         
         _ = sut.observeValueUpdateAndSetNotification()
         
-        XCTAssertTrue(blePeripheralMock.observeValueUpdateAndSetNotificationWasCalled)
+        XCTAssertEqual(blePeripheralMock.observeValueUpdateAndSetNotificationWasCalledCount, 1)
     }
     
     func testSetNotifyValue() {
@@ -46,7 +47,7 @@ class BLECharacteristicTests: XCTestCase {
         
         sut.setNotifyValue(true)
         
-        XCTAssertTrue(blePeripheralMock.setNotifyValueWasCalled)
+        XCTAssertEqual(blePeripheralMock.setNotifyValueWasCalledCount, 1)
     }
 
 }

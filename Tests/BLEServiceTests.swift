@@ -8,6 +8,7 @@
 
 import XCTest
 import CoreBluetooth
+import BLECombineKitMocks
 @testable import BLECombineKit
 
 class BLEServiceTests: XCTestCase {
@@ -28,7 +29,7 @@ class BLEServiceTests: XCTestCase {
         
         _ = sut.discoverCharacteristics(characteristicUUIDs: [])
         
-        XCTAssertTrue(blePeripheralMock.discoverCharacteristicsWasCalled)
+        XCTAssertEqual(blePeripheralMock.discoverCharacteristicsWasCalledCount, 1)
     }
 
 }

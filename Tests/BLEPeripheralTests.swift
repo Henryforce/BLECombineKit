@@ -9,6 +9,7 @@
 import XCTest
 import CoreBluetooth
 import Combine
+import BLECombineKitMocks
 @testable import BLECombineKit
 
 class BLEPeripheralTests: XCTestCase {
@@ -99,7 +100,7 @@ class BLEPeripheralTests: XCTestCase {
         
         // Then
         wait(for: [expectation], timeout: 0.005)
-        XCTAssertFalse(peripheralMock.discoverServicesWasCalled)
+        XCTAssertEqual(peripheralMock.discoverServicesWasCalledCount, 0)
         XCTAssertNotNil(expectedService)
     }
     
@@ -124,7 +125,7 @@ class BLEPeripheralTests: XCTestCase {
         // Then
         wait(for: [expectation], timeout: 0.5)
         XCTAssertNotNil(expectedService)
-        XCTAssertTrue(peripheralMock.discoverServicesWasCalled)
+        XCTAssertEqual(peripheralMock.discoverServicesWasCalledCount, 1)
     }
     
     func testDiscoverCharacteristicReturns() throws {
@@ -148,7 +149,7 @@ class BLEPeripheralTests: XCTestCase {
         // Then
         wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedCharacteristic)
-        XCTAssertTrue(peripheralMock.discoverCharacteristicsWasCalled)
+        XCTAssertEqual(peripheralMock.discoverCharacteristicsWasCalledCount, 1)
     }
     
     func testObserveValueReturns() throws {
@@ -170,7 +171,7 @@ class BLEPeripheralTests: XCTestCase {
         // Then
         wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedData)
-        XCTAssertTrue(peripheralMock.readValueForCharacteristicWasCalled)
+        XCTAssertEqual(peripheralMock.readValueForCharacteristicWasCalledCount, 1)
     }
     
     func testObserveValueUpdateAndSetNotificationReturns() throws {
@@ -192,7 +193,7 @@ class BLEPeripheralTests: XCTestCase {
         // Then
         wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedData)
-        XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
+        XCTAssertEqual(peripheralMock.setNotifyValueWasCalledCount, 1)
     }
     
     func testSetNotifyValue() {
@@ -203,7 +204,7 @@ class BLEPeripheralTests: XCTestCase {
         sut.setNotifyValue(true, for: mutableCharacteristic)
         
         // Then
-        XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
+        XCTAssertEqual(peripheralMock.setNotifyValueWasCalledCount, 1)
     }
     
     func testObserveRSSIValueReturns() {
@@ -243,7 +244,7 @@ class BLEPeripheralTests: XCTestCase {
         
         // Then
         wait(for: [expectation], timeout: 0.005)
-        XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
+        XCTAssertEqual(peripheralMock.writeValueForCharacteristicWasCalledCount, 1)
         XCTAssertNotNil(expectedResult)
     }
     
@@ -265,7 +266,7 @@ class BLEPeripheralTests: XCTestCase {
         // Then
         wait(for: [expectation], timeout: 0.005)
         XCTAssertNotNil(expectedResult)
-        XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
+        XCTAssertEqual(peripheralMock.writeValueForCharacteristicWasCalledCount, 1)
     }
     
     func testWriteValueWithResponseReturnsErrorOnDelegateErrorCall() {
@@ -285,7 +286,7 @@ class BLEPeripheralTests: XCTestCase {
         
         // Then
         wait(for: [expectation], timeout: 0.005)
-        XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
+        XCTAssertEqual(peripheralMock.writeValueForCharacteristicWasCalledCount, 1)
     }
     
     func testDisconnectCallsCentralManager() throws {

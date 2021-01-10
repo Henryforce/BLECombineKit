@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import BLECombineKitMocks
 @testable import BLECombineKit
 
 class BLEDataTests: XCTestCase {

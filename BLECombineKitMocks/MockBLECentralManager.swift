@@ -11,30 +11,32 @@ import CoreBluetooth
 import BLECombineKit
 import Combine
 
-final class MockBLECentralManager: BLECentralManager {
+public final class MockBLECentralManager: BLECentralManager {
     
-    var centralManager: CBCentralManagerWrapper = MockCBCentralManagerWrapper()
+    public var centralManager: CBCentralManagerWrapper = MockCBCentralManagerWrapper()
     
-    var isScanning: Bool = false
+    public var isScanning: Bool = false
     
-    var retrievePeripheralsWasCalledCount = 0
-    func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
+    public init() { }
+    
+    public var retrievePeripheralsWasCalledCount = 0
+    public func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
         retrievePeripheralsWasCalledCount += 1
         return Just.init(MockBLEPeripheral())
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()
     }
     
-    var retrieveConnectedPeripheralsWasCalledCount = 0
-    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
+    public var retrieveConnectedPeripheralsWasCalledCount = 0
+    public func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
         retrieveConnectedPeripheralsWasCalledCount += 1
         return Just.init(MockBLEPeripheral())
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()
     }
     
-    var scanForPeripheralsWasCalledCount = 0
-    func scanForPeripherals(withServices services: [CBUUID]?, options: [String : Any]?) -> AnyPublisher<BLEScanResult, BLEError> {
+    public var scanForPeripheralsWasCalledCount = 0
+    public func scanForPeripherals(withServices services: [CBUUID]?, options: [String : Any]?) -> AnyPublisher<BLEScanResult, BLEError> {
         scanForPeripheralsWasCalledCount += 1
         
         let blePeripheral = MockBLEPeripheral()
@@ -51,38 +53,38 @@ final class MockBLECentralManager: BLECentralManager {
             .eraseToAnyPublisher()
     }
     
-    var stopScanWasCalledCount = 0
-    func stopScan() {
+    public var stopScanWasCalledCount = 0
+    public func stopScan() {
         stopScanWasCalledCount += 1
     }
     
-    var connectWasCalledCount = 0
-    func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?) {
+    public var connectWasCalledCount = 0
+    public func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?) {
         connectWasCalledCount += 1
     }
     
-    var cancelPeripheralConnectionWasCalledCount = 0
-    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError> {
+    public var cancelPeripheralConnectionWasCalledCount = 0
+    public func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError> {
         cancelPeripheralConnectionWasCalledCount += 1
         
         return Just.init(false).setFailureType(to: BLEError.self).eraseToAnyPublisher()
     }
     
-    var registerForConnectionEventsWasCalledCount = 0
-    func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
+    public var registerForConnectionEventsWasCalledCount = 0
+    public func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
         registerForConnectionEventsWasCalledCount += 1
     }
     
-    var observeWillRestoreStateWasCalledCount = 0
-    var observeWillRestoreStateDictionary = [String: Any]()
-    func observeWillRestoreState() -> AnyPublisher<[String: Any], Never> {
+    public var observeWillRestoreStateWasCalledCount = 0
+    public var observeWillRestoreStateDictionary = [String: Any]()
+    public func observeWillRestoreState() -> AnyPublisher<[String: Any], Never> {
         observeWillRestoreStateWasCalledCount += 1
         return Just(observeWillRestoreStateDictionary).eraseToAnyPublisher()
     }
     
-    var observeDidUpdateANCSAuthorizationWasCalledCount = 0
-    var observeDidUpdateANCSAuthorizationPeripheral = MockBLEPeripheral()
-    func observeDidUpdateANCSAuthorization() -> AnyPublisher<BLEPeripheral, Never> {
+    public var observeDidUpdateANCSAuthorizationWasCalledCount = 0
+    public var observeDidUpdateANCSAuthorizationPeripheral = MockBLEPeripheral()
+    public func observeDidUpdateANCSAuthorization() -> AnyPublisher<BLEPeripheral, Never> {
         observeDidUpdateANCSAuthorizationWasCalledCount += 1
         return Just(observeDidUpdateANCSAuthorizationPeripheral).eraseToAnyPublisher()
     }

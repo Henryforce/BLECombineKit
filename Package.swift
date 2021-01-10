@@ -12,22 +12,36 @@ let package = Package(
         .library(name: "BLECombineKit", targets: ["BLECombineKit"])
     ],
     dependencies: [],
+    exclude: [
+        "BLECombineExplorer",
+        "Products",
+        "Frameworks",
+        "Tests"
+    ],
     targets: [
         .target(
-                name: "BLECombineKit",
-                dependencies: [],
-                path: ".",
-                exclude: [
-                    "Source/BLECombineKit.h",
-                    "Source/Info.plist",
-                    "BLECombineExplorer",
-                    "Products",
-                    "Frameworks",
-                    "Tests"
-                ],
-                sources: [
-                    "Source"
-                ]
-            )
+            name: "BLECombineKit",
+            dependencies: [],
+            path: ".",
+            exclude: [
+                "Source/BLECombineKit.h",
+                "Source/Info.plist",
+            ],
+            sources: [
+                "Source"
+            ]
+        ),
+        .target(
+            name: "BLECombineKitMocks",
+            dependencies: [],
+            path: ".",
+            exclude: [
+                "BLECombineKitMocks/BLECombineKitMocks.h",
+                "BLECombineKitMocks/Info.plist",
+            ],
+            sources: [
+                "BLECombineKitMocks"
+            ]
+        )
     ]
 )
