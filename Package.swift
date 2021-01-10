@@ -34,12 +34,12 @@ let package = Package(
             name: "BLECombineKitMocks",
             dependencies: ["BLECombineKit"],
             path: ".",
-            sources: [
-                "BLECombineKitMocks"
-            ],
             exclude: [
                 "BLECombineKitMocks.h",
                 "Info.plist",
+            ],
+            sources: [
+                "BLECombineKitMocks"
             ]
         )
     ]
