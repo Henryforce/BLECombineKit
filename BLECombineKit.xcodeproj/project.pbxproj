@@ -42,7 +42,6 @@
 		39BE8C9C245D7394004F73DD /* BLECombineKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 39AC63C4245D07A70024D677 /* BLECombineKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		39D66B5225A5FD8000449587 /* StandardBLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D66B5125A5FD8000449587 /* StandardBLEPeripheral.swift */; };
 		39D66B5725A5FE7F00449587 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D66B5625A5FE7F00449587 /* Array+Extensions.swift */; };
-		39D66B7025AAA0E200449587 /* BLECombineKitMocks.h in Headers */ = {isa = PBXBuildFile; fileRef = 39D66B6E25AAA0E200449587 /* BLECombineKitMocks.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		39D66B9625AAA57500449587 /* BLEPeripheralBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D66B9525AAA57500449587 /* BLEPeripheralBuilder.swift */; };
 		39D66BBD25AAB3B800449587 /* MockBLECentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC63FC245D13350024D677 /* MockBLECentralManager.swift */; };
 		39D66BC425AAB3BC00449587 /* MockBLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AC63FB245D13350024D677 /* MockBLEPeripheral.swift */; };
@@ -71,13 +70,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 39AC63C3245D07A70024D677;
 			remoteInfo = BLECombineKit;
-		};
-		39D66B8725AAA18500449587 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 39AC63BB245D07A70024D677 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 39D66B6B25AAA0E200449587;
-			remoteInfo = BLECombineKitMocks;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -140,7 +132,6 @@
 		39BE8C95245D6E16004F73DD /* ServicesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesViewModel.swift; sourceTree = "<group>"; };
 		39D66B5125A5FD8000449587 /* StandardBLEPeripheral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardBLEPeripheral.swift; sourceTree = "<group>"; };
 		39D66B5625A5FE7F00449587 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
-		39D66B6C25AAA0E200449587 /* BLECombineKitMocks.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BLECombineKitMocks.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		39D66B6E25AAA0E200449587 /* BLECombineKitMocks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLECombineKitMocks.h; sourceTree = "<group>"; };
 		39D66B6F25AAA0E200449587 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		39D66B8C25AAA51C00449587 /* MockCBPeripheralWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCBPeripheralWrapper.swift; sourceTree = "<group>"; };
@@ -179,13 +170,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		39D66B6925AAA0E200449587 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -209,7 +193,6 @@
 				39AC63C4245D07A70024D677 /* BLECombineKit.framework */,
 				39AC63CD245D07A70024D677 /* BLECombineKitTests.xctest */,
 				39BE8C5F245D5E19004F73DD /* BLECombineExplorer.app */,
-				39D66B6C25AAA0E200449587 /* BLECombineKitMocks.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -446,14 +429,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		39D66B6725AAA0E200449587 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				39D66B7025AAA0E200449587 /* BLECombineKitMocks.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -486,7 +461,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				39D66B8825AAA18500449587 /* PBXTargetDependency */,
 				39AC63D0245D07A70024D677 /* PBXTargetDependency */,
 			);
 			name = BLECombineKitTests;
@@ -513,24 +487,6 @@
 			productReference = 39BE8C5F245D5E19004F73DD /* BLECombineExplorer.app */;
 			productType = "com.apple.product-type.application";
 		};
-		39D66B6B25AAA0E200449587 /* BLECombineKitMocks */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 39D66B7125AAA0E200449587 /* Build configuration list for PBXNativeTarget "BLECombineKitMocks" */;
-			buildPhases = (
-				39D66B6725AAA0E200449587 /* Headers */,
-				39D66B6825AAA0E200449587 /* Sources */,
-				39D66B6925AAA0E200449587 /* Frameworks */,
-				39D66B6A25AAA0E200449587 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = BLECombineKitMocks;
-			productName = BLECombineKitMocks;
-			productReference = 39D66B6C25AAA0E200449587 /* BLECombineKitMocks.framework */;
-			productType = "com.apple.product-type.framework";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -551,9 +507,6 @@
 					39BE8C5E245D5E19004F73DD = {
 						CreatedOnToolsVersion = 11.4.1;
 					};
-					39D66B6B25AAA0E200449587 = {
-						CreatedOnToolsVersion = 12.3;
-					};
 				};
 			};
 			buildConfigurationList = 39AC63BE245D07A70024D677 /* Build configuration list for PBXProject "BLECombineKit" */;
@@ -570,7 +523,6 @@
 			projectRoot = "";
 			targets = (
 				39AC63C3245D07A70024D677 /* BLECombineKit */,
-				39D66B6B25AAA0E200449587 /* BLECombineKitMocks */,
 				39AC63CC245D07A70024D677 /* BLECombineKitTests */,
 				39BE8C5E245D5E19004F73DD /* BLECombineExplorer */,
 			);
@@ -599,13 +551,6 @@
 				39BE8C6E245D5E19004F73DD /* LaunchScreen.storyboard in Resources */,
 				39BE8C6B245D5E19004F73DD /* Preview Assets.xcassets in Resources */,
 				39BE8C68245D5E19004F73DD /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		39D66B6A25AAA0E200449587 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -674,13 +619,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		39D66B6825AAA0E200449587 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -693,11 +631,6 @@
 			isa = PBXTargetDependency;
 			target = 39AC63C3245D07A70024D677 /* BLECombineKit */;
 			targetProxy = 39BE8C8F245D5E37004F73DD /* PBXContainerItemProxy */;
-		};
-		39D66B8825AAA18500449587 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 39D66B6B25AAA0E200449587 /* BLECombineKitMocks */;
-			targetProxy = 39D66B8725AAA18500449587 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -968,56 +901,6 @@
 			};
 			name = Release;
 		};
-		39D66B7225AAA0E200449587 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = LY87V7AVCG;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = BLECombineKitMocks/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.henryforce.BLECombineKitMocks;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		39D66B7325AAA0E200449587 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = LY87V7AVCG;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = BLECombineKitMocks/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.henryforce.BLECombineKitMocks;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1053,15 +936,6 @@
 			buildConfigurations = (
 				39BE8C86245D5E1A004F73DD /* Debug */,
 				39BE8C87245D5E1A004F73DD /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		39D66B7125AAA0E200449587 /* Build configuration list for PBXNativeTarget "BLECombineKitMocks" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				39D66B7225AAA0E200449587 /* Debug */,
-				39D66B7325AAA0E200449587 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
