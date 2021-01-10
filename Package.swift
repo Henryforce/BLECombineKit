@@ -25,7 +25,7 @@ let package = Package(
                 "Products",
                 "Frameworks",
                 "Tests"
-            ],
+            ]
 //            sources: [
 //                "Source/Library"
 //            ]
@@ -33,7 +33,7 @@ let package = Package(
         .target(
             name: "BLECombineKitMocks",
             dependencies: ["BLECombineKit"],
-            path: "Source/Mocks",
+            path: "Source/Mocks"
 //            sources: [
 //                "Source/Mocks"
 //            ]
