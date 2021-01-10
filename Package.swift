@@ -9,7 +9,8 @@ let package = Package(
         .macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)
     ],
     products: [
-        .library(name: "BLECombineKit", targets: ["BLECombineKit", "BLECombineKitMocks"])
+        .library(name: "BLECombineKit", targets: ["BLECombineKit"]),
+        .library(name: "BLECombineKitMocks", targets: ["BLECombineKitMocks"])
     ],
     dependencies: [],
     targets: [
@@ -33,14 +34,6 @@ let package = Package(
             name: "BLECombineKitMocks",
             dependencies: ["BLECombineKit"],
             path: ".",
-            exclude: [
-                "Source/BLECombineKitMocks.h",
-                "Source/Info.plist",
-                "BLECombineExplorer",
-                "Products",
-                "Frameworks",
-                "Tests"
-            ],
             sources: [
                 "Source/Mocks"
             ]
