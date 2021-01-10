@@ -9,6 +9,7 @@
 import Foundation
 import CoreBluetooth
 import Combine
+@testable import BLECombineKit
 
 public final class MockBLEPeripheral: BLEPeripheral, BLEPeripheralState {
     

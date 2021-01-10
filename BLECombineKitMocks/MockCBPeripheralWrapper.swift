@@ -7,6 +7,7 @@
 //
 
 import CoreBluetooth
+import BLECombineKit
 
 public final class MockCBPeripheralWrapper: CBPeripheralWrapper {
     
