@@ -8,7 +8,6 @@
 
 import Foundation
 import CoreBluetooth
-import BLECombineKit
 
 public final class MockCBCentralManagerWrapper: CBCentralManagerWrapper {
     public var manager: CBCentralManager?
