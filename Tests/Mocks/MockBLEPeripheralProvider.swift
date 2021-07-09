@@ -9,11 +9,11 @@
 import Foundation
 @testable import BLECombineKit
 
-final class MockBLEPeripheralBuilder: BLEPeripheralBuilder {
+final class MockBLEPeripheralProvider: BLEPeripheralProvider {
     var buildBLEPeripheralWasCalledCount = 0
     var blePeripheral: BLEPeripheral?
-    func build(
-        from peripheral: CBPeripheralWrapper,
+    func provide(
+        for peripheral: CBPeripheralWrapper,
         centralManager: BLECentralManager
     ) -> BLEPeripheral? {
         buildBLEPeripheralWasCalledCount += 1
@@ -22,11 +22,11 @@ final class MockBLEPeripheralBuilder: BLEPeripheralBuilder {
 }
 
 /// Internal only: Used for returning nil peripheral on multiple build calls
-final class MockArrayBLEPeripheralBuilder: BLEPeripheralBuilder {
+final class MockArrayBLEPeripheralBuilder: BLEPeripheralProvider {
     var buildBLEPeripheralWasCalledCount = 0
     var blePeripherals = [BLEPeripheral?]()
-    func build(
-        from peripheral: CBPeripheralWrapper,
+    func provide(
+        for peripheral: CBPeripheralWrapper,
         centralManager: BLECentralManager
     ) -> BLEPeripheral? {
         let peripheral = blePeripherals.element(at: buildBLEPeripheralWasCalledCount)

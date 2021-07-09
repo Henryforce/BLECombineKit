@@ -16,25 +16,25 @@ class BLECentralManagerTests: XCTestCase {
     var sut: BLECentralManager!
     var delegate: BLECentralManagerDelegate!
     var centralManagerWrapper: MockCBCentralManagerWrapper!
-    var peripheralBuilder: MockBLEPeripheralBuilder!
+    var peripheralProvider: MockBLEPeripheralProvider!
     var cancellables = Set<AnyCancellable>()
     
     override func setUpWithError() throws {
         delegate = BLECentralManagerDelegate()
         centralManagerWrapper = MockCBCentralManagerWrapper()
-        peripheralBuilder = MockBLEPeripheralBuilder()
+        peripheralProvider = MockBLEPeripheralProvider()
         
         sut = StandardBLECentralManager(
             centralManager: centralManagerWrapper,
             managerDelegate: delegate,
-            peripheralBuilder: peripheralBuilder
+            peripheralProvider: peripheralProvider
         )
     }
 
     override func tearDownWithError() throws {
         delegate = nil
         centralManagerWrapper = nil
-        peripheralBuilder = nil
+        peripheralProvider = nil
         sut = nil
     }
     
@@ -44,7 +44,7 @@ class BLECentralManagerTests: XCTestCase {
         let peripheralMock = MockCBPeripheralWrapper()
         var expectedScanResult: BLEScanResult?
         let mockedPeripheral = MockBLEPeripheral()
-        peripheralBuilder.blePeripheral = mockedPeripheral
+        peripheralProvider.blePeripheral = mockedPeripheral
         
         // When
         sut.scanForPeripherals(withServices: [], options: nil)
@@ -69,7 +69,7 @@ class BLECentralManagerTests: XCTestCase {
         sut = StandardBLECentralManager(
             centralManager: centralManagerWrapper,
             managerDelegate: delegate,
-            peripheralBuilder: arrayPeripheralBuilder
+            peripheralProvider: arrayPeripheralBuilder
         )
         let expectation = XCTestExpectation(description: self.debugDescription)
         let peripheralMock = MockCBPeripheralWrapper()
@@ -154,7 +154,7 @@ class BLECentralManagerTests: XCTestCase {
         wait(for: [peripheralExpectation], timeout: 0.005)
         XCTAssertNil(retrievedPeripheral) // BLEPeripheralBuilder is returning nil, so no peripherals returned
         XCTAssertEqual(centralManagerWrapper.retrievePeripheralsWasCalledCount, 1)
-        XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
+        XCTAssertEqual(peripheralProvider.buildBLEPeripheralWasCalledCount, 1)
     }
     
     func testRetrieveConnectedPeripheralsReturns() throws {
@@ -175,7 +175,7 @@ class BLECentralManagerTests: XCTestCase {
         wait(for: [peripheralExpectation], timeout: 0.005)
         XCTAssertNil(retrievedPeripheral) // BLEPeripheralBuilder is returning nil, so no peripherals returned
         XCTAssertEqual(centralManagerWrapper.retrieveConnectedPeripheralsWasCalledCount, 1)
-        XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
+        XCTAssertEqual(peripheralProvider.buildBLEPeripheralWasCalledCount, 1)
     }
     
     func testWillRestoreStateReturnsWhenDelegateUpdates() {
@@ -203,7 +203,7 @@ class BLECentralManagerTests: XCTestCase {
         // Given
         let observeDidUpdateANCSAuthorizationExpectation = expectation(description: "PeripheralExpectation")
         let mockedCBPeripheralWrapper = MockCBPeripheralWrapper()
-        peripheralBuilder.blePeripheral = MockBLEPeripheral()
+        peripheralProvider.blePeripheral = MockBLEPeripheral()
         var observedPeripheral: BLEPeripheral?
         
         // When
@@ -219,7 +219,7 @@ class BLECentralManagerTests: XCTestCase {
         
         // Then
         wait(for: [observeDidUpdateANCSAuthorizationExpectation], timeout: 0.005)
-        XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
+        XCTAssertEqual(peripheralProvider.buildBLEPeripheralWasCalledCount, 1)
         XCTAssertNotNil(observedPeripheral)
     }
 
