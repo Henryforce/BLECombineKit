@@ -13,6 +13,11 @@ import Combine
 
 final class MockBLECentralManager: BLECentralManager {
     
+    private var _state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
+    var state: AnyPublisher<ManagerState, Never> {
+        _state.eraseToAnyPublisher()
+    }
+    
     var centralManager: CBCentralManagerWrapper = MockCBCentralManagerWrapper()
     
     var isScanning: Bool = false
