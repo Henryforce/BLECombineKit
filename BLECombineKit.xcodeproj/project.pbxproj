@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -52,6 +52,10 @@
 		39E7B702245ED60B0065044C /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7B701245ED60B0065044C /* DevicesView.swift */; };
 		39E7B705245ED6840065044C /* ActionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7B704245ED6840065044C /* ActionState.swift */; };
 		39E7B708245EDA320065044C /* BLECombineKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7B707245EDA320065044C /* BLECombineKit.swift */; };
+		48059532269C8C51001FD18D /* BLEPeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48059531269C8C51001FD18D /* BLEPeripheralManager.swift */; };
+		48059536269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48059535269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift */; };
+		4805953A269C9986001FD18D /* StartAdvertisingResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48059539269C9986001FD18D /* StartAdvertisingResult.swift */; };
+		48059553269CA046001FD18D /* CombineExt in Frameworks */ = {isa = PBXBuildFile; productRef = 48059552269CA046001FD18D /* CombineExt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,6 +142,9 @@
 		39E7B701245ED60B0065044C /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
 		39E7B704245ED6840065044C /* ActionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionState.swift; sourceTree = "<group>"; };
 		39E7B707245EDA320065044C /* BLECombineKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECombineKit.swift; sourceTree = "<group>"; };
+		48059531269C8C51001FD18D /* BLEPeripheralManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEPeripheralManager.swift; sourceTree = "<group>"; };
+		48059535269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEPeripheralManagerDelegateWrapper.swift; sourceTree = "<group>"; };
+		48059539269C9986001FD18D /* StartAdvertisingResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartAdvertisingResult.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +152,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48059553269CA046001FD18D /* CombineExt in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,6 +209,7 @@
 				39AC63E0245D12260024D677 /* Characteristic */,
 				39AC63DF245D07D60024D677 /* Central */,
 				39AC63DE245D07C80024D677 /* Peripheral */,
+				48059530269C8AB3001FD18D /* Peripheral Manager */,
 				39AC63C7245D07A70024D677 /* BLECombineKit.h */,
 				39AC63C8245D07A70024D677 /* Info.plist */,
 			);
@@ -385,6 +394,16 @@
 			path = Main;
 			sourceTree = "<group>";
 		};
+		48059530269C8AB3001FD18D /* Peripheral Manager */ = {
+			isa = PBXGroup;
+			children = (
+				48059531269C8C51001FD18D /* BLEPeripheralManager.swift */,
+				48059535269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift */,
+				48059539269C9986001FD18D /* StartAdvertisingResult.swift */,
+			);
+			path = "Peripheral Manager";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -412,6 +431,9 @@
 			dependencies = (
 			);
 			name = BLECombineKit;
+			packageProductDependencies = (
+				48059552269CA046001FD18D /* CombineExt */,
+			);
 			productName = BLECombineKit;
 			productReference = 39AC63C4245D07A70024D677 /* BLECombineKit.framework */;
 			productType = "com.apple.product-type.framework";
@@ -484,6 +506,9 @@
 				Base,
 			);
 			mainGroup = 39AC63BA245D07A70024D677;
+			packageReferences = (
+				48059551269CA046001FD18D /* XCRemoteSwiftPackageReference "CombineExt" */,
+			);
 			productRefGroup = 39AC63C5245D07A70024D677 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -527,7 +552,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4805953A269C9986001FD18D /* StartAdvertisingResult.swift in Sources */,
 				39AC63F7245D12DE0024D677 /* BLECharacteristic.swift in Sources */,
+				48059536269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift in Sources */,
 				39AC63EF245D12B40024D677 /* CBPeripheralWrapper.swift in Sources */,
 				39AC63F4245D12D00024D677 /* ManagerState.swift in Sources */,
 				39BE8C92245D5E54004F73DD /* BLEScanResult.swift in Sources */,
@@ -542,6 +569,7 @@
 				39AC63F5245D12D00024D677 /* BLECentralManagerDelegate.swift in Sources */,
 				39E7B708245EDA320065044C /* BLECombineKit.swift in Sources */,
 				39AC63EB245D12A90024D677 /* BLEPeripheral.swift in Sources */,
+				48059532269C8C51001FD18D /* BLEPeripheralManager.swift in Sources */,
 				39BE8C1B245D23A1004F73DD /* CBCentralManagerWrapper.swift in Sources */,
 				39AC63E4245D12890024D677 /* BLEData.swift in Sources */,
 			);
@@ -907,6 +935,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		48059551269CA046001FD18D /* XCRemoteSwiftPackageReference "CombineExt" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CombineCommunity/CombineExt.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		48059552269CA046001FD18D /* CombineExt */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 48059551269CA046001FD18D /* XCRemoteSwiftPackageReference "CombineExt" */;
+			productName = CombineExt;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 39AC63BB245D07A70024D677 /* Project object */;
 }
