@@ -109,6 +109,15 @@ public enum BLEError: Error, Hashable, Identifiable, CustomStringConvertible {
     // Peripheral
     case peripheral(PeripheralError)
     
+    // Advertising
+    case advertisingInProgress
+    case advertisingStartFailed(Error?)
+    case addingServiceFailed(CBService, Error?)
+    
+    // L2CAP
+    case openingL2CAPChannelFailed(BLEPeripheral, Error?)
+    case publishingL2CAPChannelFailed(CBL2CAPPSM, Error?)
+    
     // Data
     case data(DataError)
     
