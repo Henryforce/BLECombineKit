@@ -158,7 +158,14 @@ public class BLEPeripheralManager {
                         return StartAdvertisingResult.started
                     }
                     .mapError { $0 as! BLEError }
-                    .sink(receiveCompletion: { observer.send(completion: $0) }, receiveValue: { observer.send($0) })
+                    .sink(
+                        receiveCompletion: {
+                            if case .failure = $0 { observer.send(completion: $0) }
+                        },
+                        receiveValue: {
+                            observer.send($0)
+                        }
+                    )
                 strongSelf.manager.startAdvertising(advertisementData)
             }
             return AnyCancellable { [weak self] in
@@ -179,9 +186,9 @@ public class BLEPeripheralManager {
     /// Function that triggers `CBPeripheralManager.add(_:)` and waits for
     /// delegate `CBPeripheralManagerDelegate.peripheralManager(_:didAdd:error:)` result.
     /// If it receives a non nil in the result, it will emit `BLEError.addingServiceFailed` error.
-    /// Add method is called after subscription to `Observable` is made.
+    /// Add method is called after subscription to `AnyPublisher` is made.
     /// - Parameter service: `Characteristic` to read value from
-    /// - Returns: `Single` which emits `next` with given characteristic when value is ready to read.
+    /// - Returns: `AnyPublisher` which emits single `next` with given characteristic when value is ready to read.
     ///
     /// Observable can ends with following errors:
     /// * `BLEError.addingServiceFailed`
