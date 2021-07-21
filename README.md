@@ -15,7 +15,7 @@ Mac Catalyst 13.0+
 tvOS 13.0+
 watchOS 6.0+
 
-# How to use [Work in Progress]
+# How to use
 
 As simple as creating a CBCentralManager and let the reactive magic of Combine do the rest:
 
