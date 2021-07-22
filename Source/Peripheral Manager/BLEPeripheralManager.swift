@@ -410,6 +410,11 @@ public class BLEPeripheralManager {
 private extension Publisher {
     
     func ensure(_ state: ManagerState, manager: BLEPeripheralManager) -> AnyPublisher<Self.Output, Self.Failure> {
-        self.prefix(untilOutputFrom: manager.observeStateWithInitialValue().filter { $0 != state }).eraseToAnyPublisher()
+        Deferred {
+            self.prefix(
+                untilOutputFrom: manager.observeStateWithInitialValue().filter { $0 != state }
+            )
+        }
+        .eraseToAnyPublisher()
     }
 }
