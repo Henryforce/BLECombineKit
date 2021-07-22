@@ -399,7 +399,7 @@ public class BLEPeripheralManager {
         ) -> AnyPublisher<T, F> {
         let operation = Deferred<Empty<T, F>> {
             call()
-            return Empty()
+            return Empty(completeImmediately: false)
         }
         return publisher
             .merge(with: operation)
