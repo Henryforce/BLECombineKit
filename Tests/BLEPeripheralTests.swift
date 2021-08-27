@@ -206,6 +206,27 @@ class BLEPeripheralTests: XCTestCase {
         XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
     }
     
+    func testObserveNameValueReturns() {
+        // Given
+        let expectation = XCTestExpectation(description: self.debugDescription)
+        let dataToSend = "MockedPeripheral"
+        var expectedData: String?
+        
+        // When
+        sut.observeNameValue()
+            .sink(receiveCompletion: { error in
+                XCTFail("Observe Name Value should never complete")
+            }, receiveValue: { data in
+                expectedData = data
+                expectation.fulfill()
+            }).store(in: &disposable)
+        delegate.didUpdateName.send(peripheralMock)
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
+        XCTAssertEqual(expectedData!, dataToSend)
+    }
+    
     func testObserveRSSIValueReturns() {
         // Given
         let expectation = XCTestExpectation(description: self.debugDescription)
