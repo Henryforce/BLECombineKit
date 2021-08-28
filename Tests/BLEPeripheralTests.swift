@@ -209,7 +209,7 @@ class BLEPeripheralTests: XCTestCase {
     func testObserveNameValueReturns() {
         // Given
         let expectation = XCTestExpectation(description: self.debugDescription)
-        let dataToSend = "MockedPeripheral"
+        let dataToSend = "Test"
         var expectedData: String?
         
         // When
@@ -220,7 +220,7 @@ class BLEPeripheralTests: XCTestCase {
                 expectedData = data
                 expectation.fulfill()
             }).store(in: &disposable)
-        delegate.didUpdateName.send(peripheralMock)
+        delegate.didUpdateName.send((peripheral: peripheralMock, name: dataToSend))
         
         // Then
         wait(for: [expectation], timeout: 0.005)

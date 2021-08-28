@@ -10,7 +10,7 @@ import Foundation
 import CoreBluetooth
 import Combine
 
-typealias DidUpdateName = CBPeripheralWrapper
+typealias DidUpdateName = (peripheral: CBPeripheralWrapper, name: String)
 typealias DidDiscoverServicesResult = (peripheral: CBPeripheralWrapper, error: Error?)
 typealias DidDiscoverCharacteristicsResult = (peripheral: CBPeripheralWrapper, service: CBService, error: Error?)
 typealias DidUpdateValueForCharacteristicResult = (peripheral: CBPeripheralWrapper, characteristic: CBCharacteristic, error: Error?)
@@ -46,7 +46,9 @@ final class BLEPeripheralDelegate: NSObject {
 extension BLEPeripheralDelegate: CBPeripheralDelegate {
     func peripheralDidUpdateName(_ peripheral: CBPeripheral) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
-        didUpdateName.send(peripheralWrapper)
+        if let name = peripheral.name {
+            didUpdateName.send((peripheral: peripheralWrapper, name: name))
+        }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {

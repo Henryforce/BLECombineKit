@@ -80,7 +80,7 @@ final public class StandardBLEPeripheral: BLEPeripheral, BLEPeripheralState {
     public func observeNameValue() -> AnyPublisher<String, Never> {
         return delegate
             .didUpdateName
-            .map({ $0.name ?? "Unknown" })
+            .map({ $1 })
             .eraseToAnyPublisher()
     }
     
