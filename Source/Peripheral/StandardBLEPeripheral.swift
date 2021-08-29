@@ -18,7 +18,6 @@ final public class StandardBLEPeripheral: BLEPeripheral, BLEPeripheralState {
     private var connectCancellable: AnyCancellable?
     private var discoverServicesCancellable: AnyCancellable?
     private var discoverCharacteristicsCancellable: AnyCancellable?
-    private var writeValueCancellable: AnyCancellable?
     
     init(
         peripheral: CBPeripheralWrapper,
@@ -189,30 +188,21 @@ final public class StandardBLEPeripheral: BLEPeripheral, BLEPeripheralState {
         _ data: Data,
         for characteristic: CBCharacteristic,
         type: CBCharacteristicWriteType
-    ) -> AnyPublisher<Bool, BLEError> {
+    ) -> AnyPublisher<Never, BLEError> {
         peripheral.writeValue(data, for: characteristic, type: type)
-        writeValueCancellable?.cancel()
         
         switch type {
         case .withResponse:
-            return Future<Bool, BLEError> { [weak self] promise in
-                guard let self = self else { return }
-                self.writeValueCancellable = self.delegate
-                    .didWriteValueForCharacteristic
-                    .tryMap { result -> Bool in
-                        if let error = result.error { throw BLEError.writeFailed(error) }
-                        return result.characteristic == characteristic
-                    }
-                    .mapError { $0 as? BLEError ?? BLEError.unknown }
-                    .sink(receiveCompletion: { completion in
-                        guard case .failure(let error) = completion else { return }
-                        promise(.failure(error))
-                    }, receiveValue: { value in
-                        promise(.success(value))
-                    })
-            }.eraseToAnyPublisher()
+            return self.delegate
+                .didWriteValueForCharacteristic
+                .filter({ $0.characteristic == characteristic })
+                .mapError({ BLEError.writeFailed($0) })
+                .ignoreOutput()
+                .eraseToAnyPublisher()
         default:
-            return Just.init(true).setFailureType(to: BLEError.self).eraseToAnyPublisher()
+            return Empty(completeImmediately: true)
+                .setFailureType(to: BLEError.self)
+                .eraseToAnyPublisher()
         }
     }
     
