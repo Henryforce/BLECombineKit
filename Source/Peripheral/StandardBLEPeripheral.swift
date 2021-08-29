@@ -189,7 +189,9 @@ final public class StandardBLEPeripheral: BLEPeripheral, BLEPeripheralState {
         for characteristic: CBCharacteristic,
         type: CBCharacteristicWriteType
     ) -> AnyPublisher<Never, BLEError> {
-        peripheral.writeValue(data, for: characteristic, type: type)
+        defer {
+            peripheral.writeValue(data, for: characteristic, type: type)
+        }
         
         switch type {
         case .withResponse:
@@ -197,6 +199,7 @@ final public class StandardBLEPeripheral: BLEPeripheral, BLEPeripheralState {
                 .didWriteValueForCharacteristic
                 .filter({ $0.characteristic == characteristic })
                 .mapError({ BLEError.writeFailed($0) })
+                .first()
                 .ignoreOutput()
                 .eraseToAnyPublisher()
         default:
