@@ -13,6 +13,7 @@ import Combine
 public protocol BLECentralManager: AnyObject {
     var centralManager: CBCentralManagerWrapper { get }
     var isScanning: Bool { get }
+    var state: AnyPublisher<ManagerState, Never> { get }
     
     func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheral, BLEError>
     func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheral, BLEError>
@@ -30,7 +31,10 @@ final class StandardBLECentralManager: BLECentralManager {
     let centralManager: CBCentralManagerWrapper
     let peripheralBuilder: BLEPeripheralBuilder
     
-    var state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
+    private var _state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
+    var state: AnyPublisher<ManagerState, Never> {
+        _state.eraseToAnyPublisher()
+    }
     let delegate: BLECentralManagerDelegate
     
     private var scannedPeripherals = [UUID: BLEPeripheral]()
@@ -61,10 +65,12 @@ final class StandardBLECentralManager: BLECentralManager {
         self.init(centralManager: centralManagerWrapper, managerDelegate: BLECentralManagerDelegate())
     }
     
-    func observeUpdateState() {
+    private func observeUpdateState() {
         delegate
             .didUpdateState
-            .sink { self.state.send($0) }
+            .sink { state in
+                self._state.send(state)
+            }
             .store(in: &cancellables)
     }
     

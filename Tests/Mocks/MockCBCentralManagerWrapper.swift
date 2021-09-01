@@ -15,6 +15,8 @@ final class MockCBCentralManagerWrapper: CBCentralManagerWrapper {
     
     var isScanning: Bool = false
     
+    var state: CBManagerState = .unknown
+    
     var retrievePeripheralsWasCalledCount = 0
     func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
         retrievePeripheralsWasCalledCount += 1

@@ -17,6 +17,11 @@ final class MockBLECentralManager: BLECentralManager {
     
     var isScanning: Bool = false
     
+    private var _state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
+    var state: AnyPublisher<ManagerState, Never> {
+        _state.eraseToAnyPublisher()
+    }
+    
     var retrievePeripheralsWasCalledCount = 0
     func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
         retrievePeripheralsWasCalledCount += 1
