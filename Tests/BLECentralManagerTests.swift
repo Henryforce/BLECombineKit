@@ -136,10 +136,12 @@ class BLECentralManagerTests: XCTestCase {
         XCTAssertEqual(centralManagerWrapper.registerForConnectionEventsWasCalledCount, 1)
     }
     
+    // test retrieving peripherals when state is already powered on
     func testRetrievePeripheralsReturns() throws {
         // Given
         var retrievedPeripheral: BLEPeripheral?
         let peripheralExpectation = expectation(description: "PeripheralExpectation")
+        delegate.didUpdateState.send(.poweredOn)
         
         // When
         sut.retrievePeripherals(withIdentifiers: [])
@@ -157,10 +159,63 @@ class BLECentralManagerTests: XCTestCase {
         XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
     }
     
+    // test retrieving peripherals when state becomes powered on
+    func testRetrievePeripheralsReturnsOnStateUpdate() throws {
+        // Given
+        var retrievedPeripheral: BLEPeripheral?
+        let peripheralExpectation = expectation(description: "PeripheralExpectation")
+        
+        // When
+        sut.retrievePeripherals(withIdentifiers: [])
+            .sink(receiveCompletion: { completion in
+                guard case .finished = completion else { return }
+                peripheralExpectation.fulfill()
+            }, receiveValue: { peripheral in
+                retrievedPeripheral = peripheral
+            }).store(in: &cancellables)
+        delegate.didUpdateState.send(.poweredOn)
+        
+        // Then
+        wait(for: [peripheralExpectation], timeout: 0.005)
+        XCTAssertNil(retrievedPeripheral) // BLEPeripheralBuilder is returning nil, so no peripherals returned
+        XCTAssertEqual(centralManagerWrapper.retrievePeripheralsWasCalledCount, 1)
+        XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
+    }
+    
+    func testConnectToRetrievedPeripheral() throws {
+        // Given
+        let peripheralExpectation = expectation(description: "PeripheralExpectation")
+        delegate.didUpdateState.send(.poweredOn)
+        
+        // When
+        sut.retrievePeripherals(withIdentifiers: [])
+            .flatMap({ peripheral in
+                peripheral.connect(with: nil)
+            })
+            .catch({ _ in Empty(completeImmediately: false) })
+            .flatMap({ peripheral in
+                peripheral.observeConnectionState()
+            })
+            .sink(receiveCompletion: { completion in
+                guard case .finished = completion else { return }
+                peripheralExpectation.fulfill()
+            }, receiveValue: { state in
+                if state {
+                    peripheralExpectation.fulfill()
+                }
+            }).store(in: &cancellables)
+        
+        // Then
+        wait(for: [peripheralExpectation], timeout: 0.005)
+        XCTAssertEqual(centralManagerWrapper.retrievePeripheralsWasCalledCount, 1)
+        XCTAssertEqual(peripheralBuilder.buildBLEPeripheralWasCalledCount, 1)
+    }
+    
     func testRetrieveConnectedPeripheralsReturns() throws {
         // Given
         var retrievedPeripheral: BLEPeripheral?
         let peripheralExpectation = expectation(description: "PeripheralExpectation")
+        delegate.didUpdateState.send(.poweredOn)
         
         // When
         sut.retrieveConnectedPeripherals(withServices: [])
