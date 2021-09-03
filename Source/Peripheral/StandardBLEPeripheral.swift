@@ -198,6 +198,12 @@ final public class StandardBLEPeripheral: BLEPeripheral, BLEPeripheralState {
             return self.delegate
                 .didWriteValueForCharacteristic
                 .filter({ $0.characteristic == characteristic })
+                .tryMap({ result -> CBCharacteristic in
+                    if let error = result.error {
+                        throw error
+                    }
+                    return result.characteristic
+                })
                 .mapError({ BLEError.writeFailed($0) })
                 .first()
                 .ignoreOutput()
