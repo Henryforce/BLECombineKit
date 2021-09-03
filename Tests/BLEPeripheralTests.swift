@@ -269,8 +269,10 @@ class BLEPeripheralTests: XCTestCase {
         
         // When
         sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
-            .sink(receiveCompletion: { error in
-                expectation.fulfill()
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion, case .writeFailed(let error) = error, let error = error as? BLEError, case .unknown = error {
+                    expectation.fulfill()
+                }
             }, receiveValue: { _ in
             })
             .store(in: &disposable)
