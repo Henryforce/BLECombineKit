@@ -9,6 +9,7 @@
 import Foundation
 import CoreBluetooth
 import Combine
+import CombineExt
 
 public protocol BLECentralManager: AnyObject {
     var centralManager: CBCentralManagerWrapper { get }
