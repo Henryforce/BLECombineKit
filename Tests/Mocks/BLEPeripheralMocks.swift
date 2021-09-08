@@ -11,7 +11,7 @@ import CoreBluetooth
 import Combine
 @testable import BLECombineKit
 
-final class MockBLEPeripheral: BLEPeripheral, BLEPeripheralConnection {
+final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
     
     let connectionState = CurrentValueSubject<Bool, Never>(false)
     var peripheral: CBPeripheralWrapper
@@ -100,7 +100,8 @@ final class MockBLEPeripheral: BLEPeripheral, BLEPeripheralConnection {
 
 final class MockCBPeripheralWrapper: CBPeripheralWrapper {
     
-    var peripheral: CBPeripheral!
+    var mockPeripheral: CBPeripheral!
+    var peripheral: CBPeripheral { mockPeripheral }
     
     var state = CBPeripheralState.connected
     

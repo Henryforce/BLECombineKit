@@ -11,26 +11,28 @@ import Foundation
 
 final class MockBLEPeripheralProvider: BLEPeripheralProvider {
     var buildBLEPeripheralWasCalledCount = 0
-    var blePeripheral: BLEPeripheral?
+    var blePeripheral: BLETrackedPeripheral?
+    
     func provide(
         for peripheral: CBPeripheralWrapper,
         centralManager: BLECentralManager
-    ) -> BLEPeripheral? {
+    ) -> BLETrackedPeripheral {
         buildBLEPeripheralWasCalledCount += 1
-        return blePeripheral
+        return blePeripheral ?? MockBLEPeripheral()
     }
 }
 
 /// Internal only: Used for returning nil peripheral on multiple build calls
 final class MockArrayBLEPeripheralBuilder: BLEPeripheralProvider {
     var buildBLEPeripheralWasCalledCount = 0
-    var blePeripherals = [BLEPeripheral?]()
+    var blePeripherals = [BLETrackedPeripheral]()
+    
     func provide(
         for peripheral: CBPeripheralWrapper,
         centralManager: BLECentralManager
-    ) -> BLEPeripheral? {
+    ) -> BLETrackedPeripheral {
         let peripheral = blePeripherals.element(at: buildBLEPeripheralWasCalledCount)
         buildBLEPeripheralWasCalledCount += 1
-        return peripheral ?? nil
+        return peripheral ?? MockBLEPeripheral()
     }
 }
