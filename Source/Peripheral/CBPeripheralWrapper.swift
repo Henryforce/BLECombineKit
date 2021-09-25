@@ -10,7 +10,7 @@ import Foundation
 import CoreBluetooth
 
 public protocol CBPeripheralWrapper {
-    var peripheral: CBPeripheral? { get }
+    var peripheral: CBPeripheral { get }
     var state: CBPeripheralState { get }
     var identifier: UUID { get }
     var name: String? { get }
@@ -32,7 +32,7 @@ public protocol CBPeripheralWrapper {
 
 final class StandardCBPeripheralWrapper: CBPeripheralWrapper {
     
-    var peripheral: CBPeripheral? {
+    var peripheral: CBPeripheral {
         self.wrappedPeripheral
     }
     

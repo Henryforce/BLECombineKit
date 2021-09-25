@@ -64,14 +64,14 @@ class BLEPeripheralTests: XCTestCase {
     func testConnectCallsCentralManagerToConnectPeripheralAndReturnsWhenConnectionStateIsTrue() throws {
         // Given
         let expectation = XCTestExpectation(description: #function)
-        var expectedPeripheral: BLEPeripheralState?
+        var expectedPeripheral: BLETrackedPeripheral?
         
         // When
         sut.connect(with: nil)
             .sink(receiveCompletion: { completion in
                 expectation.fulfill()
             }, receiveValue: { peripheral in
-                expectedPeripheral = peripheral as? BLEPeripheralState
+                expectedPeripheral = peripheral as? BLETrackedPeripheral
             })
             .store(in: &disposable)
         sut.connectionState.send(true)

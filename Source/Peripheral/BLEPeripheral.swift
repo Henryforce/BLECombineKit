@@ -26,6 +26,6 @@ public protocol BLEPeripheral {
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) -> AnyPublisher<Never, BLEError>
 }
 
-protocol BLEPeripheralState {
+protocol BLETrackedPeripheral: BLEPeripheral {
     var connectionState: CurrentValueSubject<Bool, Never> { get }
 }

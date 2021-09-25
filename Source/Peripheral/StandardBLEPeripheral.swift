@@ -9,7 +9,7 @@
 import Combine
 import CoreBluetooth
 
-final public class StandardBLEPeripheral: BLEPeripheral, BLEPeripheralState {
+final public class StandardBLEPeripheral: BLETrackedPeripheral {
     
     let connectionState = CurrentValueSubject<Bool, Never>(false)
     public let peripheral: CBPeripheralWrapper

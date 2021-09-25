@@ -59,15 +59,11 @@ final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
     }
     
     func connect(_ peripheral: CBPeripheralWrapper, options: [String : Any]?) {
-        if let peripheral = peripheral as? StandardCBPeripheralWrapper, let realPeripheral = peripheral.peripheral {
-            wrappedManager.connect(realPeripheral, options: options)
-        }
+        wrappedManager.connect(peripheral.peripheral, options: options)
     }
     
     func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) {
-        if let peripheral = peripheral as? StandardCBPeripheralWrapper, let realPeripheral = peripheral.peripheral {
-            wrappedManager.cancelPeripheralConnection(realPeripheral)
-        }
+        wrappedManager.cancelPeripheralConnection(peripheral.peripheral)
     }
     
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
