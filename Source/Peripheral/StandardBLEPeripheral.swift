@@ -76,6 +76,13 @@ final public class StandardBLEPeripheral: BLEPeripheral, BLEPeripheralState {
         return centralManager.cancelPeripheralConnection(peripheral)
     }
     
+    public func observeNameValue() -> AnyPublisher<String, Never> {
+        return delegate
+            .didUpdateName
+            .map({ $1 })
+            .eraseToAnyPublisher()
+    }
+    
     public func observeRSSIValue() -> AnyPublisher<NSNumber, BLEError> {
         peripheral.readRSSI()
         

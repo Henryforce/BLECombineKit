@@ -16,6 +16,7 @@ public protocol BLEPeripheral {
     func observeConnectionState() -> AnyPublisher<Bool, Never>
     func connect(with options: [String: Any]?) -> AnyPublisher<BLEPeripheral, BLEError>
     @discardableResult func disconnect() -> AnyPublisher<Bool, BLEError>
+    func observeNameValue() -> AnyPublisher<String, Never>
     func observeRSSIValue() -> AnyPublisher<NSNumber, BLEError>
     func discoverServices(serviceUUIDs: [CBUUID]?) -> AnyPublisher<BLEService, BLEError>
     func discoverCharacteristics(characteristicUUIDs: [CBUUID]?, for service: CBService) -> AnyPublisher<BLECharacteristic, BLEError>

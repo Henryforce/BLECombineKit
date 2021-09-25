@@ -82,6 +82,13 @@ final class MockBLEPeripheral: BLEPeripheral, BLEPeripheralState {
         setNotifyValueWasCalled = true
     }
     
+    var observeNameValueWasCalled = false
+    func observeNameValue() -> AnyPublisher<String, Never> {
+        observeNameValueWasCalled = true
+        return Just.init("Test")
+            .eraseToAnyPublisher()
+    }
+    
     var observeRSSIValueWasCalled = false
     func observeRSSIValue() -> AnyPublisher<NSNumber, BLEError> {
         observeRSSIValueWasCalled = true
