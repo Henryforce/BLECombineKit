@@ -1,0 +1,6 @@
+uses: sersoft-gmbh/xcodebuild-action@v1
+with:
+  project: BLECombineKit.xcodeproj
+  scheme: BLECombineKit
+  destination: platform=macOS
+  action: test
