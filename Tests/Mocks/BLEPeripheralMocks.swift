@@ -12,7 +12,6 @@ import Combine
 @testable import BLECombineKit
 
 final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
-    
     let connectionState = CurrentValueSubject<Bool, Never>(false)
     var peripheral: CBPeripheralWrapper
     
@@ -34,9 +33,9 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
     }
     
     var disconnectWasCalled = false
-    func disconnect() -> AnyPublisher<Bool, BLEError> {
+    func disconnect() -> AnyPublisher<Never, BLEError> {
         disconnectWasCalled = true
-        return Just.init(false).setFailureType(to: BLEError.self).eraseToAnyPublisher()
+        return Empty(completeImmediately: true).eraseToAnyPublisher()
     }
     
     var discoverServiceWasCalled = false
@@ -82,6 +81,13 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
         setNotifyValueWasCalled = true
     }
     
+    var observeNameValueWasCalled = false
+    func observeNameValue() -> AnyPublisher<String, Never> {
+        observeNameValueWasCalled = true
+        return Just.init("Test")
+            .eraseToAnyPublisher()
+    }
+    
     var observeRSSIValueWasCalled = false
     func observeRSSIValue() -> AnyPublisher<NSNumber, BLEError> {
         observeRSSIValueWasCalled = true
@@ -91,9 +97,9 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
     }
     
     var writeValueWasCalled = false
-    func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) -> AnyPublisher<Bool, BLEError> {
+    func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) -> AnyPublisher<Never, BLEError> {
         writeValueWasCalled = true
-        return Just.init(true).setFailureType(to: BLEError.self).eraseToAnyPublisher()
+        return Empty(completeImmediately: true).setFailureType(to: BLEError.self).eraseToAnyPublisher()
     }
     
 }
