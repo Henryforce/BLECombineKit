@@ -66,14 +66,17 @@ final public class StandardBLEPeripheral: BLEPeripheral, BLEPeripheralState {
     }
     
     @discardableResult
-    public func disconnect() -> AnyPublisher<Bool, BLEError> {
+    public func disconnect() -> AnyPublisher<Never, BLEError> {
         guard let centralManager = centralManager else {
             return Just.init(false)
                 .tryMap { _ in throw BLEError.disconnectionFailed }
                 .mapError { $0 as? BLEError ?? BLEError.unknown }
                 .eraseToAnyPublisher()
         }
-        return centralManager.cancelPeripheralConnection(peripheral)
+        return centralManager
+            .cancelPeripheralConnection(peripheral)
+            .setFailureType(to: BLEError.self)
+            .eraseToAnyPublisher()
     }
     
     public func observeNameValue() -> AnyPublisher<String, Never> {

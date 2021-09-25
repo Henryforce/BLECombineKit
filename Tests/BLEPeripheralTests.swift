@@ -330,9 +330,7 @@ class BLEPeripheralTests: XCTestCase {
                 case .finished:
                     XCTFail("Error should have been returned on completion")
                 }
-            }, receiveValue: { result in
-                XCTFail("No value should have been received")
-            })
+            }, receiveValue: { _ in })
             .store(in: &disposable)
         
         // Then

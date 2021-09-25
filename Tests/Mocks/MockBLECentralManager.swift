@@ -62,10 +62,10 @@ final class MockBLECentralManager: BLECentralManager {
     }
     
     var cancelPeripheralConnectionWasCalledCount = 0
-    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError> {
+    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never> {
         cancelPeripheralConnectionWasCalledCount += 1
         
-        return Just.init(false).setFailureType(to: BLEError.self).eraseToAnyPublisher()
+        return Empty(completeImmediately: true).eraseToAnyPublisher()
     }
     
     var registerForConnectionEventsWasCalledCount = 0

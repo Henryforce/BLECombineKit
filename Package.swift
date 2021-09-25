@@ -11,11 +11,16 @@ let package = Package(
     products: [
         .library(name: "BLECombineKit", targets: ["BLECombineKit"])
     ],
-    dependencies: [],
+    dependencies: [
+        .package(
+            url: "https://github.com/CombineCommunity/CombineExt.git",
+            from: "1.0.0"
+        )
+    ],
     targets: [
         .target(
                 name: "BLECombineKit",
-                dependencies: [],
+                dependencies: ["CombineExt"],
                 path: ".",
                 exclude: [
                     "Source/BLECombineKit.h",

@@ -9,6 +9,7 @@
 import Foundation
 import CoreBluetooth
 import Combine
+import CombineExt
 
 public protocol BLECentralManager: AnyObject {
     var centralManager: CBCentralManagerWrapper { get }
@@ -19,7 +20,7 @@ public protocol BLECentralManager: AnyObject {
     func scanForPeripherals(withServices services: [CBUUID]?, options: [String: Any]?) -> AnyPublisher<BLEScanResult, BLEError>
     func stopScan()
     func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?)
-    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError>
+    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never>
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
     func observeWillRestoreState() -> AnyPublisher<[String: Any], Never>
     func observeDidUpdateANCSAuthorization() -> AnyPublisher<BLEPeripheral, Never>
@@ -136,13 +137,14 @@ final class StandardBLECentralManager: BLECentralManager {
         centralManager.connect(peripheralWrapper, options: options)
     }
     
-    public func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError> {
+    public func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never> {
         centralManager.cancelPeripheralConnection(peripheral)
         
         return delegate.didDisconnectPeripheral
             .filter { $0.identifier == peripheral.identifier }
-            .map { _ in true }
-            .setFailureType(to: BLEError.self)
+            .first()
+            .ignoreOutput()
+            .ignoreFailure()
             .eraseToAnyPublisher()
     }
     
