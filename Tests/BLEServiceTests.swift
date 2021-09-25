@@ -9,6 +9,7 @@
 import XCTest
 import CoreBluetooth
 @testable import BLECombineKit
+import BLECombineKitMocks
 
 class BLEServiceTests: XCTestCase {
 
