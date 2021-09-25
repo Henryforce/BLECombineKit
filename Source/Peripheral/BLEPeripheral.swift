@@ -22,7 +22,7 @@ public protocol BLEPeripheral {
     func observeValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError>
     func observeValueUpdateAndSetNotification(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError>
     func setNotifyValue(_ enabled: Bool, for characteristic: CBCharacteristic)
-    func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) -> AnyPublisher<Bool, BLEError>
+    func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) -> AnyPublisher<Never, BLEError>
 }
 
 protocol BLEPeripheralState {

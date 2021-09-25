@@ -230,7 +230,6 @@ class BLEPeripheralTests: XCTestCase {
     func testWriteValueWithoutResponseReturnsImmediately() {
         // Given
         let expectation = XCTestExpectation(description: #function)
-        var expectedResult: Bool?
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
         // When
@@ -238,19 +237,16 @@ class BLEPeripheralTests: XCTestCase {
             .sink(receiveCompletion: { event in
                 expectation.fulfill()
             }, receiveValue: { result in
-                expectedResult = result
             }).store(in: &disposable)
         
         // Then
         wait(for: [expectation], timeout: 0.005)
         XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
-        XCTAssertNotNil(expectedResult)
     }
     
     func testWriteValueWithResponseReturnsOnDelegateCall() {
         // Given
         let expectation = XCTestExpectation(description: #function)
-        var expectedResult: Bool?
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
         // When
@@ -258,13 +254,11 @@ class BLEPeripheralTests: XCTestCase {
             .sink(receiveCompletion: { error in
                 expectation.fulfill()
             }, receiveValue: { result in
-                expectedResult = result
             }).store(in: &disposable)
         delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil))
         
         // Then
         wait(for: [expectation], timeout: 0.005)
-        XCTAssertNotNil(expectedResult)
         XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
     }
     
@@ -275,10 +269,11 @@ class BLEPeripheralTests: XCTestCase {
         
         // When
         sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
-            .sink(receiveCompletion: { error in
-                expectation.fulfill()
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion, case .writeFailed(let error) = error, let error = error as? BLEError, case .unknown = error {
+                    expectation.fulfill()
+                }
             }, receiveValue: { _ in
-                XCTFail()
             })
             .store(in: &disposable)
         delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: BLEError.unknown))
