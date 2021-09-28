@@ -37,8 +37,8 @@ public enum BLEError: Error, Hashable, Identifiable, CustomStringConvertible {
         
         public var description: String {
             switch self {
-            case .base(code: let code, description: let description): return "CBError, code \(code), description: \(description)"
-            case .ATT(code: let code, description: let description): return "CBATTError, code \(code), description: \(description)"
+            case .base(code: let code, description: let description): return "CBError, code \(String(format: "0x%02X", code.rawValue)), description: \(description)"
+            case .ATT(code: let code, description: let description): return "CBATTError, code \(String(format: "0x%02X", code.rawValue)), description: \(description)"
             case .other(error: let error): return "Other error, domain \"\(error.domain)\" code \(error.code), description: \(error.description)"
             }
         }
