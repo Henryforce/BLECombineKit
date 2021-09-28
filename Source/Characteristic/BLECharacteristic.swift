@@ -30,4 +30,11 @@ public struct BLECharacteristic: BLEPeripheralResult {
     public func setNotifyValue(_ enabled: Bool) {
         peripheral.setNotifyValue(enabled, for: value)
     }
+    
+    public func writeValue(
+        _ data: Data,
+        type: CBCharacteristicWriteType
+    ) -> AnyPublisher<Never, BLEError> {
+        return peripheral.writeValue(data, for: self.value, type: type)
+    }
 }

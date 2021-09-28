@@ -64,14 +64,14 @@ class BLEPeripheralTests: XCTestCase {
     func testConnectCallsCentralManagerToConnectPeripheralAndReturnsWhenConnectionStateIsTrue() throws {
         // Given
         let expectation = XCTestExpectation(description: #function)
-        var expectedPeripheral: BLEPeripheralState?
+        var expectedPeripheral: BLETrackedPeripheral?
         
         // When
         sut.connect(with: nil)
             .sink(receiveCompletion: { completion in
                 expectation.fulfill()
             }, receiveValue: { peripheral in
-                expectedPeripheral = peripheral as? BLEPeripheralState
+                expectedPeripheral = peripheral as? BLETrackedPeripheral
             })
             .store(in: &disposable)
         sut.connectionState.send(true)
@@ -206,6 +206,27 @@ class BLEPeripheralTests: XCTestCase {
         XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
     }
     
+    func testObserveNameValueReturns() {
+        // Given
+        let expectation = XCTestExpectation(description: self.debugDescription)
+        let dataToSend = "Test"
+        var expectedData: String?
+        
+        // When
+        sut.observeNameValue()
+            .sink(receiveCompletion: { error in
+                XCTFail("Observe Name Value should never complete")
+            }, receiveValue: { data in
+                expectedData = data
+                expectation.fulfill()
+            }).store(in: &disposable)
+        delegate.didUpdateName.send((peripheral: peripheralMock, name: dataToSend))
+        
+        // Then
+        wait(for: [expectation], timeout: 0.005)
+        XCTAssertEqual(expectedData!, dataToSend)
+    }
+    
     func testObserveRSSIValueReturns() {
         // Given
         let expectation = XCTestExpectation(description: self.debugDescription)
@@ -230,7 +251,6 @@ class BLEPeripheralTests: XCTestCase {
     func testWriteValueWithoutResponseReturnsImmediately() {
         // Given
         let expectation = XCTestExpectation(description: #function)
-        var expectedResult: Bool?
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
         // When
@@ -238,19 +258,16 @@ class BLEPeripheralTests: XCTestCase {
             .sink(receiveCompletion: { event in
                 expectation.fulfill()
             }, receiveValue: { result in
-                expectedResult = result
             }).store(in: &disposable)
         
         // Then
         wait(for: [expectation], timeout: 0.005)
         XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
-        XCTAssertNotNil(expectedResult)
     }
     
     func testWriteValueWithResponseReturnsOnDelegateCall() {
         // Given
         let expectation = XCTestExpectation(description: #function)
-        var expectedResult: Bool?
         let mutableCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
         
         // When
@@ -258,13 +275,11 @@ class BLEPeripheralTests: XCTestCase {
             .sink(receiveCompletion: { error in
                 expectation.fulfill()
             }, receiveValue: { result in
-                expectedResult = result
             }).store(in: &disposable)
         delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil))
         
         // Then
         wait(for: [expectation], timeout: 0.005)
-        XCTAssertNotNil(expectedResult)
         XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
     }
     
@@ -275,10 +290,12 @@ class BLEPeripheralTests: XCTestCase {
         
         // When
         sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
-            .sink(receiveCompletion: { error in
-                expectation.fulfill()
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion, case .writeFailed(let subError) = error,
+                    let bleError = subError as? BLEError, case .unknown = bleError {
+                    expectation.fulfill()
+                }
             }, receiveValue: { _ in
-                XCTFail()
             })
             .store(in: &disposable)
         delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: BLEError.unknown))
@@ -313,9 +330,7 @@ class BLEPeripheralTests: XCTestCase {
                 case .finished:
                     XCTFail("Error should have been returned on completion")
                 }
-            }, receiveValue: { result in
-                XCTFail("No value should have been received")
-            })
+            }, receiveValue: { _ in })
             .store(in: &disposable)
         
         // Then

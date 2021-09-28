@@ -15,18 +15,23 @@ final class MockCBCentralManagerWrapper: CBCentralManagerWrapper {
     
     var isScanning: Bool = false
     
+<<<<<<< HEAD
     var state: CBManagerState = .unknown
     
+=======
+    var mockRetrieviePeripherals: [CBPeripheralWrapper] = .init()
+>>>>>>> master
     var retrievePeripheralsWasCalledCount = 0
     func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
         retrievePeripheralsWasCalledCount += 1
-        return [MockCBPeripheralWrapper()]
+        return mockRetrieviePeripherals
     }
     
+    var mockRetrieveConnectedPeripherals: [CBPeripheralWrapper] = .init()
     var retrieveConnectedPeripheralsWasCalledCount = 0
     func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper] {
         retrieveConnectedPeripheralsWasCalledCount += 1
-        return [MockCBPeripheralWrapper()]
+        return mockRetrieveConnectedPeripherals
     }
     
     var scanForPeripheralsWasCalledCount = 0

@@ -9,6 +9,7 @@
 import Foundation
 import CoreBluetooth
 import Combine
+import CombineExt
 
 public protocol BLECentralManager: AnyObject {
     var centralManager: CBCentralManagerWrapper { get }
@@ -20,7 +21,7 @@ public protocol BLECentralManager: AnyObject {
     func scanForPeripherals(withServices services: [CBUUID]?, options: [String: Any]?) -> AnyPublisher<BLEScanResult, BLEError>
     func stopScan()
     func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?)
-    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError>
+    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never>
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
     func observeWillRestoreState() -> AnyPublisher<[String: Any], Never>
     func observeDidUpdateANCSAuthorization() -> AnyPublisher<BLEPeripheral, Never>
@@ -29,29 +30,31 @@ public protocol BLECentralManager: AnyObject {
 final class StandardBLECentralManager: BLECentralManager {
     
     let centralManager: CBCentralManagerWrapper
-    let peripheralBuilder: BLEPeripheralBuilder
+    let peripheralProvider: BLEPeripheralProvider
     
-    private var _state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
-    var state: AnyPublisher<ManagerState, Never> {
-        _state.eraseToAnyPublisher()
-    }
+    var stateSubject = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
     let delegate: BLECentralManagerDelegate
     
-    private var knownPeripherals = [UUID: BLEPeripheral]()
     private var cancellables = [AnyCancellable]()
+    
+    private var connectedPeripherals: [UUID: BLETrackedPeripheral] = [:]
     
     var isScanning: Bool {
         centralManager.isScanning
     }
     
+    var state: AnyPublisher<ManagerState, Never> {
+        stateSubject.eraseToAnyPublisher()
+    }
+    
     init(
         centralManager: CBCentralManagerWrapper,
         managerDelegate: BLECentralManagerDelegate = BLECentralManagerDelegate(),
-        peripheralBuilder: BLEPeripheralBuilder = StandardBLEPeripheralBuilder()
+        peripheralProvider: BLEPeripheralProvider = StandardBLEPeripheralProvider()
     ) {
         self.centralManager = centralManager
         self.delegate = managerDelegate
-        self.peripheralBuilder = peripheralBuilder
+        self.peripheralProvider = peripheralProvider
         
         if let centralManager = centralManager as? StandardCBCentralManagerWrapper {
             centralManager.setupDelegate(managerDelegate)
@@ -69,14 +72,11 @@ final class StandardBLECentralManager: BLECentralManager {
         delegate
             .didUpdateState
             .sink { state in
-                self._state.send(state)
-                if state != .poweredOn {
-                    for peripheral in self.knownPeripherals.values {
-                        if let peripheral = peripheral as? BLEPeripheralState, peripheral.connectionState.value {
-                            peripheral.connectionState.send(false)
-                        }
-                    }
+                self.stateSubject.send(state)
+                for p in self.connectedPeripherals.values {
+                    p.connectionState.send(false)
                 }
+                self.connectedPeripherals.removeAll()
             }
             .store(in: &cancellables)
     }
@@ -86,9 +86,9 @@ final class StandardBLECentralManager: BLECentralManager {
             .didConnectPeripheral
             .sink { [weak self] result in
                 guard let self = self else { return }
-                if let knownPeripheral = self.knownPeripherals[result.identifier] as? BLEPeripheralState {
-                    knownPeripheral.connectionState.send(true)
-                }
+                let p = self.peripheralProvider.provide(for: result, centralManager: self)
+                p.connectionState.send(true)
+                self.connectedPeripherals[p.peripheral.identifier] = p
             }.store(in: &cancellables)
     }
     
@@ -97,17 +97,17 @@ final class StandardBLECentralManager: BLECentralManager {
             .didDisconnectPeripheral
             .sink { [weak self] result in
                 guard let self = self else { return }
-                if let scannedPeripheral = self.knownPeripherals[result.identifier] as? BLEPeripheralState {
-                    scannedPeripheral.connectionState.send(false)
-                }
+                let p = self.peripheralProvider.provide(for: result, centralManager: self)
+                p.connectionState.send(false)
+                self.connectedPeripherals[p.peripheral.identifier] = nil
             }.store(in: &cancellables)
     }
     
     private func waitUntilPoweredOn() -> AnyPublisher<CBCentralManagerWrapper, BLEError> {
-        if _state.value == .poweredOn {
+        if self.stateSubject.value == .poweredOn {
             return Just(centralManager).setFailureType(to: BLEError.self).eraseToAnyPublisher()
         } else {
-            return _state
+            return self.stateSubject
                 .filter({ $0 == .poweredOn })
                 .first()
                 .map { _ in self.centralManager }
@@ -136,17 +136,9 @@ final class StandardBLECentralManager: BLECentralManager {
         
         return self.delegate
             .didDiscoverAdvertisementData
-            .compactMap { [weak self] peripheral, advertisementData, rssi -> (BLEPeripheral, [String: Any], NSNumber)? in
-                guard let self = self, let blePeripheral = self.peripheralBuilder.build(
-                    from: peripheral,
-                    centralManager: self
-                ) else { return nil }
-                return (blePeripheral, advertisementData, rssi)
-            }
             .tryMap { [weak self] peripheral, advertisementData, rssi in
                 guard let self = self else { throw BLEError.deallocated }
-                
-                self.knownPeripherals[peripheral.peripheral.identifier] = peripheral
+                let peripheral = self.peripheralProvider.provide(for: peripheral, centralManager: self)
                 
                 return BLEScanResult(
                     peripheral: peripheral,
@@ -166,13 +158,14 @@ final class StandardBLECentralManager: BLECentralManager {
         centralManager.connect(peripheralWrapper, options: options)
     }
     
-    public func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError> {
+    public func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never> {
         centralManager.cancelPeripheralConnection(peripheral)
         
         return delegate.didDisconnectPeripheral
             .filter { $0.identifier == peripheral.identifier }
-            .map { _ in true }
-            .setFailureType(to: BLEError.self)
+            .first()
+            .ignoreOutput()
+            .ignoreFailure()
             .eraseToAnyPublisher()
     }
     
@@ -188,7 +181,7 @@ final class StandardBLECentralManager: BLECentralManager {
         delegate.didUpdateANCSAuthorization
             .compactMap { [weak self] peripheral in
                 guard let self = self else { return nil }
-                return self.peripheralBuilder.build(from: peripheral, centralManager: self)
+                return self.peripheralProvider.provide(for: peripheral, centralManager: self)
             }.eraseToAnyPublisher()
     }
     
@@ -204,12 +197,10 @@ final class StandardBLECentralManager: BLECentralManager {
         let peripherals = retrievedPeripherals
             .compactMap { [weak self]  peripheral -> BLEPeripheral? in
                 guard let self = self else { return nil }
-                let p = self.peripheralBuilder.build(
-                    from: peripheral,
+                return self.peripheralProvider.provide(
+                    for: peripheral,
                     centralManager: self
                 )
-                self.knownPeripherals[peripheral.identifier] = p
-                return p
             }
         
         return Publishers.Sequence.init(sequence: peripherals)
