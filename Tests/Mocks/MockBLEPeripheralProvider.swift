@@ -10,15 +10,15 @@ import Foundation
 @testable import BLECombineKit
 
 final class MockBLEPeripheralProvider: BLEPeripheralProvider {
-    var buildBLEPeripheralWasCalledCount = 0
+    var provideBLEPeripheralWasCalledCount = 0
     var blePeripheral: BLETrackedPeripheral?
     
     func provide(
         for peripheral: CBPeripheralWrapper,
         centralManager: BLECentralManager
     ) -> BLETrackedPeripheral {
-        buildBLEPeripheralWasCalledCount += 1
-        return blePeripheral ?? MockBLEPeripheral()
+        provideBLEPeripheralWasCalledCount += 1
+        return blePeripheral ?? MockBLEPeripheral(peripheral: peripheral as! MockCBPeripheralWrapper)
     }
 }
 
@@ -31,8 +31,8 @@ final class MockArrayBLEPeripheralBuilder: BLEPeripheralProvider {
         for peripheral: CBPeripheralWrapper,
         centralManager: BLECentralManager
     ) -> BLETrackedPeripheral {
-        let peripheral = blePeripherals.element(at: buildBLEPeripheralWasCalledCount)
+        let p = blePeripherals.element(at: buildBLEPeripheralWasCalledCount)
         buildBLEPeripheralWasCalledCount += 1
-        return peripheral ?? MockBLEPeripheral()
+        return p ?? MockBLEPeripheral(peripheral: peripheral as! MockCBPeripheralWrapper)
     }
 }
