@@ -26,8 +26,6 @@ let package = Package(
                     "Source/BLECombineKit.h",
                     "Source/Info.plist",
                     "BLECombineExplorer",
-                    "Products",
-                    "Frameworks",
                     "Tests"
                 ],
                 sources: [
