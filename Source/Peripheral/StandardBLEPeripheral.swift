@@ -58,7 +58,7 @@ final public class StandardBLEPeripheral: BLETrackedPeripheral {
                     return self
                 }.sink(receiveCompletion: { completion in
                     guard case .failure = completion else { return }
-                    promise(.failure(BLEError.connectionFailure))
+                    promise(.failure(BLEError.peripheral(.connectionFailure)))
                 }, receiveValue: { value in
                     promise(.success(value))
                 })
@@ -69,7 +69,7 @@ final public class StandardBLEPeripheral: BLETrackedPeripheral {
     public func disconnect() -> AnyPublisher<Never, BLEError> {
         guard let centralManager = centralManager else {
             return Just.init(false)
-                .tryMap { _ in throw BLEError.disconnectionFailed }
+                .tryMap { _ in throw BLEError.peripheral(.disconnectionFailed) }
                 .mapError { $0 as? BLEError ?? BLEError.unknown }
                 .eraseToAnyPublisher()
         }
@@ -118,7 +118,7 @@ final public class StandardBLEPeripheral: BLETrackedPeripheral {
                 return $0.peripheral.identifier == self.peripheral.identifier
             }
             .tryMap { result -> [CBService] in
-                guard result.error == nil, let services = result.peripheral.services else { throw BLEError.servicesFoundError(result.error) }
+                guard result.error == nil, let services = result.peripheral.services else { throw BLEError.peripheral(.servicesFoundError(BLEError.CoreBluetoothError.from(error: result.error! as NSError))) }
                 return services
             }
             .mapError { $0 as? BLEError ?? BLEError.unknown }
@@ -151,7 +151,7 @@ final public class StandardBLEPeripheral: BLETrackedPeripheral {
                 return $0.peripheral.identifier == self.peripheral.identifier
             }
             .tryMap { result -> [CBCharacteristic] in
-                guard result.error == nil, let characteristics = result.service.characteristics else { throw BLEError.characteristicsFoundError(result.error) }
+                guard result.error == nil, let characteristics = result.service.characteristics else { throw BLEError.peripheral(.characteristicsFoundError(BLEError.CoreBluetoothError.from(error: result.error! as NSError))) }
                 return characteristics
             }
             .mapError { $0 as? BLEError ?? BLEError.unknown }
@@ -214,7 +214,8 @@ final public class StandardBLEPeripheral: BLETrackedPeripheral {
                     }
                     return result.characteristic
                 })
-                .mapError({ BLEError.writeFailed($0) })
+                .mapError({ BLEError.writeFailed(BLEError.CoreBluetoothError.from(error:
+                                                $0 as NSError)) })
                 .first()
                 .ignoreOutput()
                 .eraseToAnyPublisher()
@@ -234,7 +235,7 @@ final public class StandardBLEPeripheral: BLETrackedPeripheral {
                 .filter { $0.characteristic.uuid == characteristic.uuid }
                 .tryMap { [weak self] filteredPeripheral in
                     guard let self = self else { throw BLEError.deallocated }
-                    guard let data = filteredPeripheral.characteristic.value else { throw BLEError.invalidData }
+                    guard let data = filteredPeripheral.characteristic.value else { throw BLEError.data(.invalid) }
                     return BLEData(value: data, peripheral: self)
                 }
                 .mapError { $0 as? BLEError ?? BLEError.unknown }

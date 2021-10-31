@@ -292,13 +292,13 @@ class BLEPeripheralTests: XCTestCase {
         sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion, case .writeFailed(let subError) = error,
-                    let bleError = subError as? BLEError, case .unknown = bleError {
+                   case .base(code: let code, description: _) = subError, code == CBError.Code.connectionFailed {
                     expectation.fulfill()
                 }
             }, receiveValue: { _ in
             })
             .store(in: &disposable)
-        delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: BLEError.unknown))
+        delegate.didWriteValueForCharacteristic.send((peripheral: peripheralMock, characteristic: mutableCharacteristic, error: NSError(domain: CBErrorDomain, code: CBError.Code.connectionFailed.rawValue, userInfo: nil)))
         
         // Then
         wait(for: [expectation], timeout: 0.005)
@@ -324,7 +324,7 @@ class BLEPeripheralTests: XCTestCase {
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .failure(let error):
-                    if case .disconnectionFailed = error {
+                    if case .peripheral(let e) = error, e == .disconnectionFailed {
                         expectation.fulfill()
                     }
                 case .finished:
