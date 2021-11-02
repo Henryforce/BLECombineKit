@@ -139,9 +139,6 @@
 		39E7B701245ED60B0065044C /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
 		39E7B704245ED6840065044C /* ActionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionState.swift; sourceTree = "<group>"; };
 		39E7B707245EDA320065044C /* BLECombineKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECombineKit.swift; sourceTree = "<group>"; };
-		48059531269C8C51001FD18D /* BLEPeripheralManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEPeripheralManager.swift; sourceTree = "<group>"; };
-		48059535269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEPeripheralManagerDelegateWrapper.swift; sourceTree = "<group>"; };
-		48059539269C9986001FD18D /* StartAdvertisingResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartAdvertisingResult.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,7 +203,6 @@
 				39AC63E0245D12260024D677 /* Characteristic */,
 				39AC63DF245D07D60024D677 /* Central */,
 				39AC63DE245D07C80024D677 /* Peripheral */,
-				48059530269C8AB3001FD18D /* Peripheral Manager */,
 				39AC63C7245D07A70024D677 /* BLECombineKit.h */,
 				39AC63C8245D07A70024D677 /* Info.plist */,
 			);
@@ -391,16 +387,6 @@
 			path = Main;
 			sourceTree = "<group>";
 		};
-		48059530269C8AB3001FD18D /* Peripheral Manager */ = {
-			isa = PBXGroup;
-			children = (
-				48059531269C8C51001FD18D /* BLEPeripheralManager.swift */,
-				48059535269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift */,
-				48059539269C9986001FD18D /* StartAdvertisingResult.swift */,
-			);
-			path = "Peripheral Manager";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -549,9 +535,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4805953A269C9986001FD18D /* StartAdvertisingResult.swift in Sources */,
 				39AC63F7245D12DE0024D677 /* BLECharacteristic.swift in Sources */,
-				48059536269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift in Sources */,
 				39AC63EF245D12B40024D677 /* CBPeripheralWrapper.swift in Sources */,
 				39AC63F4245D12D00024D677 /* ManagerState.swift in Sources */,
 				39BE8C92245D5E54004F73DD /* BLEScanResult.swift in Sources */,
@@ -566,7 +550,6 @@
 				39AC63F5245D12D00024D677 /* BLECentralManagerDelegate.swift in Sources */,
 				39E7B708245EDA320065044C /* BLECombineKit.swift in Sources */,
 				39AC63EB245D12A90024D677 /* BLEPeripheral.swift in Sources */,
-				48059532269C8C51001FD18D /* BLEPeripheralManager.swift in Sources */,
 				39BE8C1B245D23A1004F73DD /* CBCentralManagerWrapper.swift in Sources */,
 				39AC63E4245D12890024D677 /* BLEData.swift in Sources */,
 			);
@@ -761,8 +744,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -788,8 +773,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
