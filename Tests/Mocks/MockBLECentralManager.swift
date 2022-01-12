@@ -13,6 +13,11 @@ import Combine
 
 final class MockBLECentralManager: BLECentralManager {
     
+    private var _state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
+    var state: AnyPublisher<ManagerState, Never> {
+        _state.eraseToAnyPublisher()
+    }
+    
     var centralManager: CBCentralManagerWrapper = MockCBCentralManagerWrapper()
     
     var isScanning: Bool = false
@@ -62,10 +67,10 @@ final class MockBLECentralManager: BLECentralManager {
     }
     
     var cancelPeripheralConnectionWasCalledCount = 0
-    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Bool, BLEError> {
+    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never> {
         cancelPeripheralConnectionWasCalledCount += 1
         
-        return Just.init(false).setFailureType(to: BLEError.self).eraseToAnyPublisher()
+        return Empty(completeImmediately: true).eraseToAnyPublisher()
     }
     
     var registerForConnectionEventsWasCalledCount = 0

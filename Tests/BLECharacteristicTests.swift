@@ -48,5 +48,14 @@ class BLECharacteristicTests: XCTestCase {
         
         XCTAssertTrue(blePeripheralMock.setNotifyValueWasCalled)
     }
+    
+    func testWriteValue() {
+        let cbCharacteristic = CBMutableCharacteristic(type: CBUUID.init(string: "0x0000"), properties: CBCharacteristicProperties.init(), value: Data(), permissions: CBAttributePermissions.init())
+        let sut = BLECharacteristic(value: cbCharacteristic, peripheral: blePeripheralMock)
+        
+        _ = sut.writeValue(Data(), type: .withResponse)
+        
+        XCTAssertTrue(blePeripheralMock.writeValueWasCalled)
+    }
 
 }
