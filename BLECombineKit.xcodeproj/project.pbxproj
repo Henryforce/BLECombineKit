@@ -53,6 +53,9 @@
 		39E7B705245ED6840065044C /* ActionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7B704245ED6840065044C /* ActionState.swift */; };
 		39E7B708245EDA320065044C /* BLECombineKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7B707245EDA320065044C /* BLECombineKit.swift */; };
 		486C7B6226E90D3F0061CC52 /* CombineExt in Frameworks */ = {isa = PBXBuildFile; productRef = 486C7B6126E90D3F0061CC52 /* CombineExt */; };
+		48747E5527906B6700B93223 /* BLEPeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48059531269C8C51001FD18D /* BLEPeripheralManager.swift */; };
+		48747E5827906B6A00B93223 /* BLEPeripheralManagerDelegateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48059535269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift */; };
+		48747E5B27906B6C00B93223 /* StartAdvertisingResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48059539269C9986001FD18D /* StartAdvertisingResult.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -549,9 +552,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4805953A269C9986001FD18D /* StartAdvertisingResult.swift in Sources */,
+				48747E5B27906B6C00B93223 /* StartAdvertisingResult.swift in Sources */,
 				39AC63F7245D12DE0024D677 /* BLECharacteristic.swift in Sources */,
-				48059536269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift in Sources */,
+				48747E5827906B6A00B93223 /* BLEPeripheralManagerDelegateWrapper.swift in Sources */,
 				39AC63EF245D12B40024D677 /* CBPeripheralWrapper.swift in Sources */,
 				39AC63F4245D12D00024D677 /* ManagerState.swift in Sources */,
 				39BE8C92245D5E54004F73DD /* BLEScanResult.swift in Sources */,
@@ -566,7 +569,7 @@
 				39AC63F5245D12D00024D677 /* BLECentralManagerDelegate.swift in Sources */,
 				39E7B708245EDA320065044C /* BLECombineKit.swift in Sources */,
 				39AC63EB245D12A90024D677 /* BLEPeripheral.swift in Sources */,
-				48059532269C8C51001FD18D /* BLEPeripheralManager.swift in Sources */,
+				48747E5527906B6700B93223 /* BLEPeripheralManager.swift in Sources */,
 				39BE8C1B245D23A1004F73DD /* CBCentralManagerWrapper.swift in Sources */,
 				39AC63E4245D12890024D677 /* BLEData.swift in Sources */,
 			);
