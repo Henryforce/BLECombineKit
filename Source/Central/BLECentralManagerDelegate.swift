@@ -13,7 +13,7 @@ public final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate
     
     let didConnectPeripheral = PassthroughSubject<CBPeripheralWrapper, Never>()
     let didDisconnectPeripheral = PassthroughSubject<CBPeripheralWrapper, Never>()
-    let didFailToConnect = PassthroughSubject<CBPeripheralWrapper, Error>()
+    let didFailToConnect = PassthroughSubject<CBPeripheralWrapper, Never>()
     let didDiscoverAdvertisementData = PassthroughSubject<DidDiscoverAdvertisementDataResult, Never>()
     let didUpdateState = PassthroughSubject<ManagerState, Never>()
     let willRestoreState = PassthroughSubject<[String: Any], Never>()

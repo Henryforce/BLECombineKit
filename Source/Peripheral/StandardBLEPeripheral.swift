@@ -47,21 +47,33 @@ final public class StandardBLEPeripheral: BLETrackedPeripheral {
     public func connect(
         with options: [String: Any]?
     ) -> AnyPublisher<BLEPeripheral, BLEError> {
-        centralManager?.connect(peripheralWrapper: peripheral, options: options)
-        connectCancellable?.cancel()
         return Future<BLEPeripheral, BLEError> { [weak self] promise in
             guard let self = self else { return }
-            self.connectCancellable = self.connectionState
-                .filter { $0 == true }
-                .tryMap { [weak self] _ -> BLEPeripheral in
-                    guard let self = self else { throw BLEError.deallocated }
-                    return self
-                }.sink(receiveCompletion: { completion in
-                    guard case .failure = completion else { return }
-                    promise(.failure(BLEError.peripheral(.connectionFailure)))
-                }, receiveValue: { value in
-                    promise(.success(value))
-                })
+            self.connectCancellable?.cancel()
+            
+            let makeDisconnected: AnyPublisher<Never, Never>
+            if self.connectionState.value {
+                makeDisconnected = self.disconnect().ignoreFailure()
+            } else {
+                makeDisconnected = Empty().eraseToAnyPublisher()
+            }
+            
+            self.connectCancellable = makeDisconnected
+                .handleEvents(
+                    receiveCompletion: { _ in
+                        self.centralManager?.connect(peripheralWrapper: self.peripheral, options: options)
+                    }
+                )
+                .setOutputType(to: Bool.self)
+                .append(self.connectionState.dropFirst().first())
+                .sink { successfullyConnected in
+                    if successfullyConnected {
+                        promise(.success(self))
+                    } else {
+                        promise(.failure(BLEError.peripheral(.connectionFailure)))
+                    }
+                }
+                
         }.eraseToAnyPublisher()
     }
     
