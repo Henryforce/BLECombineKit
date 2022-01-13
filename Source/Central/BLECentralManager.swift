@@ -22,6 +22,7 @@ public protocol BLECentralManager: AnyObject {
     func stopScan()
     func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?)
     func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never>
+    
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
     func observeWillRestoreState() -> AnyPublisher<[String: Any], Never>
     func observeDidUpdateANCSAuthorization() -> AnyPublisher<BLEPeripheral, Never>

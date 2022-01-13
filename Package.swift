@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "BLECombineKit",
     platforms: [
-        .macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)
+        .iOS(.v13)
     ],
     products: [
         .library(name: "BLECombineKit", targets: ["BLECombineKit"])
@@ -19,18 +19,25 @@ let package = Package(
     ],
     targets: [
         .target(
-                name: "BLECombineKit",
-                dependencies: ["CombineExt"],
-                path: ".",
-                exclude: [
-                    "Source/BLECombineKit.h",
-                    "Source/Info.plist",
-                    "BLECombineExplorer",
-                    "Tests"
-                ],
-                sources: [
-                    "Source"
-                ]
-            )
+            name: "BLECombineKit",
+            dependencies: ["CombineExt"],
+            path: ".",
+            exclude: [
+                "Source/BLECombineKit.h",
+                "Source/Info.plist",
+                "BLECombineExplorer",
+                "Tests"
+            ],
+            sources: [
+                "Source"
+            ]
+        ),
+        .testTarget(
+            name: "BLECombineKitTests",
+            dependencies: [
+                "BLECombineKit",
+            ],
+            path: "Tests"
+        ),
     ]
 )

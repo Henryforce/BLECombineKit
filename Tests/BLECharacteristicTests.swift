@@ -10,7 +10,7 @@ import XCTest
 import CoreBluetooth
 @testable import BLECombineKit
 
-class BLECharacteristicTests: XCTestCase {
+final class BLECharacteristicTests: XCTestCase {
 
     var blePeripheralMock: MockBLEPeripheral!
     
