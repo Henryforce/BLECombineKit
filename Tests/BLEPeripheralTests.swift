@@ -11,7 +11,7 @@ import CoreBluetooth
 import Combine
 @testable import BLECombineKit
 
-class BLEPeripheralTests: XCTestCase {
+final class BLEPeripheralTests: XCTestCase {
 
     var sut: StandardBLEPeripheral!
     var delegate: BLEPeripheralDelegate!

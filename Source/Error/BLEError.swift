@@ -21,7 +21,8 @@ extension CBATTError: Hashable, Identifiable {
     public var id: Self { self }
 }
 
-public enum BLEError: Error, Hashable, Identifiable, CustomStringConvertible {
+public enum BLEError: Error, CustomStringConvertible {
+    
     public enum CoreBluetoothError: Error, Hashable, Identifiable, CustomStringConvertible {
         case base(code: CBError.Code, description: String), ATT(code: CBATTError.Code, description: String), other(error: NSError)
         
@@ -97,6 +98,14 @@ public enum BLEError: Error, Hashable, Identifiable, CustomStringConvertible {
     
     public var id: Self { self }
     
+    case advertisingInProgress
+    
+    case advertisingStartFailed(Error)
+    
+    case addingServiceFailed(CBMutableService, Error)
+    
+    case publishingL2CAPChannelFailed(CBL2CAPPSM, Error)
+    
     /// Generic error for handling `unknown` cases.
     case unknown
     
@@ -117,6 +126,10 @@ public enum BLEError: Error, Hashable, Identifiable, CustomStringConvertible {
     
     public var description: String {
         switch(self) {
+        case .advertisingInProgress: return "Advertising in Progress"
+        case .advertisingStartFailed(let error): return "Advertising failed to start with error: \(error)"
+        case .addingServiceFailed(let service, let error): return "Adding service \(service) failed with error: \(error)"
+        case .publishingL2CAPChannelFailed(_, let error): return "Publishing L2CAPChannel failed with error: \(error)"
         case .unknown: return "Unknown error"
         case .deallocated: return "Deallocated"
         case .managerState(let error): return "Manager state error: \(error)"

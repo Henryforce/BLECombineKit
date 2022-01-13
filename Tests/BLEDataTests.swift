@@ -9,7 +9,7 @@
 import XCTest
 @testable import BLECombineKit
 
-class BLEDataTests: XCTestCase {
+final class BLEDataTests: XCTestCase {
 
     var mockupPeripheral: MockBLEPeripheral!
     

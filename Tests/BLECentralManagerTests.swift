@@ -11,7 +11,7 @@ import CoreBluetooth
 import Combine
 @testable import BLECombineKit
 
-class BLECentralManagerTests: XCTestCase {
+final class BLECentralManagerTests: XCTestCase {
 
     var sut: BLECentralManager!
     var delegate: BLECentralManagerDelegate!

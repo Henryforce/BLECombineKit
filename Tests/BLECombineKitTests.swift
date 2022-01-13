@@ -9,7 +9,7 @@
 import XCTest
 import BLECombineKit
 
-class BLECombineKitTests: XCTestCase {
+final class BLECombineKitTests: XCTestCase {
     
     func testBLECombineKitInitReturnsBLECentralManager() throws {
         let bleCentralManager = BLECombineKit.buildCentralManager()
