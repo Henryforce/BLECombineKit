@@ -83,6 +83,15 @@ final class StandardBLECentralManager: BLECentralManager {
             }.store(in: &cancellables)
     }
     
+    func observeDidFailToConnectPeripheral() {
+        delegate
+            .didFailToConnect
+            .sink { [weak self] result in
+                guard let self = self else { return }
+                self.peripheralProvider.provide(for: result, centralManager: self).connectionState.send(false)
+            }.store(in: &cancellables)
+    }
+    
     func observeDidDisconnectPeripheral() {
         delegate
             .didDisconnectPeripheral
@@ -162,6 +171,7 @@ final class StandardBLECentralManager: BLECentralManager {
     private func subscribeToDelegate() {
         observeUpdateState()
         observeDidConnectPeripheral()
+        observeDidFailToConnectPeripheral()
         observeDidDisconnectPeripheral()
     }
     
