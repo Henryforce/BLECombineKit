@@ -1,6 +1,6 @@
 # BLECombineKit
 
-![badge-platforms][] [![badge-spm][]][spm]
+![badge-platforms][] [![badge-carthage][]][carthage] [![badge-spm][]][spm]
 
 CoreBluetooth abstraction layer for iOS development environment. Powered by Combine.
 
@@ -40,6 +40,15 @@ centralManager.scanForPeripherals(withServices: nil, options: nil)
 You can reference the sample project inside the repository to see the library in action with SwiftUI.
 
 # Installation
+
+## Carthage
+
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
+To integrate CombineBluetoothKit into your Xcode project using Carthage  specify it in your `Cartfile`:
+```swift
+github "Henryforce/BLECombineKit"
+```
+Then, run `carthage update` to build framework and drag `CombineBluetoothKit.framework` into your Xcode project.
 
 ## Swift Package Manager
 
