@@ -11,12 +11,16 @@ import CoreBluetooth
 import Combine
 @testable import BLECombineKit
 
-final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
+final class MockBLEPeripheral: BLETrackedPeripheral {
     let connectionState = CurrentValueSubject<Bool, Never>(false)
     var peripheral: CBPeripheralWrapper
     
     init() {
         self.peripheral = MockCBPeripheralWrapper()
+    }
+    
+    init(peripheral: MockCBPeripheralWrapper) {
+        self.peripheral = peripheral
     }
     
     public func observeConnectionState() -> AnyPublisher<Bool, Never> {
@@ -26,8 +30,8 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
     var connectWasCalled = false
     func connect(with options: [String : Any]?) -> AnyPublisher<BLEPeripheral, BLEError> {
         connectWasCalled = true
-        let blePeripheral = StandardBLEPeripheral(peripheral: peripheral, centralManager: nil)
-        return Just.init(blePeripheral)
+        self.connectionState.send(true)
+        return Just.init(self)
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()
     }
@@ -35,6 +39,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
     var disconnectWasCalled = false
     func disconnect() -> AnyPublisher<Never, BLEError> {
         disconnectWasCalled = true
+        self.connectionState.send(false)
         return Empty(completeImmediately: true).eraseToAnyPublisher()
     }
     

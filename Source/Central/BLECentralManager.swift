@@ -38,6 +38,8 @@ final class StandardBLECentralManager: BLECentralManager {
     
     private var cancellables = [AnyCancellable]()
     
+    private var connectedPeripherals: [UUID: BLETrackedPeripheral] = [:]
+    
     var isScanning: Bool {
         centralManager.isScanning
     }
@@ -67,10 +69,16 @@ final class StandardBLECentralManager: BLECentralManager {
         self.init(centralManager: centralManagerWrapper, managerDelegate: BLECentralManagerDelegate())
     }
     
-    func observeUpdateState() {
+    private func observeUpdateState() {
         delegate
             .didUpdateState
-            .sink { self.stateSubject.send($0) }
+            .sink { state in
+                self.stateSubject.send(state)
+                for p in self.connectedPeripherals.values {
+                    p.connectionState.send(false)
+                }
+                self.connectedPeripherals.removeAll()
+            }
             .store(in: &cancellables)
     }
     
@@ -79,7 +87,9 @@ final class StandardBLECentralManager: BLECentralManager {
             .didConnectPeripheral
             .sink { [weak self] result in
                 guard let self = self else { return }
-                self.peripheralProvider.provide(for: result, centralManager: self).connectionState.send(true)
+                let p = self.peripheralProvider.provide(for: result, centralManager: self)
+                p.connectionState.send(true)
+                self.connectedPeripherals[p.peripheral.identifier] = p
             }.store(in: &cancellables)
     }
     
@@ -97,18 +107,37 @@ final class StandardBLECentralManager: BLECentralManager {
             .didDisconnectPeripheral
             .sink { [weak self] result in
                 guard let self = self else { return }
-                self.peripheralProvider.provide(for: result, centralManager: self).connectionState.send(false)
+                let p = self.peripheralProvider.provide(for: result, centralManager: self)
+                p.connectionState.send(false)
+                self.connectedPeripherals[p.peripheral.identifier] = nil
             }.store(in: &cancellables)
     }
     
+    private func waitUntilPoweredOn() -> AnyPublisher<CBCentralManagerWrapper, BLEError> {
+        if self.stateSubject.value == .poweredOn {
+            return Just(centralManager).setFailureType(to: BLEError.self).eraseToAnyPublisher()
+        } else {
+            return self.stateSubject
+                .filter({ $0 == .poweredOn })
+                .first()
+                .map { _ in self.centralManager }
+                .setFailureType(to: BLEError.self)
+                .eraseToAnyPublisher()
+        }
+    }
+    
     public func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
-        let retrievedPeripherals = centralManager.retrievePeripherals(withIdentifiers: identifiers)
-        return observePeripherals(from: retrievedPeripherals)
+        return waitUntilPoweredOn().flatMap { wrapper -> AnyPublisher<BLEPeripheral, BLEError> in
+            let retrievedPeripherals = wrapper.retrievePeripherals(withIdentifiers: identifiers)
+            return self.observePeripherals(from: retrievedPeripherals)
+        }.eraseToAnyPublisher()
     }
     
     public func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
-        let retrievedPeripherals = centralManager.retrieveConnectedPeripherals(withServices: serviceUUIDs)
-        return observePeripherals(from: retrievedPeripherals)
+        return waitUntilPoweredOn().flatMap { wrapper -> AnyPublisher<BLEPeripheral, BLEError> in
+            let retrievedPeripherals = wrapper.retrieveConnectedPeripherals(withServices: serviceUUIDs)
+            return self.observePeripherals(from: retrievedPeripherals)
+        }.eraseToAnyPublisher()
     }
     
     public func scanForPeripherals(withServices services: [CBUUID]?,
