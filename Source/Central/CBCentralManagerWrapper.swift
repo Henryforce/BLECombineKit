@@ -12,6 +12,7 @@ import CoreBluetooth
 public protocol CBCentralManagerWrapper {
     var manager: CBCentralManager? { get }
     var isScanning: Bool { get }
+    var state: CBManagerState { get }
     
     func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper]
     func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper]
@@ -30,6 +31,10 @@ final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
     
     var isScanning: Bool {
         wrappedManager.isScanning
+    }
+    
+    var state: CBManagerState {
+        wrappedManager.state
     }
     
     let wrappedManager: CBCentralManager
