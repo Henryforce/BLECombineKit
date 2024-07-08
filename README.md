@@ -24,9 +24,13 @@ import BLECombineKit
 
 let centralManager = BLECombineKit.buildCentralManager(with: CBCentralManager())
 
-centralManager.scanForPeripherals(withServices: nil, options: nil)
+let serviceUUID = CBUUID(string: "0x00FF")
+// Connect to the first peripheral that matches the given service UUID and observe all the
+// characteristics in that service.
+centralManager.scanForPeripherals(withServices: [serviceUUID], options: nil)
     .first()
-    .flatMap { $0.peripheral.discoverServices(serviceUUIDs: nil) }
+    .flatMap { $0.peripheral.connect(with: nil) }
+    .flatMap { $0.discoverServices(serviceUUIDs: [serviceUUID]) }
     .flatMap { $0.discoverCharacteristics(characteristicUUIDs: nil) }
     .flatMap { $0.observeValue() }
     .sink(receiveCompletion: { completion in
