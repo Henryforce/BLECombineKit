@@ -877,7 +877,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"BLECombineExplorer/Preview Content\"";
-				DEVELOPMENT_TEAM = 7XA6R6R3H2;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = BLECombineExplorer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -900,7 +900,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"BLECombineExplorer/Preview Content\"";
-				DEVELOPMENT_TEAM = 7XA6R6R3H2;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = BLECombineExplorer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
