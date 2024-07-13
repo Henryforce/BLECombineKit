@@ -44,7 +44,9 @@ final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
             .map { StandardCBPeripheralWrapper(peripheral: $0) }
     }
     
-    func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper] {
+    func retrieveConnectedPeripherals(
+      withServices serviceUUIDs: [CBUUID]
+    ) -> [CBPeripheralWrapper] {
         wrappedManager
             .retrieveConnectedPeripherals(withServices: serviceUUIDs)
             .map { StandardCBPeripheralWrapper(peripheral: $0) }

@@ -11,20 +11,50 @@ import CoreBluetooth
 import Combine
 import CombineExt
 
+/// Interface definining the Bluetooth Central Manager that provides Combine APIs.
 public protocol BLECentralManager: AnyObject {
+    // TODO: change type to be CBCentralManager?, no need to expose the wrapper.
+    /// Reference to the actual Bluetooth Manager.
     var centralManager: CBCentralManagerWrapper { get }
+  
+    /// The latest scanning status.
     var isScanning: Bool { get }
+  
+    /// The current state as a publisher.
     var state: AnyPublisher<ManagerState, Never> { get }
     
+    /// Retrieve peripherals given a set of identifiers.
+    /// This method will generate events for any matching peripheral or an error.
     func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheral, BLEError>
+  
+    /// Retrieve connected peripherals given a set of service identifiers.
+    /// This method will generate events for any matching peripheral or an error.
     func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheral, BLEError>
+  
+    /// Start scanning for peripherals given a set of service identifiers and options.
+    /// This method will generate scan result events or an error.
     func scanForPeripherals(withServices services: [CBUUID]?, options: [String: Any]?) -> AnyPublisher<BLEScanResult, BLEError>
+  
+    /// Stop scanning.
     func stopScan()
+  
+    // TODO: update method to accept a BLEPeripheral instead of a CBPeripheralWrapper and make
+    // it return an event.
     func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?)
+  
+    // TODO: update method to accept a BLEPeripheral instead of a CBPeripheralWrapper.
     func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never>
     
+    /// Register for any connection events.
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
+  
+    /// Observe for any changes to the willRestoreState.
+    /// This method will generate an event for each update to willRestoreState, if any.
     func observeWillRestoreState() -> AnyPublisher<[String: Any], Never>
+  
+    /// Observe any update to the ANCS authorization.
+    /// This method will trigger an event for any call to the delegate method
+    /// `didUpdateANCSAuthorizationFor`.
     func observeDidUpdateANCSAuthorization() -> AnyPublisher<BLEPeripheral, Never>
 }
 
@@ -101,18 +131,24 @@ final class StandardBLECentralManager: BLECentralManager {
             }.store(in: &cancellables)
     }
     
-    public func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
+    public func retrievePeripherals(
+      withIdentifiers identifiers: [UUID]
+    ) -> AnyPublisher<BLEPeripheral, BLEError> {
         let retrievedPeripherals = centralManager.retrievePeripherals(withIdentifiers: identifiers)
         return observePeripherals(from: retrievedPeripherals)
     }
     
-    public func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> AnyPublisher<BLEPeripheral, BLEError> {
+    public func retrieveConnectedPeripherals(
+      withServices serviceUUIDs: [CBUUID]
+    ) -> AnyPublisher<BLEPeripheral, BLEError> {
         let retrievedPeripherals = centralManager.retrieveConnectedPeripherals(withServices: serviceUUIDs)
         return observePeripherals(from: retrievedPeripherals)
     }
     
-    public func scanForPeripherals(withServices services: [CBUUID]?,
-                                   options: [String: Any]?) -> AnyPublisher<BLEScanResult, BLEError> {
+    public func scanForPeripherals(
+      withServices services: [CBUUID]?,
+      options: [String: Any]?
+    ) -> AnyPublisher<BLEScanResult, BLEError> {
         self.centralManager.scanForPeripherals(withServices: services, options: options)
         
         return self.delegate
@@ -139,7 +175,9 @@ final class StandardBLECentralManager: BLECentralManager {
         centralManager.connect(peripheralWrapper, options: options)
     }
     
-    public func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never> {
+    public func cancelPeripheralConnection(
+      _ peripheral: CBPeripheralWrapper
+    ) -> AnyPublisher<Never, Never> {
         centralManager.cancelPeripheralConnection(peripheral)
         
         return delegate.didDisconnectPeripheral
@@ -175,7 +213,9 @@ final class StandardBLECentralManager: BLECentralManager {
         observeDidDisconnectPeripheral()
     }
     
-    private func observePeripherals(from retrievedPeripherals: [CBPeripheralWrapper]) -> AnyPublisher<BLEPeripheral, BLEError>{
+    private func observePeripherals(
+      from retrievedPeripherals: [CBPeripheralWrapper]
+    ) -> AnyPublisher<BLEPeripheral, BLEError>{
         let peripherals = retrievedPeripherals
             .compactMap { [weak self]  peripheral -> BLEPeripheral? in
                 guard let self = self else { return nil }
