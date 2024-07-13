@@ -21,24 +21,28 @@ typealias DidWriteValueForCharacteristicResult = (peripheral: CBPeripheralWrappe
 
 final class BLEPeripheralDelegate: NSObject {
     
-    // name updated
+    /// Subject for the name update callback.
     let didUpdateName = PassthroughSubject<DidUpdateName, Never>()
     
-    // Discovering Services
+    /// Subject used for the discover services callback.
     let didDiscoverServices = PassthroughSubject<DidDiscoverServicesResult, Error>()
     
-    // Discovering Characteristics and their Descriptors
+    /// Subject used for the discover characteristics callback.
     let didDiscoverCharacteristics = PassthroughSubject<DidDiscoverCharacteristicsResult, Error>()
+  
+    /// Subject used for the discover descriptors callback.
     let didDiscoverDescriptors = PassthroughSubject<DidDiscoverDescriptorForCharacteristicResult, Error>()
   
-    // Retrieving Characteristic and Descriptor Values
+    /// Subject used for the update value of a characteristic callback.
     let didUpdateValueForCharacteristic = PassthroughSubject<DidUpdateValueForCharacteristicResult, Error>()
+    
+    /// Subject used for the update value of a characteristic descriptor callback.
     let didUpdateValueForDescriptor = PassthroughSubject<DidUpdateValueForDescriptorResult, Error>()
     
-    // Retrieving a Peripheral’s RSSI Data
+    /// Subject used for the update value of the RSSI callback.
     let didReadRSSI = PassthroughSubject<DidReadRSSIResult, Error>()
     
-    // Writing Characteristic and Descriptor Values
+    /// Subject used for the didWrite callback.
     let didWriteValueForCharacteristic = PassthroughSubject<DidWriteValueForCharacteristicResult, Error>()
     
 }
@@ -56,22 +60,38 @@ extension BLEPeripheralDelegate: CBPeripheralDelegate {
         didDiscoverServices.send((peripheral: peripheralWrapper, error: error))
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+    func peripheral(
+      _ peripheral: CBPeripheral,
+      didDiscoverCharacteristicsFor service: CBService,
+      error: Error?
+    ) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         didDiscoverCharacteristics.send((peripheral: peripheralWrapper, service: service, error: error))
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverDescriptorsFor characteristic: CBCharacteristic, error: Error?) {
+    func peripheral(
+      _ peripheral: CBPeripheral,
+      didDiscoverDescriptorsFor characteristic: CBCharacteristic,
+      error: Error?
+    ) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         didDiscoverDescriptors.send((peripheral: peripheralWrapper, characteristic: characteristic, error: error))
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+    func peripheral(
+      _ peripheral: CBPeripheral,
+      didUpdateValueFor characteristic: CBCharacteristic,
+      error: Error?
+    ) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         didUpdateValueForCharacteristic.send((peripheral: peripheralWrapper, characteristic: characteristic, error: error))
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor descriptor: CBDescriptor, error: Error?) {
+    func peripheral(
+      _ peripheral: CBPeripheral,
+      didUpdateValueFor descriptor: CBDescriptor,
+      error: Error?
+    ) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         didUpdateValueForDescriptor.send((peripheral: peripheralWrapper, descriptor: descriptor, error: error))
     }
@@ -81,7 +101,11 @@ extension BLEPeripheralDelegate: CBPeripheralDelegate {
         didReadRSSI.send((peripheral: peripheralWrapper, rssi: RSSI, error: error))
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+    func peripheral(
+      _ peripheral: CBPeripheral,
+      didWriteValueFor characteristic: CBCharacteristic,
+      error: Error?
+    ) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         didWriteValueForCharacteristic.send((peripheral: peripheralWrapper, characteristic: characteristic, error: error))
     }

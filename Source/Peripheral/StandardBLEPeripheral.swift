@@ -11,12 +11,25 @@ import CoreBluetooth
 
 final public class StandardBLEPeripheral: BLETrackedPeripheral {
     
+    /// Subject used for tracking the lateset connection state.
     let connectionState = CurrentValueSubject<Bool, Never>(false)
+  
+    /// Wrapper for the CBPeripheral associated to this class.
     public let peripheral: CBPeripheralWrapper
+  
+    /// Reference to the wrapper delegate used for tracking BLE events.
     private let delegate: BLEPeripheralDelegate
+  
+    /// Reference to te BLECentralManager.
     private weak var centralManager: BLECentralManager?
+  
+    /// Cancellable reference to the connect publisher.
     private var connectCancellable: AnyCancellable?
+  
+    /// Cancellable reference to the discoverServices publisher.
     private var discoverServicesCancellable: AnyCancellable?
+  
+    /// Cancellable reference to the discoverCharacteristics publisher.
     private var discoverCharacteristicsCancellable: AnyCancellable?
     
     init(

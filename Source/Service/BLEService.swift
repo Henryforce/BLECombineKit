@@ -19,7 +19,9 @@ public struct BLEService: BLEPeripheralResult {
        self.peripheral = peripheral
     }
     
-    public func discoverCharacteristics(characteristicUUIDs: [CBUUID]?) -> AnyPublisher<BLECharacteristic, BLEError> {
+    public func discoverCharacteristics(
+      characteristicUUIDs: [CBUUID]?
+    ) -> AnyPublisher<BLECharacteristic, BLEError> {
         return peripheral.discoverCharacteristics(characteristicUUIDs: characteristicUUIDs, for: value)
     }
 }

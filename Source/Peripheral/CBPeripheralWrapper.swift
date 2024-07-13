@@ -86,7 +86,11 @@ final class StandardCBPeripheralWrapper: CBPeripheralWrapper {
         self.wrappedPeripheral.maximumWriteValueLength(for: type)
     }
     
-    func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) {
+    func writeValue(
+      _ data: Data,
+      for characteristic: CBCharacteristic,
+      type: CBCharacteristicWriteType
+    ) {
         self.wrappedPeripheral.writeValue(data, for: characteristic, type: type)
     }
     

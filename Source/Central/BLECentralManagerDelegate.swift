@@ -24,17 +24,30 @@ public final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate
         didConnectPeripheral.send(peripheralWrapper)
     }
 
-    public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+    public func centralManager(
+      _ central: CBCentralManager,
+      didDisconnectPeripheral peripheral: CBPeripheral,
+      error: Error?
+    ) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         didDisconnectPeripheral.send(peripheralWrapper)
     }
 
-    public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+    public func centralManager(
+      _ central: CBCentralManager,
+      didFailToConnect peripheral: CBPeripheral,
+      error: Error?
+    ) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         didFailToConnect.send(peripheralWrapper)
     }
 
-    public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+    public func centralManager(
+      _ central: CBCentralManager,
+      didDiscover peripheral: CBPeripheral,
+      advertisementData: [String : Any],
+      rssi RSSI: NSNumber
+    ) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         let result = (peripheral: peripheralWrapper, advertisementData: advertisementData, rssi: RSSI)
         didDiscoverAdvertisementData.send(result)
@@ -45,11 +58,17 @@ public final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate
         didUpdateState.send(state)
     }
     
-    public func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]) {
+    public func centralManager(
+      _ central: CBCentralManager,
+      willRestoreState dict: [String : Any]
+    ) {
         willRestoreState.send(dict)
     }
     
-    public func centralManager(_ central: CBCentralManager, didUpdateANCSAuthorizationFor peripheral: CBPeripheral) {
+    public func centralManager(
+      _ central: CBCentralManager,
+      didUpdateANCSAuthorizationFor peripheral: CBPeripheral
+    ) {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         didUpdateANCSAuthorization.send(peripheralWrapper)
     }
