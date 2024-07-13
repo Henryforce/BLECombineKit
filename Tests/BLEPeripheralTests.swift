@@ -54,15 +54,21 @@ final class BLEPeripheralTests: XCTestCase {
     }
 
     func testConnectCallsCentralManagerToConnectPeripheral() throws {
+        // Given
+        let associatedManager = MockCBCentralManagerWrapper()
+        centralManager.associatedCentralManager = associatedManager
+      
         // When
         _ = sut.connect(with: nil)
 
         // Then
-        XCTAssertEqual(centralManager.connectWasCalledCount, 1)
+        XCTAssertEqual(associatedManager.connectWasCalledCount, 1)
     }
     
     func testConnectCallsCentralManagerToConnectPeripheralAndReturnsWhenConnectionStateIsTrue() throws {
         // Given
+        let associatedManager = MockCBCentralManagerWrapper()
+        centralManager.associatedCentralManager = associatedManager
         let expectation = XCTestExpectation(description: #function)
         var expectedPeripheral: BLETrackedPeripheral?
         
@@ -79,7 +85,7 @@ final class BLEPeripheralTests: XCTestCase {
         // Then
         wait(for: [expectation], timeout: 0.005)
         XCTAssertTrue(expectedPeripheral?.connectionState.value ?? false)
-        XCTAssertEqual(centralManager.connectWasCalledCount, 1)
+        XCTAssertEqual(associatedManager.connectWasCalledCount, 1)
     }
     
     func testDiscoverServicesReturnsWhenPeripheralAlreadyFoundServices() throws {

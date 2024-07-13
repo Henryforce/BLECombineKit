@@ -12,9 +12,8 @@ import Combine
 
 /// Interface definining the Bluetooth Peripheral that provides Combine APIs.
 public protocol BLEPeripheral {
-    // TODO: change type to be CBPeripheral?, no need to expose the wrapper.
-    /// Reference to the actual Bluetooth peripheral.
-    var peripheral: CBPeripheralWrapper { get }
+    /// Reference to the actual Bluetooth peripheral, via a wrapper.
+    var associatedPeripheral: CBPeripheralWrapper { get }
 
     /// Observe the connection state of the peripheral.
     func observeConnectionState() -> AnyPublisher<Bool, Never>

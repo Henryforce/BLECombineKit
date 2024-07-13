@@ -13,10 +13,10 @@ import Combine
 
 final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
     let connectionState = CurrentValueSubject<Bool, Never>(false)
-    var peripheral: CBPeripheralWrapper
+    var associatedPeripheral: CBPeripheralWrapper
     
     init() {
-        self.peripheral = MockCBPeripheralWrapper()
+        self.associatedPeripheral = MockCBPeripheralWrapper()
     }
     
     public func observeConnectionState() -> AnyPublisher<Bool, Never> {
@@ -26,7 +26,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
     var connectWasCalled = false
     func connect(with options: [String : Any]?) -> AnyPublisher<BLEPeripheral, BLEError> {
         connectWasCalled = true
-        let blePeripheral = StandardBLEPeripheral(peripheral: peripheral, centralManager: nil)
+        let blePeripheral = StandardBLEPeripheral(peripheral: associatedPeripheral, centralManager: nil)
         return Just.init(blePeripheral)
             .setFailureType(to: BLEError.self)
             .eraseToAnyPublisher()

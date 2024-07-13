@@ -9,7 +9,7 @@ import Combine
 
 typealias DidDiscoverAdvertisementDataResult = (peripheral: CBPeripheralWrapper, advertisementData: [String: Any], rssi: NSNumber)
 
-public final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
+final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
     
     let didConnectPeripheral = PassthroughSubject<CBPeripheralWrapper, Never>()
     let didDisconnectPeripheral = PassthroughSubject<CBPeripheralWrapper, Never>()

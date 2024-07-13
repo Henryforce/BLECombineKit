@@ -9,8 +9,10 @@
 import Foundation
 import CoreBluetooth
 
-public final class BLECombineKit {
-    static public func buildCentralManager(with centralManager: CBCentralManager? = nil) -> some BLECentralManager {
+public enum BLECombineKit {
+    static public func buildCentralManager(
+      with centralManager: CBCentralManager? = nil
+    ) -> BLECentralManager {
         return StandardBLECentralManager(with: centralManager ?? CBCentralManager())
     }
 }
