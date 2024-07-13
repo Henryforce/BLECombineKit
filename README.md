@@ -2,7 +2,7 @@
 
 ![badge-platforms][] [![badge-carthage][]][carthage] [![badge-spm][]][spm]
 
-CoreBluetooth abstraction layer for iOS development environment. Powered by Combine.
+CoreBluetooth abstraction layer for iOS, macOS, TvOS, WatchOS and VisionOS development environments.
 
 - Swift Concurrency compatible
 - SwiftUI compatible
@@ -11,6 +11,11 @@ CoreBluetooth abstraction layer for iOS development environment. Powered by Comb
 It is currently supported on:
 
 iOS 13.0+
+macOS 10.15+
+Mac Catalyst 13.0+
+tvOS 13.0+
+watchOS 6.0+
+visionOS 1.0+
 
 # How to use
 

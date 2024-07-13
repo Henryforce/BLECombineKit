@@ -9,7 +9,6 @@
 import Foundation
 import CoreBluetooth
 import Combine
-import CombineExt
 
 /// Interface definining the Bluetooth Central Manager that provides Combine APIs.
 public protocol BLECentralManager: AnyObject {

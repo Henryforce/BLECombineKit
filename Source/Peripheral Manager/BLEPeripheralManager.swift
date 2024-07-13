@@ -9,7 +9,6 @@
 import Foundation
 import CoreBluetooth
 import Combine
-import CombineExt
 
 /// BLEPeripheralManager is a class implementing ReactiveX API which wraps all the Core Bluetooth Peripheral's functions, that allow to
 /// advertise, to publish L2CAP channels and more.

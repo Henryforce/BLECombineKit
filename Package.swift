@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,21 +6,14 @@ import PackageDescription
 let package = Package(
     name: "BLECombineKit",
     platforms: [
-        .iOS(.v13)
+        .macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6), .vision(.v1),
     ],
     products: [
         .library(name: "BLECombineKit", targets: ["BLECombineKit"])
     ],
-    dependencies: [
-        .package(
-            url: "https://github.com/CombineCommunity/CombineExt.git",
-            from: "1.5.1"
-        )
-    ],
     targets: [
         .target(
             name: "BLECombineKit",
-            dependencies: ["CombineExt"],
             path: ".",
             exclude: [
                 "Source/BLECombineKit.h",
