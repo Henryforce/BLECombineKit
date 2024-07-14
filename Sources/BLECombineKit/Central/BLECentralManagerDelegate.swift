@@ -65,7 +65,7 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
         willRestoreState.send(dict)
     }
     
-    
+    #if !os(macOS)
     public func centralManager(
       _ central: CBCentralManager,
       didUpdateANCSAuthorizationFor peripheral: CBPeripheral
@@ -73,5 +73,6 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
         let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
         didUpdateANCSAuthorization.send(peripheralWrapper)
     }
+    #endif
 
 }

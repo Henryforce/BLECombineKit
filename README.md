@@ -2,7 +2,7 @@
 
 ![badge-platforms][] [![badge-spm][]][spm]
 
-CoreBluetooth abstraction layer for the iOS development environment.
+CoreBluetooth abstraction layer for iOS and macOS development environments.
 
 - Swift Concurrency compatible
 - SwiftUI compatible
@@ -11,6 +11,7 @@ CoreBluetooth abstraction layer for the iOS development environment.
 It is currently supported on:
 
 iOS 13.0+
+macOS 10.15+
 
 # How to use
 
@@ -81,7 +82,7 @@ In Xcode, select File --> Swift Packages --> Add Package Dependency and then add
 https://github.com/Henryforce/BLECombineKit
 ```
 
-[badge-platforms]: https://img.shields.io/badge/platforms-iOS%20-lightgrey.svg
+[badge-platforms]: https://img.shields.io/badge/platforms-macOS%20%7C%20iOS%20-lightgrey.svg
 [badge-carthage]: https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat
 [badge-spm]: https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg
 
