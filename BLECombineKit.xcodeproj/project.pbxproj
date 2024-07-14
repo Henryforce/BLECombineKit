@@ -40,8 +40,6 @@
 		39BE8C92245D5E54004F73DD /* BLEScanResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BE8C91245D5E54004F73DD /* BLEScanResult.swift */; };
 		39BE8C94245D6DED004F73DD /* DevicesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BE8C93245D6DED004F73DD /* DevicesViewModel.swift */; };
 		39BE8C96245D6E16004F73DD /* ServicesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BE8C95245D6E16004F73DD /* ServicesViewModel.swift */; };
-		39BE8C98245D7315004F73DD /* BLECombineKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39AC63C4245D07A70024D677 /* BLECombineKit.framework */; };
-		39BE8C9C245D7394004F73DD /* BLECombineKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 39AC63C4245D07A70024D677 /* BLECombineKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		39D66B5225A5FD8000449587 /* StandardBLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D66B5125A5FD8000449587 /* StandardBLEPeripheral.swift */; };
 		39D66B5725A5FE7F00449587 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D66B5625A5FE7F00449587 /* Array+Extensions.swift */; };
 		39DE680A25A03A8900EABBE9 /* BLEPeripheralProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DE680925A03A8900EABBE9 /* BLEPeripheralProvider.swift */; };
@@ -56,6 +54,8 @@
 		39F455CA2C428C290010D865 /* Publishers+SetOutputType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F455C92C428C290010D865 /* Publishers+SetOutputType.swift */; };
 		39F455CC2C428D420010D865 /* Publishers+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F455CB2C428D420010D865 /* Publishers+Create.swift */; };
 		39F455CE2C428DC10010D865 /* Publisher+DemandBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F455CD2C428DC10010D865 /* Publisher+DemandBuffer.swift */; };
+		39F455D12C434A750010D865 /* BLECombineKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39AC63C4245D07A70024D677 /* BLECombineKit.framework */; };
+		39F455D22C434A750010D865 /* BLECombineKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 39AC63C4245D07A70024D677 /* BLECombineKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		48747E5527906B6700B93223 /* BLEPeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48059531269C8C51001FD18D /* BLEPeripheralManager.swift */; };
 		48747E5827906B6A00B93223 /* BLEPeripheralManagerDelegateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48059535269C8ECA001FD18D /* BLEPeripheralManagerDelegateWrapper.swift */; };
 		48747E5B27906B6C00B93223 /* StartAdvertisingResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48059539269C9986001FD18D /* StartAdvertisingResult.swift */; };
@@ -69,7 +69,7 @@
 			remoteGlobalIDString = 39AC63C3245D07A70024D677;
 			remoteInfo = BLECombineKit;
 		};
-		39BE8C8F245D5E37004F73DD /* PBXContainerItemProxy */ = {
+		39F455D32C434A750010D865 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 39AC63BB245D07A70024D677 /* Project object */;
 			proxyType = 1;
@@ -85,7 +85,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				39BE8C9C245D7394004F73DD /* BLECombineKit.framework in Embed Frameworks */,
+				39F455D22C434A750010D865 /* BLECombineKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,7 +174,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				39BE8C98245D7315004F73DD /* BLECombineKit.framework in Frameworks */,
+				39F455D12C434A750010D865 /* BLECombineKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,7 +477,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				39BE8C90245D5E37004F73DD /* PBXTargetDependency */,
+				39F455D42C434A750010D865 /* PBXTargetDependency */,
 			);
 			name = BLECombineExplorer;
 			productName = BLECombineExplorer;
@@ -631,10 +631,10 @@
 			target = 39AC63C3245D07A70024D677 /* BLECombineKit */;
 			targetProxy = 39AC63CF245D07A70024D677 /* PBXContainerItemProxy */;
 		};
-		39BE8C90245D5E37004F73DD /* PBXTargetDependency */ = {
+		39F455D42C434A750010D865 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 39AC63C3245D07A70024D677 /* BLECombineKit */;
-			targetProxy = 39BE8C8F245D5E37004F73DD /* PBXContainerItemProxy */;
+			targetProxy = 39F455D32C434A750010D865 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -776,8 +776,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -803,8 +805,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";

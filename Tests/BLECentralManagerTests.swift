@@ -100,10 +100,10 @@ final class BLECentralManagerTests: XCTestCase {
     
     func testConnectCallsCentralManager() throws {
         // Given
-        let peripheral = MockCBPeripheralWrapper()
+        let peripheral = MockBLEPeripheral()
         
         // When
-        sut.connect(peripheralWrapper: peripheral, options: nil)
+        _ = sut.connect(peripheral: peripheral, options: nil)
         
         // Then
         XCTAssertEqual(centralManagerWrapper.connectWasCalledCount, 1)
@@ -119,7 +119,7 @@ final class BLECentralManagerTests: XCTestCase {
     
     func testCancelPeripheralConnectionCallsCentralManager() throws {
         // Given
-        let peripheral = MockCBPeripheralWrapper()
+        let peripheral = MockBLEPeripheral()
         
         // When
         _ = sut.cancelPeripheralConnection(peripheral)

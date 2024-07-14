@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreBluetooth
-import BLECombineKit
+@testable import BLECombineKit
 import Combine
 
 final class MockBLECentralManager: BLECentralManager {
@@ -18,7 +18,7 @@ final class MockBLECentralManager: BLECentralManager {
         _state.eraseToAnyPublisher()
     }
     
-    var centralManager: CBCentralManagerWrapper = MockCBCentralManagerWrapper()
+    var associatedCentralManager: CBCentralManagerWrapper = MockCBCentralManagerWrapper()
     
     var isScanning: Bool = false
     
@@ -62,12 +62,16 @@ final class MockBLECentralManager: BLECentralManager {
     }
     
     var connectWasCalledCount = 0
-    func connect(peripheralWrapper: CBPeripheralWrapper, options: [String:Any]?) {
+    func connect(
+      peripheral: BLEPeripheral,
+      options: [String: Any]?
+    ) -> AnyPublisher<BLEPeripheral, BLEError> {
         connectWasCalledCount += 1
+        return Empty(completeImmediately: true).eraseToAnyPublisher()
     }
     
     var cancelPeripheralConnectionWasCalledCount = 0
-    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) -> AnyPublisher<Never, Never> {
+    func cancelPeripheralConnection(_ peripheral: BLEPeripheral) -> AnyPublisher<Never, Never> {
         cancelPeripheralConnectionWasCalledCount += 1
         
         return Empty(completeImmediately: true).eraseToAnyPublisher()

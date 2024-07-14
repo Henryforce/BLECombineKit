@@ -25,7 +25,7 @@ final class ServicesViewModel: ObservableObject {
         
         let peripheral = scanResult.peripheral
         
-        name = peripheral.peripheral.name ?? "Unknown"
+        name = peripheral.associatedPeripheral.name ?? "Unknown"
         
         peripheral.connect(with: [:])
             .first()

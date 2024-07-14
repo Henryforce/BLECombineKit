@@ -13,7 +13,7 @@ final class BLECombineKitTests: XCTestCase {
     
     func testBLECombineKitInitReturnsBLECentralManager() throws {
         let bleCentralManager = BLECombineKit.buildCentralManager()
-        XCTAssertNotNil(bleCentralManager.centralManager.manager)
+        XCTAssertNotNil(bleCentralManager.associatedCentralManager)
     }
 
 }

@@ -40,12 +40,12 @@ final class MockCBCentralManagerWrapper: CBCentralManagerWrapper {
     }
     
     var connectWasCalledCount = 0
-    func connect(_ peripheral: CBPeripheralWrapper, options: [String : Any]?) {
+    func connect(_ wrappedPeripheral: CBPeripheralWrapper, options: [String : Any]?) {
         connectWasCalledCount += 1
     }
     
     var cancelPeripheralConnectionWasCalledCount = 0
-    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) {
+    func cancelPeripheralConnection(_ wrappedPeripheral: CBPeripheralWrapper) {
         cancelPeripheralConnectionWasCalledCount += 1
     }
     

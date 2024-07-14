@@ -28,19 +28,20 @@ final class DevicesViewModel: ObservableObject {
     
     func startScanning() {
         scanForPeripheralsCancellable?.cancel()
-        scanForPeripheralsCancellable = centralManager.scanForPeripherals(withServices: nil, options: nil)
+        scanForPeripheralsCancellable = centralManager
+            .scanForPeripherals(withServices: nil, options: nil)
             .sink(receiveCompletion: { completion in
                 print(completion)
             }, receiveValue: { [weak self] scanResult in
                 guard let self = self, self.canUpdate else { return }
                 
-                let identifier = scanResult.peripheral.peripheral.identifier
+                let identifier = scanResult.peripheral.associatedPeripheral.identifier
 
                 self.blePeripheralMap[identifier] = scanResult
                 
                 let scannedPeripheralItem = ScannedPeripheralItem(rssi: scanResult.rssi.doubleValue,
-                                      name: scanResult.peripheral.peripheral.name ?? "Unknown",
-                                      identifier: scanResult.peripheral.peripheral.identifier)
+                                      name: scanResult.peripheral.associatedPeripheral.name ?? "Unknown",
+                                      identifier: scanResult.peripheral.associatedPeripheral.identifier)
                 
                 if let savedPeripheral = self.peripheralMap[identifier] {
                     if savedPeripheral.rssi != scannedPeripheralItem.rssi {

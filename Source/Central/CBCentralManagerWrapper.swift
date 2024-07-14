@@ -9,6 +9,9 @@
 import Foundation
 import CoreBluetooth
 
+/// Interface for wrapping the CBCentralManager.
+/// This interface is critical in order to mock the CBCentralManager calls as Apple has the
+/// init restricted.
 public protocol CBCentralManagerWrapper {
     var manager: CBCentralManager? { get }
     var isScanning: Bool { get }
@@ -17,8 +20,8 @@ public protocol CBCentralManagerWrapper {
     func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper]
     func scanForPeripherals(withServices serviceUUIDs: [CBUUID]?, options: [String : Any]?)
     func stopScan()
-    func connect(_ peripheral: CBPeripheralWrapper, options: [String : Any]?)
-    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper)
+    func connect(_ wrappedPeripheral: CBPeripheralWrapper, options: [String : Any]?)
+    func cancelPeripheralConnection(_ wrappedPeripheral: CBPeripheralWrapper)
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
 }
 
@@ -60,12 +63,12 @@ final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
         wrappedManager.stopScan()
     }
     
-    func connect(_ peripheral: CBPeripheralWrapper, options: [String : Any]?) {
-        wrappedManager.connect(peripheral.peripheral, options: options)
+    func connect(_ wrappedPeripheral: CBPeripheralWrapper, options: [String : Any]?) {
+        wrappedManager.connect(wrappedPeripheral.peripheral, options: options)
     }
     
-    func cancelPeripheralConnection(_ peripheral: CBPeripheralWrapper) {
-        wrappedManager.cancelPeripheralConnection(peripheral.peripheral)
+    func cancelPeripheralConnection(_ wrappedPeripheral: CBPeripheralWrapper) {
+        wrappedManager.cancelPeripheralConnection(wrappedPeripheral.peripheral)
     }
     
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
