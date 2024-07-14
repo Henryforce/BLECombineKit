@@ -6,13 +6,13 @@
 //  Copyright © 2020 Henry Serrano. All rights reserved.
 //
 
-import Foundation
 import CoreBluetooth
+import Foundation
 
 public enum BLECombineKit {
-    static public func buildCentralManager(
-      with centralManager: CBCentralManager? = nil
-    ) -> BLECentralManager {
-        return StandardBLECentralManager(with: centralManager ?? CBCentralManager())
-    }
+  static public func buildCentralManager(
+    with centralManager: CBCentralManager? = nil
+  ) -> BLECentralManager {
+    return StandardBLECentralManager(with: centralManager ?? CBCentralManager())
+  }
 }

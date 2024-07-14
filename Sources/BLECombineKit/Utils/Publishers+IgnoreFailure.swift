@@ -12,14 +12,14 @@
 import Combine
 
 extension Publisher {
-    /// An analog to `ignoreOutput` for `Publisher`’s `Failure` generic, allowing for either no or an immediate completion on an error event.
-    ///
-    /// - parameter completeImmediately: Whether the returned publisher should complete on an error event. Defaults to `true`.
-    ///
-    /// - returns: A publisher that ignores upstream error events.
-    func ignoreFailure(completeImmediately: Bool = true) -> AnyPublisher<Output, Never> {
-      `catch` { _ in Empty(completeImmediately: completeImmediately) }
-        .eraseToAnyPublisher()
-    }
-  
+  /// An analog to `ignoreOutput` for `Publisher`’s `Failure` generic, allowing for either no or an immediate completion on an error event.
+  ///
+  /// - parameter completeImmediately: Whether the returned publisher should complete on an error event. Defaults to `true`.
+  ///
+  /// - returns: A publisher that ignores upstream error events.
+  func ignoreFailure(completeImmediately: Bool = true) -> AnyPublisher<Output, Never> {
+    `catch` { _ in Empty(completeImmediately: completeImmediately) }
+      .eraseToAnyPublisher()
+  }
+
 }

@@ -6,14 +6,14 @@
 //  Copyright © 2020 Henry Serrano. All rights reserved.
 //
 
-import XCTest
 import BLECombineKit
+import XCTest
 
 final class BLECombineKitTests: XCTestCase {
-    
-    func testBLECombineKitInitReturnsBLECentralManager() throws {
-        let bleCentralManager = BLECombineKit.buildCentralManager()
-        XCTAssertNotNil(bleCentralManager.associatedCentralManager)
-    }
+
+  func testBLECombineKitInitReturnsBLECentralManager() throws {
+    let bleCentralManager = BLECombineKit.buildCentralManager()
+    XCTAssertNotNil(bleCentralManager.associatedCentralManager)
+  }
 
 }

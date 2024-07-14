@@ -9,9 +9,9 @@
 import Foundation
 
 protocol BLEPeripheralResult {
-    associatedtype BLEResultType
-    
-    var value: BLEResultType { get }
-    
-    init(value: BLEResultType, peripheral: BLEPeripheral)
+  associatedtype BLEResultType
+
+  var value: BLEResultType { get }
+
+  init(value: BLEResultType, peripheral: BLEPeripheral)
 }
