@@ -1,8 +1,8 @@
 # BLECombineKit
 
-![badge-platforms][] [![badge-carthage][]][carthage] [![badge-spm][]][spm]
+![badge-platforms][] [![badge-spm][]][spm]
 
-CoreBluetooth abstraction layer for iOS, macOS, TvOS, WatchOS and VisionOS development environments.
+CoreBluetooth abstraction layer for the iOS development environment.
 
 - Swift Concurrency compatible
 - SwiftUI compatible
@@ -11,11 +11,6 @@ CoreBluetooth abstraction layer for iOS, macOS, TvOS, WatchOS and VisionOS devel
 It is currently supported on:
 
 iOS 13.0+
-macOS 10.15+
-Mac Catalyst 13.0+
-tvOS 13.0+
-watchOS 6.0+
-visionOS 1.0+
 
 # How to use
 
@@ -76,18 +71,7 @@ Task {
 }
 ```
 
-You can reference the sample project inside the repository to see the library in action with SwiftUI.
-
 # Installation
-
-## Carthage
-
-[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
-To integrate CombineBluetoothKit into your Xcode project using Carthage  specify it in your `Cartfile`:
-```swift
-github "Henryforce/BLECombineKit"
-```
-Then, run `carthage update` to build framework and drag `CombineBluetoothKit.framework` into your Xcode project.
 
 ## Swift Package Manager
 
