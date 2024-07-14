@@ -9,12 +9,12 @@
 import Foundation
 
 extension Array {
-    @inlinable var isNotEmpty: Bool {
-        !isEmpty
-    }
-    
-    func element(at index: Int) -> Element? {
-        guard index < count else { return nil }
-        return self[index]
-    }
+  @inlinable var isNotEmpty: Bool {
+    !isEmpty
+  }
+
+  func element(at index: Int) -> Element? {
+    guard index < count else { return nil }
+    return self[index]
+  }
 }

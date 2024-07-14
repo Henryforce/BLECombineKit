@@ -4,25 +4,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "BLECombineKit",
-    platforms: [
-        .macOS(.v10_15), .iOS(.v13),
-    ],
-    products: [
-        .library(name: "BLECombineKit", targets: ["BLECombineKit"])
-    ],
-    targets: [
-        .target(
-            name: "BLECombineKit",
-            dependencies: [],
-            path: "Sources/BLECombineKit"
-        ),
-        .testTarget(
-            name: "BLECombineKitTests",
-            dependencies: [
-                "BLECombineKit",
-            ],
-            path: "Tests"
-        ),
-    ]
+  name: "BLECombineKit",
+  platforms: [
+    .macOS(.v10_15), .iOS(.v13),
+  ],
+  products: [
+    .library(name: "BLECombineKit", targets: ["BLECombineKit"])
+  ],
+  targets: [
+    .target(
+      name: "BLECombineKit",
+      dependencies: [],
+      path: "Sources/BLECombineKit"
+    ),
+    .testTarget(
+      name: "BLECombineKitTests",
+      dependencies: [
+        "BLECombineKit"
+      ],
+      path: "Tests"
+    ),
+  ]
 )
