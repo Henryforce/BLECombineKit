@@ -128,6 +128,7 @@ final class BLECentralManagerTests: XCTestCase {
         XCTAssertEqual(centralManagerWrapper.cancelPeripheralConnectionWasCalledCount, 1)
     }
     
+    #if !os(macOS)
     func testRegisterForConnectionEventsCallsCentralManager() {
         // When
         sut.registerForConnectionEvents(options: nil)
@@ -135,6 +136,7 @@ final class BLECentralManagerTests: XCTestCase {
         // Then
         XCTAssertEqual(centralManagerWrapper.registerForConnectionEventsWasCalledCount, 1)
     }
+    #endif
     
     func testRetrievePeripheralsReturns() throws {
         // Given

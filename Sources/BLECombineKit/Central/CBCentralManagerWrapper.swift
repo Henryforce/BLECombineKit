@@ -22,7 +22,9 @@ public protocol CBCentralManagerWrapper {
     func stopScan()
     func connect(_ wrappedPeripheral: CBPeripheralWrapper, options: [String : Any]?)
     func cancelPeripheralConnection(_ wrappedPeripheral: CBPeripheralWrapper)
+    #if !os(macOS)
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
+    #endif
 }
 
 final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
@@ -71,9 +73,13 @@ final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
         wrappedManager.cancelPeripheralConnection(wrappedPeripheral.peripheral)
     }
     
+    #if !os(macOS)
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
+        
         wrappedManager.registerForConnectionEvents(options: options)
+       
     }
+    #endif
     
     func setupDelegate(_ delegate: CBCentralManagerDelegate) {
         wrappedManager.delegate = delegate

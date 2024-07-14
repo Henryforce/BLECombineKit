@@ -43,7 +43,9 @@ public protocol BLECentralManager: AnyObject {
     func cancelPeripheralConnection(_ peripheral: BLEPeripheral) -> AnyPublisher<Never, Never>
     
     /// Register for any connection events.
+    #if !os(macOS)
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?)
+    #endif
   
     /// Observe for any changes to the willRestoreState.
     /// This method will generate an event for each update to willRestoreState, if any.
@@ -208,9 +210,11 @@ final class StandardBLECentralManager: BLECentralManager {
             .eraseToAnyPublisher()
     }
     
+    #if !os(macOS)
     public func registerForConnectionEvents(options: [CBConnectionEventMatchingOption : Any]?) {
         associatedCentralManager.registerForConnectionEvents(options: options)
     }
+    #endif
     
     public func observeWillRestoreState() -> AnyPublisher<[String: Any], Never> {
         delegate.willRestoreState.eraseToAnyPublisher()

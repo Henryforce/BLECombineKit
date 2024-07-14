@@ -2,7 +2,7 @@
 
 ![badge-platforms][] [![badge-spm][]][spm]
 
-CoreBluetooth abstraction layer for the iOS development environment.
+CoreBluetooth abstraction layer for iOS and macOS development environments.
 
 - Swift Concurrency compatible
 - SwiftUI compatible
@@ -11,6 +11,7 @@ CoreBluetooth abstraction layer for the iOS development environment.
 It is currently supported on:
 
 iOS 13.0+
+macOS 10.15+
 
 # How to use
 
