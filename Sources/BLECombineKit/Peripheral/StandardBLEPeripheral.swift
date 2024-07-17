@@ -244,7 +244,7 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
     _ enabled: Bool,
     for characteristic: CBCharacteristic
   ) {
-    associatedPeripheral.setNotifyValue(false, for: characteristic)
+    associatedPeripheral.setNotifyValue(enabled, for: characteristic)
   }
 
   public func writeValue(
