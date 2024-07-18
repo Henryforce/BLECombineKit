@@ -10,7 +10,7 @@ import Foundation
 
 protocol BLEPeripheralProvider {
   func provide(
-    for peripheral: CBPeripheralWrapper,
+    for peripheralWrapper: CBPeripheralWrapper,
     centralManager: BLECentralManager
   ) -> BLETrackedPeripheral
 }
@@ -18,37 +18,43 @@ protocol BLEPeripheralProvider {
 final class StandardBLEPeripheralProvider: BLEPeripheralProvider {
 
   private lazy var queue = DispatchQueue(
-    label: String(describing: StandardBLEPeripheral.self),
+    label: String(describing: StandardBLEPeripheralProvider.self),
     attributes: .concurrent
   )
 
-  private var peripherals = [UUID: BLETrackedPeripheral]()
+  private lazy var peripherals = [UUID: StandardBLEPeripheral]()
 
   func provide(
-    for peripheral: CBPeripheralWrapper,
+    for peripheralWrapper: CBPeripheralWrapper,
     centralManager: BLECentralManager
   ) -> BLETrackedPeripheral {
-    return existingPeripheral(id: peripheral.identifier)
-      ?? {
-        let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral.peripheral)
-        let peripheralDelegate = BLEPeripheralDelegate()
-        peripheralWrapper.setupDelegate(peripheralDelegate)
-
-        let blePeripheral = StandardBLEPeripheral(
-          peripheral: peripheralWrapper,
-          centralManager: centralManager,
-          delegate: peripheralDelegate
-        )
-        queue.async(flags: .barrier) { [weak self] in
-          self?.peripherals[peripheral.identifier] = blePeripheral
-        }
-        return blePeripheral
-      }()
+    return existingPeripheral(id: peripheralWrapper.identifier)
+      ?? buildPeripheral(for: peripheralWrapper, centralManager: centralManager)
   }
 
-  private func existingPeripheral(id: UUID) -> BLETrackedPeripheral? {
+  // MARK - Private.
+
+  private func existingPeripheral(id: UUID) -> StandardBLEPeripheral? {
     queue.sync {
       peripherals[id]
     }
+  }
+
+  private func buildPeripheral(
+    for peripheralWrapper: CBPeripheralWrapper,
+    centralManager: BLECentralManager
+  ) -> StandardBLEPeripheral {
+    let peripheralDelegate = BLEPeripheralDelegate()
+    peripheralWrapper.setupDelegate(peripheralDelegate)
+
+    let blePeripheral = StandardBLEPeripheral(
+      peripheral: peripheralWrapper,
+      centralManager: centralManager,
+      delegate: peripheralDelegate
+    )
+    queue.async(flags: .barrier) { [weak self] in
+      self?.peripherals[peripheralWrapper.identifier] = blePeripheral
+    }
+    return blePeripheral
   }
 }

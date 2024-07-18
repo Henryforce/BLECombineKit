@@ -115,9 +115,9 @@ final class StandardBLECentralManager: BLECentralManager {
       .didConnectPeripheral
       .sink { [weak self] result in
         guard let self = self else { return }
-        self.peripheralProvider.provide(for: result, centralManager: self).connectionState.send(
-          true
-        )
+        self.peripheralProvider
+          .provide(for: result, centralManager: self)
+          .connectionState.send(true)
       }.store(in: &cancellables)
   }
 

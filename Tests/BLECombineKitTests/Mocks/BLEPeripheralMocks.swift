@@ -12,6 +12,11 @@ import Foundation
 
 @testable import BLECombineKit
 
+struct SetNotifyValueWasCalledStackValue: Equatable {
+  let enabled: Bool
+  let characteristic: CBCharacteristic
+}
+
 final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   let connectionState = CurrentValueSubject<Bool, Never>(false)
   var associatedPeripheral: CBPeripheralWrapper
@@ -86,9 +91,11 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
       .eraseToAnyPublisher()
   }
 
-  var setNotifyValueWasCalled = false
+  var setNotifyValueWasCalledStack = [SetNotifyValueWasCalledStackValue]()
   func setNotifyValue(_ enabled: Bool, for characteristic: CBCharacteristic) {
-    setNotifyValueWasCalled = true
+    setNotifyValueWasCalledStack.append(
+      SetNotifyValueWasCalledStackValue(enabled: enabled, characteristic: characteristic)
+    )
   }
 
   var observeNameValueWasCalled = false
@@ -125,13 +132,18 @@ final class MockCBPeripheralWrapper: CBPeripheralWrapper {
 
   var state = CBPeripheralState.connected
 
-  var identifier = UUID.init()
+  var identifier = UUID()
 
   var name: String? = "MockedPeripheral"
 
   var mockedServices: [CBService]?
   var services: [CBService]? {
     return mockedServices
+  }
+
+  var setupDelegateWasCalledStack = [CBPeripheralDelegate]()
+  func setupDelegate(_ delegate: CBPeripheralDelegate) {
+    setupDelegateWasCalledStack.append(delegate)
   }
 
   var readRSSIWasCalled = false
@@ -171,9 +183,11 @@ final class MockCBPeripheralWrapper: CBPeripheralWrapper {
     writeValueForCharacteristicWasCalled = true
   }
 
-  var setNotifyValueWasCalled = false
+  var setNotifyValueWasCalledStack = [SetNotifyValueWasCalledStackValue]()
   func setNotifyValue(_ enabled: Bool, for characteristic: CBCharacteristic) {
-    setNotifyValueWasCalled = true
+    setNotifyValueWasCalledStack.append(
+      SetNotifyValueWasCalledStackValue(enabled: enabled, characteristic: characteristic)
+    )
   }
 
   func discoverDescriptors(for characteristic: CBCharacteristic) {
