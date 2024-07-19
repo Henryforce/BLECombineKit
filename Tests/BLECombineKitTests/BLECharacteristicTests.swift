@@ -24,6 +24,7 @@ final class BLECharacteristicTests: XCTestCase {
   }
 
   func testObserveValueCallsBLEPeripheral() throws {
+    // Given.
     let cbCharacteristic = CBMutableCharacteristic(
       type: CBUUID.init(string: "0x0000"),
       properties: CBCharacteristicProperties.init(),
@@ -32,8 +33,10 @@ final class BLECharacteristicTests: XCTestCase {
     )
     let sut = BLECharacteristic(value: cbCharacteristic, peripheral: blePeripheralMock)
 
+    // When.
     _ = sut.observeValue()
 
+    // Then.
     XCTAssertTrue(blePeripheralMock.observeValueWasCalled)
   }
 
