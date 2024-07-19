@@ -220,6 +220,9 @@ final class BLEPeripheralTests: XCTestCase {
       value: Data(),
       permissions: CBAttributePermissions.init()
     )
+    let expectedSetNotifyStack: [SetNotifyValueWasCalledStackValue] = [
+      SetNotifyValueWasCalledStackValue(enabled: true, characteristic: mutableCharacteristic)
+    ]
 
     // When
     sut.observeValueUpdateAndSetNotification(for: mutableCharacteristic)
@@ -239,7 +242,7 @@ final class BLEPeripheralTests: XCTestCase {
     // Then
     wait(for: [expectation], timeout: 0.005)
     XCTAssertNotNil(expectedData)
-    XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
+    XCTAssertEqual(expectedSetNotifyStack, peripheralMock.setNotifyValueWasCalledStack)
   }
 
   func testSetNotifyValue() {
@@ -250,12 +253,15 @@ final class BLEPeripheralTests: XCTestCase {
       value: Data(),
       permissions: CBAttributePermissions.init()
     )
+    let expectedSetNotifyStack: [SetNotifyValueWasCalledStackValue] = [
+      SetNotifyValueWasCalledStackValue(enabled: true, characteristic: mutableCharacteristic)
+    ]
 
     // When
     sut.setNotifyValue(true, for: mutableCharacteristic)
 
     // Then
-    XCTAssertTrue(peripheralMock.setNotifyValueWasCalled)
+    XCTAssertEqual(expectedSetNotifyStack, peripheralMock.setNotifyValueWasCalledStack)
   }
 
   func testObserveNameValueReturns() {
