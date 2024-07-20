@@ -97,7 +97,7 @@ final class BLEPeripheralTests: XCTestCase {
     // Given
     let expectation = XCTestExpectation(description: #function)
     var expectedService: BLEService?
-    let mutableService = CBMutableService(type: CBUUID.init(), primary: true)
+    let mutableService = CBMutableService(type: CBUUID(), primary: true)
     peripheralMock.mockedServices = [mutableService]
 
     // When
@@ -120,7 +120,7 @@ final class BLEPeripheralTests: XCTestCase {
   func testDiscoverServicesReturnsDelegateObservable() throws {
     // Given
     let expectation = XCTestExpectation(description: #function)
-    let mutableService = CBMutableService(type: CBUUID.init(), primary: true)
+    let mutableService = CBMutableService(type: CBUUID(), primary: true)
     var expectedService: BLEService?
     peripheralMock.mockedServices = nil
 
@@ -148,13 +148,8 @@ final class BLEPeripheralTests: XCTestCase {
     // Given
     let expectation = XCTestExpectation(description: self.debugDescription)
     var expectedCharacteristic: BLECharacteristic?
-    let service = CBMutableService.init(type: CBUUID.init(string: "0x0000"), primary: true)
-    let mutableCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
-      value: Data(),
-      permissions: CBAttributePermissions.init()
-    )
+    let service = CBMutableService(type: CBUUID(string: "0x0000"), primary: true)
+    let mutableCharacteristic = commonMutableCharacteristic()
     service.characteristics = [mutableCharacteristic]
 
     // When
@@ -182,12 +177,8 @@ final class BLEPeripheralTests: XCTestCase {
     // Given
     let expectation = XCTestExpectation(description: self.debugDescription)
     var expectedData: BLEData?
-    let mutableCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
-      value: Data(),
-      permissions: CBAttributePermissions.init()
-    )
+    let mutableCharacteristic = commonMutableCharacteristic()
+    let expectedReadStack = [mutableCharacteristic]
 
     // When
     sut.observeValue(for: mutableCharacteristic)
@@ -207,19 +198,93 @@ final class BLEPeripheralTests: XCTestCase {
     // Then
     wait(for: [expectation], timeout: 0.005)
     XCTAssertNotNil(expectedData)
-    XCTAssertTrue(peripheralMock.readValueForCharacteristicWasCalled)
+    XCTAssertEqual(expectedReadStack, peripheralMock.readValueForCharacteristicWasCalledStack)
+  }
+  
+  func testReadValueReturnsSingleValueAndCompletes() throws {
+    // Given.
+    let valueExpectation = XCTestExpectation(description: "Value received")
+    let completionExpectation = XCTestExpectation(description: "Completion called")
+    let stringData = "My data"
+    let mutableCharacteristic = commonMutableCharacteristic(data: stringData.data(using: .utf8))
+    var receivedData: BLEData?
+    let expectedReadStack = [mutableCharacteristic]
+
+    // When.
+    sut.readValue(for: mutableCharacteristic)
+      .sink(
+        receiveCompletion: { error in
+          completionExpectation.fulfill()
+        },
+        receiveValue: { data in
+          receivedData = data
+          valueExpectation.fulfill()
+        }
+      ).store(in: &disposable)
+    delegate.didUpdateValueForCharacteristic.send(
+      (peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil)
+    )
+
+    // Then.
+    wait(for: [valueExpectation, completionExpectation], timeout: 0.01)
+    XCTAssertEqual(stringData, receivedData?.string)
+    XCTAssertEqual(expectedReadStack, peripheralMock.readValueForCharacteristicWasCalledStack)
+  }
+
+  func testReadValueAsASharedPublisherTriggersOnlyOneRead() throws {
+    // Given.
+    let valueExpectation = XCTestExpectation(description: "Value received")
+    let completionExpectation = XCTestExpectation(description: "Completion called")
+    let valueExpectation2 = XCTestExpectation(description: "Value received 2")
+    let completionExpectation2 = XCTestExpectation(description: "Completion called 2")
+    let stringData = "My data"
+    let mutableCharacteristic = commonMutableCharacteristic(data: stringData.data(using: .utf8))
+    var receivedData: BLEData?
+    var receivedData2: BLEData?
+    let expectedReadStack = [mutableCharacteristic]
+    let resultToSend: DidUpdateValueForCharacteristicResult = (peripheral: peripheralMock, characteristic: mutableCharacteristic, error: nil)
+
+    // When.
+    let stream = sut.readValue(for: mutableCharacteristic)
+      .share()
+    stream
+      .sink(
+        receiveCompletion: { error in
+          completionExpectation.fulfill()
+        },
+        receiveValue: { data in
+          receivedData = data
+          valueExpectation.fulfill()
+        }
+      ).store(in: &disposable)
+    stream
+      .sink(
+        receiveCompletion: { error in
+          completionExpectation2.fulfill()
+        },
+        receiveValue: { data in
+          receivedData2 = data
+          valueExpectation2.fulfill()
+        }
+      ).store(in: &disposable)
+    delegate.didUpdateValueForCharacteristic.send(resultToSend)
+    delegate.didUpdateValueForCharacteristic.send(resultToSend)
+
+    // Then.
+    wait(
+      for: [valueExpectation, valueExpectation2, completionExpectation, completionExpectation2],
+      timeout: 0.01
+    )
+    XCTAssertEqual(stringData, receivedData?.string)
+    XCTAssertEqual(stringData, receivedData2?.string)
+    XCTAssertEqual(expectedReadStack, peripheralMock.readValueForCharacteristicWasCalledStack)
   }
 
   func testObserveValueUpdateAndSetNotificationReturns() throws {
     // Given
     let expectation = XCTestExpectation(description: self.debugDescription)
     var expectedData: BLEData?
-    let mutableCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
-      value: Data(),
-      permissions: CBAttributePermissions.init()
-    )
+    let mutableCharacteristic = commonMutableCharacteristic()
     let expectedSetNotifyStack: [SetNotifyValueWasCalledStackValue] = [
       SetNotifyValueWasCalledStackValue(enabled: true, characteristic: mutableCharacteristic)
     ]
@@ -247,12 +312,7 @@ final class BLEPeripheralTests: XCTestCase {
 
   func testSetNotifyValue() {
     // Given
-    let mutableCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
-      value: Data(),
-      permissions: CBAttributePermissions.init()
-    )
+    let mutableCharacteristic = commonMutableCharacteristic()
     let expectedSetNotifyStack: [SetNotifyValueWasCalledStackValue] = [
       SetNotifyValueWasCalledStackValue(enabled: true, characteristic: mutableCharacteristic)
     ]
@@ -291,7 +351,7 @@ final class BLEPeripheralTests: XCTestCase {
   func testObserveRSSIValueReturns() {
     // Given
     let expectation = XCTestExpectation(description: self.debugDescription)
-    let dataToSend = NSNumber.init(value: 0)
+    let dataToSend = NSNumber(value: 0)
     var expectedData: NSNumber?
 
     // When
@@ -315,12 +375,7 @@ final class BLEPeripheralTests: XCTestCase {
   func testWriteValueWithoutResponseReturnsImmediately() {
     // Given
     let expectation = XCTestExpectation(description: #function)
-    let mutableCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
-      value: Data(),
-      permissions: CBAttributePermissions.init()
-    )
+    let mutableCharacteristic = commonMutableCharacteristic()
 
     // When
     sut.writeValue(Data(), for: mutableCharacteristic, type: .withoutResponse)
@@ -340,12 +395,7 @@ final class BLEPeripheralTests: XCTestCase {
   func testWriteValueWithResponseReturnsOnDelegateCall() {
     // Given
     let expectation = XCTestExpectation(description: #function)
-    let mutableCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
-      value: Data(),
-      permissions: CBAttributePermissions.init()
-    )
+    let mutableCharacteristic = commonMutableCharacteristic()
 
     // When
     sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
@@ -368,12 +418,7 @@ final class BLEPeripheralTests: XCTestCase {
   func testWriteValueWithResponseReturnsErrorOnDelegateErrorCall() {
     // Given
     let expectation = XCTestExpectation(description: #function)
-    let mutableCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
-      value: Data(),
-      permissions: CBAttributePermissions.init()
-    )
+    let mutableCharacteristic = commonMutableCharacteristic()
 
     // When
     sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
@@ -450,10 +495,32 @@ final class BLEPeripheralTests: XCTestCase {
     let peripheralMock = MockCBPeripheralWrapper()
 
     // When
-    sut = StandardBLEPeripheral.init(peripheral: peripheralMock, centralManager: nil)
+    sut = StandardBLEPeripheral(peripheral: peripheralMock, centralManager: nil)
 
     // Then
     XCTAssertNotNil(sut)
   }
+  
+  // MARK - Private.
+  
+  private func commonMutableCharacteristic(
+    type UUID: CBUUID = CBUUID(string: "0x0000"),
+    properties: CBCharacteristicProperties = CBCharacteristicProperties(),
+    data: Data? = Data(),
+    permissions: CBAttributePermissions = CBAttributePermissions()
+  ) -> CBMutableCharacteristic {
+    return CBMutableCharacteristic(
+      type: UUID,
+      properties: properties,
+      value: data,
+      permissions: permissions
+    )
+  }
 
+}
+
+fileprivate extension BLEData {
+  var string: String {
+    String(decoding: value, as: UTF8.self)
+  }
 }

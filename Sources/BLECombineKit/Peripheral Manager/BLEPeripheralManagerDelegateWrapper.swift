@@ -20,7 +20,7 @@ class BLEPeripheralManagerDelegateWrapper: NSObject, CBPeripheralManagerDelegate
   let isReady = PassthroughSubject<Void, Never>()
   let didStartAdvertising = PassthroughSubject<Error?, Never>()
   let didReceiveRead = PassthroughSubject<CBATTRequest, Never>()
-  let willRestoreState = CurrentValueSubject<[String: Any], Never>(.init())
+  let willRestoreState = CurrentValueSubject<[String: Any], Never>([:])
   let didAddService = PassthroughSubject<(CBService, Error?), Never>()
   let didReceiveWrite = PassthroughSubject<[CBATTRequest], Never>()
   let didSubscribeTo = PassthroughSubject<(CBCentral, CBCharacteristic), Never>()

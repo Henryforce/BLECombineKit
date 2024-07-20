@@ -24,7 +24,7 @@ final class BLEServiceTests: XCTestCase {
   }
 
   func testDiscoverCharacteristicsCallsBLEPeripheral() throws {
-    let cbService = CBMutableService.init(type: CBUUID.init(string: "0x0000"), primary: true)
+    let cbService = CBMutableService(type: CBUUID(string: "0x0000"), primary: true)
     let sut = BLEService(value: cbService, peripheral: blePeripheralMock)
 
     _ = sut.discoverCharacteristics(characteristicUUIDs: [])

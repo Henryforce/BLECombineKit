@@ -55,6 +55,11 @@ public protocol BLEPeripheral {
   /// `didUpdateValueFor:` delegate method (see CBPeripheralDelegate).
   func observeValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError>
 
+  /// Read the value of a given characteristic.
+  /// This method will trigger a single event after the CBPeripheral calls the
+  /// `didUpdateValueFor:` delegate method (see CBPeripheralDelegate) and it will then complete.
+  func readValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError>
+
   /// Start observing for a value updated on a given characteristic and set the notify value on
   /// the peripheral (internally calls `setNotifyValue`).
   /// An event is triggered every time the CBPeripheral calls the
