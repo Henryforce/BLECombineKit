@@ -190,6 +190,9 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
 
     discoverCharacteristicsCancellable = delegate
       .didDiscoverCharacteristics
+//      .handleEvents(receiveSubscription: { [weak self] _ in
+//        self?.associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
+//      })
       .tryFilter { [weak self] in
         guard let self = self else { throw BLEError.deallocated }
         return $0.peripheral.identifier == self.associatedPeripheral.identifier

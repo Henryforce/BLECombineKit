@@ -40,9 +40,14 @@ extension BLEPeripheral {
   ) async throws -> [BLECharacteristic] {
     let stream = discoverCharacteristics(characteristicUUIDs: characteristicUUIDs, for: service)
       .values
-    return try await stream.reduce(into: []) { partialResult, characteristic in
-      partialResult.append(characteristic)
+//    return try await stream.reduce(into: []) { partialResult, characteristic in
+//      partialResult.append(characteristic)
+//    }
+    var results = [BLECharacteristic]()
+    for try await result in stream {
+      results.append(result)
     }
+    return results
   }
 
   public func readValueAsync(for characteristic: CBCharacteristic) async throws -> BLEData {
