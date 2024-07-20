@@ -185,14 +185,14 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
     for service: CBService
   ) -> AnyPublisher<BLECharacteristic, BLEError> {
     let subject = PassthroughSubject<BLECharacteristic, BLEError>()
-    associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
+//    associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
     discoverCharacteristicsCancellable?.cancel()
 
     discoverCharacteristicsCancellable = delegate
       .didDiscoverCharacteristics
-//      .handleEvents(receiveSubscription: { [weak self] _ in
-//        self?.associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
-//      })
+      .handleEvents(receiveSubscription: { [weak self] _ in
+        self?.associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
+      })
       .tryFilter { [weak self] in
         guard let self = self else { throw BLEError.deallocated }
         return $0.peripheral.identifier == self.associatedPeripheral.identifier
