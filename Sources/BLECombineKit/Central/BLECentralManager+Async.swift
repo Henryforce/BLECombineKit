@@ -10,7 +10,7 @@ import Combine
 import CoreBluetooth
 import Foundation
 
-@available(iOS 13, macOS 12.0, *)
+@available(iOS 15, macOS 12.0, *)
 extension BLECentralManager {
 
   public func scanForPeripheralsStream(
