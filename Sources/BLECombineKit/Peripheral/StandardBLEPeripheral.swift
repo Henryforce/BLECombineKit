@@ -255,6 +255,7 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
         self?.associatedPeripheral.setNotifyValue(true, for: characteristic)
       })
       .filter { $0.characteristic.uuid == characteristic.uuid }
+      .first()
       .flatMap { output -> AnyPublisher<BLEData, BLEError> in
         if let error = output.error {
           return Fail(error: error).eraseToAnyPublisher()
