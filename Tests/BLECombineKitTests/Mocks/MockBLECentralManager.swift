@@ -28,7 +28,7 @@ final class MockBLECentralManager: BLECentralManager {
     BLEPeripheral, BLEError
   > {
     retrievePeripheralsWasCalledCount += 1
-    return Just.init(MockBLEPeripheral())
+    return Just(MockBLEPeripheral())
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
   }
@@ -38,7 +38,7 @@ final class MockBLECentralManager: BLECentralManager {
     BLEPeripheral, BLEError
   > {
     retrieveConnectedPeripheralsWasCalledCount += 1
-    return Just.init(MockBLEPeripheral())
+    return Just(MockBLEPeripheral())
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
   }
@@ -51,7 +51,7 @@ final class MockBLECentralManager: BLECentralManager {
 
     let blePeripheral = MockBLEPeripheral()
     let advertisementData: [String: Any] = [:]
-    let rssi = NSNumber.init(value: 0)
+    let rssi = NSNumber(value: 0)
 
     let bleScanResult = BLEScanResult(
       peripheral: blePeripheral,
@@ -59,9 +59,7 @@ final class MockBLECentralManager: BLECentralManager {
       rssi: rssi
     )
 
-    return
-      Just
-      .init(bleScanResult)
+    return Just(bleScanResult)
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
   }

@@ -26,10 +26,10 @@ final class BLECharacteristicTests: XCTestCase {
   func testObserveValueCallsBLEPeripheral() throws {
     // Given.
     let cbCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
+      type: CBUUID(string: "0x0000"),
+      properties: CBCharacteristicProperties(),
       value: Data(),
-      permissions: CBAttributePermissions.init()
+      permissions: CBAttributePermissions()
     )
     let sut = BLECharacteristic(value: cbCharacteristic, peripheral: blePeripheralMock)
 
@@ -42,10 +42,10 @@ final class BLECharacteristicTests: XCTestCase {
 
   func testObserveValueUpdateWithNotificationCallsBLEPeripheral() throws {
     let cbCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
+      type: CBUUID(string: "0x0000"),
+      properties: CBCharacteristicProperties(),
       value: Data(),
-      permissions: CBAttributePermissions.init()
+      permissions: CBAttributePermissions()
     )
     let sut = BLECharacteristic(value: cbCharacteristic, peripheral: blePeripheralMock)
 
@@ -57,10 +57,10 @@ final class BLECharacteristicTests: XCTestCase {
   func testSetNotifyValue() {
     // Given.
     let cbCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
+      type: CBUUID(string: "0x0000"),
+      properties: CBCharacteristicProperties(),
       value: Data(),
-      permissions: CBAttributePermissions.init()
+      permissions: CBAttributePermissions()
     )
     let sut = BLECharacteristic(value: cbCharacteristic, peripheral: blePeripheralMock)
     let expectedSetNotifyStack: [SetNotifyValueWasCalledStackValue] = [
@@ -78,10 +78,10 @@ final class BLECharacteristicTests: XCTestCase {
 
   func testWriteValue() {
     let cbCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
+      type: CBUUID(string: "0x0000"),
+      properties: CBCharacteristicProperties(),
       value: Data(),
-      permissions: CBAttributePermissions.init()
+      permissions: CBAttributePermissions()
     )
     let sut = BLECharacteristic(value: cbCharacteristic, peripheral: blePeripheralMock)
 

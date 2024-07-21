@@ -33,7 +33,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   func connect(with options: [String: Any]?) -> AnyPublisher<BLEPeripheral, BLEError> {
     connectWasCalled = true
     let blePeripheral = StandardBLEPeripheral(peripheral: associatedPeripheral, centralManager: nil)
-    return Just.init(blePeripheral)
+    return Just(blePeripheral)
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
   }
@@ -47,7 +47,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   var discoverServiceWasCalled = false
   func discoverServices(serviceUUIDs: [CBUUID]?) -> AnyPublisher<BLEService, BLEError> {
     discoverServiceWasCalled = true
-    let cbService = CBMutableService.init(type: CBUUID.init(string: "0x0000"), primary: true)
+    let cbService = CBMutableService(type: CBUUID(string: "0x0000"), primary: true)
     let service = BLEService(value: cbService, peripheral: self)
     return Just.init(service)
       .setFailureType(to: BLEError.self)
@@ -60,13 +60,13 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   {
     discoverCharacteristicsWasCalled = true
     let cbCharacteristic = CBMutableCharacteristic(
-      type: CBUUID.init(string: "0x0000"),
-      properties: CBCharacteristicProperties.init(),
+      type: CBUUID(string: "0x0000"),
+      properties: CBCharacteristicProperties(),
       value: Data(),
-      permissions: CBAttributePermissions.init()
+      permissions: CBAttributePermissions()
     )
     let characteristic = BLECharacteristic(value: cbCharacteristic, peripheral: self)
-    return Just.init(characteristic)
+    return Just(characteristic)
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
   }
@@ -75,7 +75,16 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   func observeValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
     observeValueWasCalled = true
     let data = BLEData(value: Data(), peripheral: self)
-    return Just.init(data)
+    return Just(data)
+      .setFailureType(to: BLEError.self)
+      .eraseToAnyPublisher()
+  }
+
+  var readValueWasCalledStack = [CBCharacteristic]()
+  func readValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
+    readValueWasCalledStack.append(characteristic)
+    let data = BLEData(value: Data(), peripheral: self)
+    return Just(data)
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
   }
@@ -86,7 +95,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   {
     observeValueUpdateAndSetNotificationWasCalled = true
     let data = BLEData(value: Data(), peripheral: self)
-    return Just.init(data)
+    return Just(data)
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
   }
@@ -108,7 +117,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   var observeRSSIValueWasCalled = false
   func observeRSSIValue() -> AnyPublisher<NSNumber, BLEError> {
     observeRSSIValueWasCalled = true
-    return Just.init(NSNumber.init(value: 0))
+    return Just.init(NSNumber(value: 0))
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
   }
@@ -160,14 +169,17 @@ final class MockCBPeripheralWrapper: CBPeripheralWrapper {
 
   }
 
-  var discoverCharacteristicsWasCalled = false
+  typealias DiscoverCharacteristicsWasCalledStackValue = (
+    characteristicUUIDs: [CBUUID]?, service: CBService
+  )
+  var discoverCharacteristicsWasCalledStack = [DiscoverCharacteristicsWasCalledStackValue]()
   func discoverCharacteristics(_ characteristicUUIDs: [CBUUID]?, for service: CBService) {
-    discoverCharacteristicsWasCalled = true
+    discoverCharacteristicsWasCalledStack.append((characteristicUUIDs, service))
   }
 
-  var readValueForCharacteristicWasCalled = false
+  var readValueForCharacteristicWasCalledStack = [CBCharacteristic]()
   func readValue(for characteristic: CBCharacteristic) {
-    readValueForCharacteristicWasCalled = true
+    readValueForCharacteristicWasCalledStack.append(characteristic)
   }
 
   func maximumWriteValueLength(for type: CBCharacteristicWriteType) -> Int {

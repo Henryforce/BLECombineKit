@@ -50,6 +50,11 @@ public protocol BLEPeripheral {
     for service: CBService
   ) -> AnyPublisher<BLECharacteristic, BLEError>
 
+  /// Read the value of a given characteristic.
+  /// This method will trigger a single event after the CBPeripheral calls the
+  /// `didUpdateValueFor:` delegate method (see CBPeripheralDelegate) and it will then complete.
+  func readValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError>
+
   /// Start observing for a value updated on a given characteristic.
   /// An event is triggered every time the CBPeripheral calls the
   /// `didUpdateValueFor:` delegate method (see CBPeripheralDelegate).

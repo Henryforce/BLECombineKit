@@ -59,7 +59,7 @@ final class BLECentralManagerTests: XCTestCase {
         }
       ).store(in: &cancellables)
     delegate.didDiscoverAdvertisementData.send(
-      (peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber.init(value: 0))
+      (peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber(value: 0))
     )
 
     // Then
@@ -97,13 +97,13 @@ final class BLECentralManagerTests: XCTestCase {
         }
       ).store(in: &cancellables)
     delegate.didDiscoverAdvertisementData.send(
-      (peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber.init(value: 0))
+      (peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber(value: 0))
     )
     delegate.didDiscoverAdvertisementData.send(
-      (peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber.init(value: 0))
+      (peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber(value: 0))
     )
     delegate.didDiscoverAdvertisementData.send(
-      (peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber.init(value: 0))
+      (peripheral: peripheralMock, advertisementData: [:], rssi: NSNumber(value: 0))
     )
 
     // Then

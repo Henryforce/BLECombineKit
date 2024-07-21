@@ -60,7 +60,6 @@ final class BLEPeripheralDelegate: NSObject {
   let didWriteValueForCharacteristic = PassthroughSubject<
     DidWriteValueForCharacteristicResult, Error
   >()
-
 }
 
 extension BLEPeripheralDelegate: CBPeripheralDelegate {

@@ -104,7 +104,7 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
   @discardableResult
   public func disconnect() -> AnyPublisher<Never, BLEError> {
     guard let centralManager = centralManager else {
-      return Just.init(false)
+      return Just(false)
         .tryMap { _ in throw BLEError.peripheral(.disconnectionFailed) }
         .mapError { $0 as? BLEError ?? BLEError.unknown }
         .eraseToAnyPublisher()
@@ -139,7 +139,7 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
     let subject = PassthroughSubject<BLEService, BLEError>()
 
     if let services = associatedPeripheral.services, services.isNotEmpty {
-      return Publishers.Sequence.init(sequence: services)
+      return Publishers.Sequence(sequence: services)
         .setFailureType(to: BLEError.self)
         .map { BLEService(value: $0, peripheral: self) }
         .eraseToAnyPublisher()
@@ -185,11 +185,13 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
     for service: CBService
   ) -> AnyPublisher<BLECharacteristic, BLEError> {
     let subject = PassthroughSubject<BLECharacteristic, BLEError>()
-    associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
     discoverCharacteristicsCancellable?.cancel()
 
     discoverCharacteristicsCancellable = delegate
       .didDiscoverCharacteristics
+      .handleEvents(receiveSubscription: { [weak self] _ in
+        self?.associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
+      })
       .tryFilter { [weak self] in
         guard let self = self else { throw BLEError.deallocated }
         return $0.peripheral.identifier == self.associatedPeripheral.identifier
@@ -227,6 +229,14 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
   ) -> AnyPublisher<BLEData, BLEError> {
     buildDeferredValuePublisher(for: characteristic)
       .handleEvents(receiveRequest: { [weak self] _ in
+        self?.associatedPeripheral.readValue(for: characteristic)
+      }).eraseToAnyPublisher()
+  }
+
+  public func readValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
+    buildDeferredValuePublisher(for: characteristic)
+      .first()
+      .handleEvents(receiveSubscription: { [weak self] _ in
         self?.associatedPeripheral.readValue(for: characteristic)
       }).eraseToAnyPublisher()
   }
