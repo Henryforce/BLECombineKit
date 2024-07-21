@@ -169,9 +169,12 @@ final class MockCBPeripheralWrapper: CBPeripheralWrapper {
 
   }
 
-  var discoverCharacteristicsWasCalled = false
+  typealias DiscoverCharacteristicsWasCalledStackValue = (
+    characteristicUUIDs: [CBUUID]?, service: CBService
+  )
+  var discoverCharacteristicsWasCalledStack = [DiscoverCharacteristicsWasCalledStackValue]()
   func discoverCharacteristics(_ characteristicUUIDs: [CBUUID]?, for service: CBService) {
-    discoverCharacteristicsWasCalled = true
+    discoverCharacteristicsWasCalledStack.append((characteristicUUIDs, service))
   }
 
   var readValueForCharacteristicWasCalledStack = [CBCharacteristic]()

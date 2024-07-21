@@ -16,23 +16,11 @@ extension BLECentralManager {
   public func scanForPeripheralsStream(
     withServices services: [CBUUID]?,
     options: [String: Any]?
-  ) async throws -> AsyncThrowingStream<BLEPeripheral, Error> {
-    return AsyncThrowingStream { continuation in
-      let cancellable = scanForPeripherals(withServices: services, options: options)
-        .sink { completion in
-          if case .failure(let error) = completion {
-            continuation.finish(throwing: error)
-          }
-          else {
-            continuation.finish()
-          }
-        } receiveValue: { scanResult in
-          continuation.yield(scanResult.peripheral)
-        }
-      continuation.onTermination = { _ in
-        cancellable.cancel()
-      }
-    }
+  ) -> AsyncThrowingStream<BLEPeripheral, Error> {
+    let scanPublisher = scanForPeripherals(withServices: services, options: options)
+      .map { $0.peripheral }
+      .eraseToAnyPublisher()
+    return scanPublisher.asyncThrowingStream
   }
 
   public func connectAsync(

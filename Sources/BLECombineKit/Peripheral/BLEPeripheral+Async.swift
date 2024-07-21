@@ -28,28 +28,30 @@ extension BLEPeripheral {
   public func discoverServicesAsync(
     serviceUUIDs: [CBUUID]?
   ) async throws -> [BLEService] {
-    let stream = discoverServices(serviceUUIDs: serviceUUIDs).values
-    return try await stream.reduce(into: []) { partialResult, service in
-      partialResult.append(service)
+    var iterator = discoverServices(serviceUUIDs: serviceUUIDs)
+      .collect()
+      .values
+      .makeAsyncIterator()
+
+    guard let results = try await iterator.next() else {
+      throw BLEError.unknown
     }
+    return results
   }
 
   public func discoverCharacteristicsAsync(
     characteristicUUIDs: [CBUUID]?,
     for service: CBService
   ) async throws -> [BLECharacteristic] {
-    let stream = discoverCharacteristics(characteristicUUIDs: characteristicUUIDs, for: service)
+    var iterator = discoverCharacteristics(characteristicUUIDs: characteristicUUIDs, for: service)
       .collect()
       .values
-//    return try await stream.reduce(into: []) { partialResult, characteristic in
-//      partialResult.append(characteristic)
-//    }
-//    var results = [BLECharacteristic]()
-    for try await results in stream {
-      return results
+      .makeAsyncIterator()
+
+    guard let results = try await iterator.next() else {
+      throw BLEError.unknown
     }
-//    return results
-    return []
+    return results
   }
 
   public func readValueAsync(for characteristic: CBCharacteristic) async throws -> BLEData {
@@ -58,5 +60,17 @@ extension BLEPeripheral {
       throw BLEError.unknown
     }
     return value
+  }
+
+  public func observeValueStream(
+    for characteristic: CBCharacteristic
+  ) -> AsyncThrowingStream<BLEData, Error> {
+    return observeValue(for: characteristic).asyncThrowingStream
+  }
+
+  public func observeValueUpdateAndSetNotificationStream(
+    for characteristic: CBCharacteristic
+  ) -> AsyncThrowingStream<BLEData, Error> {
+    return observeValueUpdateAndSetNotification(for: characteristic).asyncThrowingStream
   }
 }

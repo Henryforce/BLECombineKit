@@ -19,6 +19,10 @@ public struct BLECharacteristic: BLEPeripheralResult {
     self.peripheral = peripheral
   }
 
+  public func readValue() -> AnyPublisher<BLEData, BLEError> {
+    peripheral.readValue(for: value)
+  }
+
   public func observeValue() -> AnyPublisher<BLEData, BLEError> {
     peripheral.observeValue(for: value)
   }

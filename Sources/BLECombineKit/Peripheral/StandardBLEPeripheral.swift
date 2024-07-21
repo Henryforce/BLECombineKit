@@ -185,7 +185,6 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
     for service: CBService
   ) -> AnyPublisher<BLECharacteristic, BLEError> {
     let subject = PassthroughSubject<BLECharacteristic, BLEError>()
-//    associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
     discoverCharacteristicsCancellable?.cancel()
 
     discoverCharacteristicsCancellable = delegate
