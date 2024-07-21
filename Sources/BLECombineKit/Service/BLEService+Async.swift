@@ -13,8 +13,7 @@ import Foundation
 @available(iOS 15, macOS 12.0, *)
 extension BLEService {
   public func discoverCharacteristicsAsync(
-    characteristicUUIDs: [CBUUID]?,
-    for service: CBService
+    characteristicUUIDs: [CBUUID]?
   ) async throws -> [BLECharacteristic] {
     var iterator = discoverCharacteristics(characteristicUUIDs: characteristicUUIDs)
       .collect()

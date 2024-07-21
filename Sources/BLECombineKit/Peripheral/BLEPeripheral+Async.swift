@@ -12,6 +12,7 @@ import Foundation
 
 @available(iOS 15, macOS 12.0, *)
 extension BLEPeripheral {
+  @discardableResult
   public func connectAsync(
     with options: [String: Any]?
   ) async throws -> BLEPeripheral {
