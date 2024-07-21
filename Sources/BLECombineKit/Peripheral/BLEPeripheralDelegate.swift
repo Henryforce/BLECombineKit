@@ -28,6 +28,9 @@ typealias DidReadRSSIResult = (peripheral: CBPeripheralWrapper, rssi: NSNumber, 
 typealias DidWriteValueForCharacteristicResult = (
   peripheral: CBPeripheralWrapper, characteristic: CBCharacteristic, error: Error?
 )
+typealias DidUpdateNotificationStateResult = (
+  peripheral: CBPeripheralWrapper, characteristic: CBCharacteristic, error: BLEError?
+)
 
 final class BLEPeripheralDelegate: NSObject {
 
@@ -60,6 +63,9 @@ final class BLEPeripheralDelegate: NSObject {
   let didWriteValueForCharacteristic = PassthroughSubject<
     DidWriteValueForCharacteristicResult, Error
   >()
+
+  /// Subject used for the didUpdateNotificationState callback.
+  let didUpdateNotificationState = PassthroughSubject<DidUpdateNotificationStateResult, BLEError>()
 
 }
 
@@ -131,6 +137,27 @@ extension BLEPeripheralDelegate: CBPeripheralDelegate {
     let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
     didWriteValueForCharacteristic.send(
       (peripheral: peripheralWrapper, characteristic: characteristic, error: error)
+    )
+  }
+
+  func peripheral(
+    _ peripheral: CBPeripheral,
+    didUpdateNotificationStateFor characteristic: CBCharacteristic,
+    error: (any Error)?
+  ) {
+    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
+    let bleError = bleError(from: error)
+    didUpdateNotificationState.send(
+      (peripheral: peripheralWrapper, characteristic: characteristic, error: bleError)
+    )
+  }
+
+  private func bleError(from error: Error?) -> BLEError? {
+    guard let validError = error as? NSError else { return nil }
+    return BLEError.peripheral(
+      .servicesFoundError(
+        BLEError.CoreBluetoothError.from(error: validError)
+      )
     )
   }
 }

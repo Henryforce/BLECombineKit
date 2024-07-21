@@ -244,10 +244,24 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
   public func observeValueUpdateAndSetNotification(
     for characteristic: CBCharacteristic
   ) -> AnyPublisher<BLEData, BLEError> {
-    buildDeferredValuePublisher(for: characteristic)
+    //    buildDeferredValuePublisher(for: characteristic)
+    //      .handleEvents(receiveRequest: { [weak self] _ in
+    //        self?.associatedPeripheral.setNotifyValue(true, for: characteristic)
+    //      }).eraseToAnyPublisher()
+
+    let deferredPublisher = buildDeferredValuePublisher(for: characteristic)
+    return delegate.didUpdateNotificationState
       .handleEvents(receiveRequest: { [weak self] _ in
         self?.associatedPeripheral.setNotifyValue(true, for: characteristic)
-      }).eraseToAnyPublisher()
+      })
+      .filter { $0.characteristic.uuid == characteristic.uuid }
+      .flatMap { output -> AnyPublisher<BLEData, BLEError> in
+        if let error = output.error {
+          return Fail(error: error).eraseToAnyPublisher()
+        }
+        return deferredPublisher
+      }
+      .eraseToAnyPublisher()
   }
 
   public func setNotifyValue(
