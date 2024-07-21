@@ -12,7 +12,7 @@ import Foundation
 
 @available(iOS 15, macOS 12.0, *)
 extension BLECharacteristic {
-  public func readValueAsync(for characteristic: CBCharacteristic) async throws -> BLEData {
+  public func readValueAsync() async throws -> BLEData {
     var iterator = readValue().values.makeAsyncIterator()
     guard let value = try await iterator.next() else {
       throw BLEError.unknown
@@ -20,15 +20,11 @@ extension BLECharacteristic {
     return value
   }
 
-  public func observeValueStream(
-    for characteristic: CBCharacteristic
-  ) -> AsyncThrowingStream<BLEData, Error> {
+  public func observeValueStream() -> AsyncThrowingStream<BLEData, Error> {
     return observeValue().asyncThrowingStream
   }
 
-  public func observeValueUpdateAndSetNotificationStream(
-    for characteristic: CBCharacteristic
-  ) -> AsyncThrowingStream<BLEData, Error> {
+  public func observeValueUpdateAndSetNotificationStream() -> AsyncThrowingStream<BLEData, Error> {
     return observeValueUpdateAndSetNotification().asyncThrowingStream
   }
 }
