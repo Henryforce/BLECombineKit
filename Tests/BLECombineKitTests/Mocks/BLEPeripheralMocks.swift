@@ -74,7 +74,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   var observeValueWasCalled = false
   func observeValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
     observeValueWasCalled = true
-    let data = BLEData(value: Data(), peripheral: self)
+    let data = BLEData(value: Data())
     return Just(data)
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
@@ -83,7 +83,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   var readValueWasCalledStack = [CBCharacteristic]()
   func readValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
     readValueWasCalledStack.append(characteristic)
-    let data = BLEData(value: Data(), peripheral: self)
+    let data = BLEData(value: Data())
     return Just(data)
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
@@ -94,7 +94,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
     -> AnyPublisher<BLEData, BLEError>
   {
     observeValueUpdateAndSetNotificationWasCalled = true
-    let data = BLEData(value: Data(), peripheral: self)
+    let data = BLEData(value: Data())
     return Just(data)
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()

@@ -173,49 +173,12 @@ final class BLEPeripheralTests: XCTestCase {
     XCTAssertEqual(peripheralMock.discoverCharacteristicsWasCalledStack.count, 1)
   }
 
-  func testDiscoverCharacteristicWithMultipleSubscriptionsCallsDelegateOnlyOnce() throws {
-    // Given
-    let expectation = XCTestExpectation(description: "self.debugDescription")
-    let expectation2 = XCTestExpectation(description: "self.debugDescription 2")
-    let service = CBMutableService(type: CBUUID(string: "0x0000"), primary: true)
-    let mutableCharacteristic = commonMutableCharacteristic()
-    service.characteristics = [mutableCharacteristic]
-
-    // When
-    let publisher = sut.discoverCharacteristics(characteristicUUIDs: nil, for: service)
-
-    publisher
-      .sink(
-        receiveCompletion: { _ in
-          expectation.fulfill()
-        },
-        receiveValue: { _ in
-        }
-      ).store(in: &disposable)
-
-    publisher
-      .sink(
-        receiveCompletion: { _ in
-          expectation2.fulfill()
-        },
-        receiveValue: { _ in
-        }
-      ).store(in: &disposable)
-    delegate.didDiscoverCharacteristics.send(
-      (peripheral: peripheralMock, service: service, error: nil)
-    )
-
-    // Then
-    wait(for: [expectation, expectation2], timeout: 0.005)
-    XCTAssertEqual(peripheralMock.discoverCharacteristicsWasCalledStack.count, 1)
-  }
-
   func testObserveValueReturns() throws {
     // Given
     let expectation = XCTestExpectation(description: self.debugDescription)
     var expectedData: BLEData?
     let mutableCharacteristic = commonMutableCharacteristic()
-    let expectedReadStack = [mutableCharacteristic]
+    let expectedReadStack = [CBCharacteristic]()
 
     // When
     sut.observeValue(for: mutableCharacteristic)
@@ -454,21 +417,29 @@ final class BLEPeripheralTests: XCTestCase {
     XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
   }
 
-  func testWriteValueWithResponseReturnsErrorOnDelegateErrorCall() {
+  func testWriteValueWithResponseReturnsErrorOnDelegateErrorCall() throws {
     // Given
     let expectation = XCTestExpectation(description: #function)
     let mutableCharacteristic = commonMutableCharacteristic()
+    let baseError = NSError(
+      domain: CBErrorDomain,
+      code: CBError.Code.connectionFailed.rawValue,
+      userInfo: nil
+    )
+    let coreBluetoothError = BLEError.CoreBluetoothError.from(error: baseError)
+    let bleError = BLEError.peripheral(.writeError(coreBluetoothError))
+    var receivedError: BLEError?
 
     // When
     sut.writeValue(Data(), for: mutableCharacteristic, type: .withResponse)
       .sink(
         receiveCompletion: { completion in
-          if case .failure(let error) = completion, case .writeFailed(let subError) = error,
-            case .base(code: let code, description: _) = subError,
-            code == CBError.Code.connectionFailed
-          {
-            expectation.fulfill()
+          guard case .failure(let error) = completion else {
+            XCTFail("Failure was expected")
+            return
           }
+          receivedError = error
+          expectation.fulfill()
         },
         receiveValue: { _ in
         }
@@ -477,17 +448,23 @@ final class BLEPeripheralTests: XCTestCase {
     delegate.didWriteValueForCharacteristic.send(
       (
         peripheral: peripheralMock, characteristic: mutableCharacteristic,
-        error: NSError(
-          domain: CBErrorDomain,
-          code: CBError.Code.connectionFailed.rawValue,
-          userInfo: nil
-        )
+        error: bleError
       )
     )
 
     // Then
     wait(for: [expectation], timeout: 0.005)
     XCTAssertTrue(peripheralMock.writeValueForCharacteristicWasCalled)
+    let validReceivedError = try XCTUnwrap(receivedError)
+    guard case .peripheral(let peripheralError) = validReceivedError else {
+      XCTFail("Not a peripheral error")
+      return
+    }
+    guard case .writeError(let writeError) = peripheralError else {
+      XCTFail("Not a write error")
+      return
+    }
+    XCTAssertEqual(writeError, coreBluetoothError)
   }
 
   func testDisconnectCallsCentralManager() throws {

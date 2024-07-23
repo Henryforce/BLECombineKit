@@ -8,9 +8,8 @@
 
 import Combine
 import CoreBluetooth
-import Foundation
 
-public struct BLECharacteristic: BLEPeripheralResult {
+public struct BLECharacteristic {
   public let value: CBCharacteristic
   private let peripheral: BLEPeripheral
 

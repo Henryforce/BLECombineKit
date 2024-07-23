@@ -26,11 +26,7 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
   /// Cancellable reference to the connect publisher.
   private var connectCancellable: AnyCancellable?
 
-  /// Cancellable reference to the discoverServices publisher.
-  private var discoverServicesCancellable: AnyCancellable?
-
-  /// Cancellable reference to the discoverCharacteristics publisher.
-  private var discoverCharacteristicsCancellable: AnyCancellable?
+  private typealias CharacteristicValuePreHandler = () -> (Void)
 
   init(
     peripheral: CBPeripheralWrapper,
@@ -42,7 +38,7 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
     self.delegate = delegate
   }
 
-  public convenience init(
+  convenience init(
     peripheral: CBPeripheralWrapper,
     centralManager: BLECentralManager?
   ) {
@@ -53,11 +49,11 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
     self.init(peripheral: peripheral, centralManager: centralManager, delegate: delegate)
   }
 
-  public func observeConnectionState() -> AnyPublisher<Bool, Never> {
+  func observeConnectionState() -> AnyPublisher<Bool, Never> {
     return connectionState.eraseToAnyPublisher()
   }
 
-  public func connect(
+  func connect(
     with options: [String: Any]?
   ) -> AnyPublisher<BLEPeripheral, BLEError> {
     return Future<BLEPeripheral, BLEError> { [weak self] promise in
@@ -102,11 +98,9 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
   }
 
   @discardableResult
-  public func disconnect() -> AnyPublisher<Never, BLEError> {
+  func disconnect() -> AnyPublisher<Never, BLEError> {
     guard let centralManager = centralManager else {
-      return Just(false)
-        .tryMap { _ in throw BLEError.peripheral(.disconnectionFailed) }
-        .mapError { $0 as? BLEError ?? BLEError.unknown }
+      return Fail(error: BLEError.peripheral(.disconnectionFailed))
         .eraseToAnyPublisher()
     }
     return
@@ -116,28 +110,28 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
       .eraseToAnyPublisher()
   }
 
-  public func observeNameValue() -> AnyPublisher<String, Never> {
+  func observeNameValue() -> AnyPublisher<String, Never> {
     return delegate
       .didUpdateName
       .map { $0.name }
       .eraseToAnyPublisher()
   }
 
-  public func observeRSSIValue() -> AnyPublisher<NSNumber, BLEError> {
-    associatedPeripheral.readRSSI()
-
-    return delegate
-      .didReadRSSI
-      .map { $0.rssi }
-      .mapError { $0 as? BLEError ?? BLEError.unknown }
-      .eraseToAnyPublisher()
+  func observeRSSIValue() -> AnyPublisher<NSNumber, BLEError> {
+    Deferred<AnyPublisher<NSNumber, BLEError>> { [delegate, associatedPeripheral] in
+      defer {
+        associatedPeripheral.readRSSI()
+      }
+      return delegate
+        .didReadRSSI
+        .map { $0.rssi }
+        .eraseToAnyPublisher()
+    }.eraseToAnyPublisher()
   }
 
-  public func discoverServices(
+  func discoverServices(
     serviceUUIDs: [CBUUID]?
   ) -> AnyPublisher<BLEService, BLEError> {
-    let subject = PassthroughSubject<BLEService, BLEError>()
-
     if let services = associatedPeripheral.services, services.isNotEmpty {
       return Publishers.Sequence(sequence: services)
         .setFailureType(to: BLEError.self)
@@ -145,173 +139,135 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
         .eraseToAnyPublisher()
     }
 
-    associatedPeripheral.discoverServices(serviceUUIDs)
-    discoverServicesCancellable?.cancel()
-
-    discoverServicesCancellable = delegate
-      .didDiscoverServices
-      .tryFilter { [weak self] in
-        guard let self = self else { throw BLEError.deallocated }
-        return $0.peripheral.identifier == self.associatedPeripheral.identifier
+    return Deferred<AnyPublisher<BLEService, BLEError>> {
+      [weak self, delegate, associatedPeripheral] in
+      defer {
+        associatedPeripheral.discoverServices(serviceUUIDs)
       }
-      .tryMap { result -> [CBService] in
-        guard result.error == nil, let services = result.peripheral.services else {
-          throw BLEError.peripheral(
-            .servicesFoundError(BLEError.CoreBluetoothError.from(error: result.error! as NSError))
-          )
+      let identifier = associatedPeripheral.identifier
+      return delegate
+        .didDiscoverServices
+        .filter { $0.peripheral.identifier == identifier }
+        .first()
+        .flatMap { result -> AnyPublisher<CBService, BLEError> in
+          let output = result.peripheral.services ?? []
+          return Publishers.Sequence(sequence: output)
+            .eraseToAnyPublisher()
         }
-        return services
-      }
-      .mapError { $0 as? BLEError ?? BLEError.unknown }
-      .sink(
-        receiveCompletion: { completion in
-          guard case .failure(let error) = completion else { return }
-          subject.send(completion: .failure(error))
-        },
-        receiveValue: { [weak self] services in
-          guard let self = self else { return }
-          services.forEach { service in
-            subject.send(BLEService(value: service, peripheral: self))
-          }
-          subject.send(completion: .finished)
+        .compactMap { [weak self] output -> BLEService? in
+          guard let self else { return nil }
+          return BLEService(value: output, peripheral: self)
         }
-      )
-
-    return subject.eraseToAnyPublisher()
+        .eraseToAnyPublisher()
+    }.eraseToAnyPublisher()
   }
 
-  public func discoverCharacteristics(
+  func discoverCharacteristics(
     characteristicUUIDs: [CBUUID]?,
     for service: CBService
   ) -> AnyPublisher<BLECharacteristic, BLEError> {
-    let subject = PassthroughSubject<BLECharacteristic, BLEError>()
-    discoverCharacteristicsCancellable?.cancel()
-
-    discoverCharacteristicsCancellable = delegate
-      .didDiscoverCharacteristics
-      .handleEvents(receiveSubscription: { [weak self] _ in
-        self?.associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
-      })
-      .tryFilter { [weak self] in
-        guard let self = self else { throw BLEError.deallocated }
-        return $0.peripheral.identifier == self.associatedPeripheral.identifier
+    return Deferred<AnyPublisher<BLECharacteristic, BLEError>> {
+      [weak self, delegate, associatedPeripheral] in
+      defer {
+        associatedPeripheral.discoverCharacteristics(characteristicUUIDs, for: service)
       }
-      .tryMap { result -> [CBCharacteristic] in
-        guard result.error == nil, let characteristics = result.service.characteristics else {
-          throw BLEError.peripheral(
-            .characteristicsFoundError(
-              BLEError.CoreBluetoothError.from(error: result.error! as NSError)
-            )
-          )
+      let identifier = associatedPeripheral.identifier
+      return delegate
+        .didDiscoverCharacteristics
+        .filter { $0.peripheral.identifier == identifier }
+        .first()
+        .flatMap { result -> AnyPublisher<CBCharacteristic, BLEError> in
+          let output = result.service.characteristics ?? []
+          return Publishers.Sequence(sequence: output)
+            .eraseToAnyPublisher()
         }
-        return characteristics
-      }
-      .mapError { $0 as? BLEError ?? BLEError.unknown }
-      .sink(
-        receiveCompletion: { completion in
-          guard case .failure(let error) = completion else { return }
-          subject.send(completion: .failure(error))
-        },
-        receiveValue: { [weak self] characteristics in
-          guard let self = self else { return }
-          characteristics.forEach { characteristic in
-            subject.send(BLECharacteristic(value: characteristic, peripheral: self))
-          }
-          subject.send(completion: .finished)
+        .compactMap { [weak self] output -> BLECharacteristic? in
+          guard let self else { return nil }
+          return BLECharacteristic(value: output, peripheral: self)
         }
-      )
-
-    return subject.eraseToAnyPublisher()
+        .eraseToAnyPublisher()
+    }.eraseToAnyPublisher()
   }
 
-  public func observeValue(
+  func observeValue(
     for characteristic: CBCharacteristic
   ) -> AnyPublisher<BLEData, BLEError> {
-    buildDeferredValuePublisher(for: characteristic)
-      .handleEvents(receiveRequest: { [weak self] _ in
-        self?.associatedPeripheral.readValue(for: characteristic)
-      }).eraseToAnyPublisher()
+    return buildDeferredValuePublisher(for: characteristic, preHandler: nil)
+      .eraseToAnyPublisher()
   }
 
-  public func readValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
-    buildDeferredValuePublisher(for: characteristic)
+  func readValue(for characteristic: CBCharacteristic) -> AnyPublisher<BLEData, BLEError> {
+    let preHandler: () -> (Void) = { [weak self] in
+      self?.associatedPeripheral.readValue(for: characteristic)
+    }
+    return buildDeferredValuePublisher(for: characteristic, preHandler: preHandler)
       .first()
-      .handleEvents(receiveSubscription: { [weak self] _ in
-        self?.associatedPeripheral.readValue(for: characteristic)
-      }).eraseToAnyPublisher()
+      .eraseToAnyPublisher()
   }
 
-  public func observeValueUpdateAndSetNotification(
+  func observeValueUpdateAndSetNotification(
     for characteristic: CBCharacteristic
   ) -> AnyPublisher<BLEData, BLEError> {
-    buildDeferredValuePublisher(for: characteristic)
-      .handleEvents(receiveRequest: { [weak self] _ in
-        self?.associatedPeripheral.setNotifyValue(true, for: characteristic)
-      }).eraseToAnyPublisher()
+    let preHandler: () -> (Void) = { [weak self] in
+      self?.associatedPeripheral.setNotifyValue(true, for: characteristic)
+    }
+    return buildDeferredValuePublisher(for: characteristic, preHandler: preHandler)
+      .eraseToAnyPublisher()
   }
 
-  public func setNotifyValue(
+  func setNotifyValue(
     _ enabled: Bool,
     for characteristic: CBCharacteristic
   ) {
     associatedPeripheral.setNotifyValue(enabled, for: characteristic)
   }
 
-  public func writeValue(
+  func writeValue(
     _ data: Data,
     for characteristic: CBCharacteristic,
     type: CBCharacteristicWriteType
   ) -> AnyPublisher<Never, BLEError> {
-    defer {
-      associatedPeripheral.writeValue(data, for: characteristic, type: type)
-    }
-
-    switch type {
-    case .withResponse:
-      return self.delegate
-        .didWriteValueForCharacteristic
-        .filter({ $0.characteristic == characteristic })
-        .tryMap({ result -> CBCharacteristic in
-          if let error = result.error {
-            throw error
+    return Deferred<AnyPublisher<Never, BLEError>> { [delegate, associatedPeripheral] in
+      defer {
+        associatedPeripheral.writeValue(data, for: characteristic, type: type)
+      }
+      switch type {
+      case .withResponse:
+        return delegate
+          .didWriteValueForCharacteristic
+          .filter({ $0.characteristic.uuid == characteristic.uuid })
+          .flatMap { result -> AnyPublisher<Bool, BLEError> in
+            BLECombineKit.OutputOrFail(output: true, error: result.error)
           }
-          return result.characteristic
-        })
-        .mapError({
-          BLEError.writeFailed(
-            BLEError.CoreBluetoothError.from(
-              error:
-                $0 as NSError
-            )
-          )
-        })
-        .first()
-        .ignoreOutput()
-        .eraseToAnyPublisher()
-    default:
-      return Empty(completeImmediately: true)
-        .setFailureType(to: BLEError.self)
-        .eraseToAnyPublisher()
-    }
+          .first()
+          .ignoreOutput()
+          .eraseToAnyPublisher()
+      default:
+        return Empty(completeImmediately: true)
+          .setFailureType(to: BLEError.self)
+          .eraseToAnyPublisher()
+      }
+    }.eraseToAnyPublisher()
   }
 
-  // MARK - private
+  // MARK - Private.
 
   private func buildDeferredValuePublisher(
-    for characteristic: CBCharacteristic
+    for characteristic: CBCharacteristic,
+    preHandler: CharacteristicValuePreHandler?
   ) -> AnyPublisher<BLEData, BLEError> {
-    Deferred<AnyPublisher<BLEData, BLEError>> {
-      self.delegate
+    return Deferred<AnyPublisher<BLEData, BLEError>> { [delegate] in
+      // Run the pre-handler to run the method that will trigger the delegate's publisher.
+      defer { preHandler?() }
+      return delegate
         .didUpdateValueForCharacteristic
         .filter { $0.characteristic.uuid == characteristic.uuid }
-        .tryMap { [weak self] filteredPeripheral in
-          guard let self = self else { throw BLEError.deallocated }
+        .flatMap { filteredPeripheral -> AnyPublisher<BLEData, BLEError> in
           guard let data = filteredPeripheral.characteristic.value else {
-            throw BLEError.data(.invalid)
+            return Fail(error: BLEError.data(.invalid)).eraseToAnyPublisher()
           }
-          return BLEData(value: data, peripheral: self)
+          return BLECombineKit.Just(BLEData(value: data))
         }
-        .mapError { $0 as? BLEError ?? BLEError.unknown }
         .eraseToAnyPublisher()
     }.eraseToAnyPublisher()
   }
