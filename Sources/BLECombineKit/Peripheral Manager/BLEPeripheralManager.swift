@@ -236,9 +236,9 @@ public class BLEPeripheralManager {
   /// Continuous observer for `CBPeripheralManagerDelegate.peripheralManager(_:didReceiveRead:)` results
   /// - returns: Observable that emits `next` event whenever didReceiveRead occurs.
   ///
-  /// It's **infinite** stream, so `.complete` is never called.
+  /// It's an **infinite** stream, so `.complete` is never called.
   ///
-  /// Observable can ends with following errors:
+  /// Observable can end with following errors:
   /// * `BLEError.deallocated`
   /// * `BLEError.bluetoothUnsupported`
   /// * `BLEError.bluetoothUnauthorized`

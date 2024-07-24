@@ -253,4 +253,23 @@ final class BLECentralManagerTests: XCTestCase {
     XCTAssertNotNil(observedPeripheral)
   }
 
+  func testConnect() {
+    // Given.
+    let expectation = XCTestExpectation(description: #function)
+    let peripheral = MockBLEPeripheral()
+    let peripheralWrapper = MockCBPeripheralWrapper()
+
+    // When.
+    sut.connect(peripheral: peripheral, options: nil)
+      .sink { _ in
+      } receiveValue: { receivedPeripheral in
+        expectation.fulfill()
+      }.store(in: &cancellables)
+    delegate.didConnectPeripheral.send(peripheralWrapper)
+
+    // Then.
+    wait(for: [expectation], timeout: 0.01)
+    XCTAssertEqual(centralManagerWrapper.connectWasCalledCount, 1)
+  }
+
 }

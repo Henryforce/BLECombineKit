@@ -10,7 +10,7 @@ import Combine
 import CoreBluetooth
 import Foundation
 
-public struct BLEService: BLEPeripheralResult {
+public struct BLEService {
   public let value: CBService
   private let peripheral: BLEPeripheral
 

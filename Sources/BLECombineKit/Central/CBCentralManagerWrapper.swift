@@ -46,7 +46,6 @@ final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
   func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
     wrappedManager
       .retrievePeripherals(withIdentifiers: identifiers)
-      .map { StandardCBPeripheralWrapper(peripheral: $0) }
   }
 
   func retrieveConnectedPeripherals(
@@ -54,7 +53,6 @@ final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
   ) -> [CBPeripheralWrapper] {
     wrappedManager
       .retrieveConnectedPeripherals(withServices: serviceUUIDs)
-      .map { StandardCBPeripheralWrapper(peripheral: $0) }
   }
 
   func scanForPeripherals(withServices serviceUUIDs: [CBUUID]?, options: [String: Any]?) {
@@ -66,11 +64,13 @@ final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
   }
 
   func connect(_ wrappedPeripheral: CBPeripheralWrapper, options: [String: Any]?) {
-    wrappedManager.connect(wrappedPeripheral.peripheral, options: options)
+    guard let manager else { return }
+    wrappedPeripheral.connect(manager: manager)
   }
 
   func cancelPeripheralConnection(_ wrappedPeripheral: CBPeripheralWrapper) {
-    wrappedManager.cancelPeripheralConnection(wrappedPeripheral.peripheral)
+    guard let manager else { return }
+    wrappedPeripheral.cancelConnection(manager: manager)
   }
 
   #if !os(macOS)

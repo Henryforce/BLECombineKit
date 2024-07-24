@@ -35,7 +35,7 @@ final class BLEDataTests: XCTestCase {
       }
     )
 
-    let data = BLEData(value: float32Data, peripheral: mockupPeripheral)
+    let data = BLEData(value: float32Data)
 
     if let result = data.to(type: Float32.self) {
       XCTAssertEqual(float32, result, accuracy: 0.000001)

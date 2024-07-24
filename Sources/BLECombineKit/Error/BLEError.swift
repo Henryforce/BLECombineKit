@@ -86,16 +86,28 @@ public enum BLEError: Error, CustomStringConvertible {
     case invalid
     case connectionFailure
     case disconnectionFailed
+    case didDiscoverDescriptorsError(CoreBluetoothError)
+    case didUpdateValueForCharacteristicError(CoreBluetoothError)
+    case didUpdateValueForDescriptorError(CoreBluetoothError)
     case servicesFoundError(CoreBluetoothError)
     case characteristicsFoundError(CoreBluetoothError)
+    case writeError(CoreBluetoothError)
+    case readRSSIError(CoreBluetoothError)
 
     public var description: String {
       switch self {
-      case .invalid: return "Invalid"
-      case .connectionFailure: return "Connection Failure"
-      case .disconnectionFailed: return "Disconnection Failed"
-      case .servicesFoundError(let error): return "Services Found Error: \(error)"
-      case .characteristicsFoundError(let error): return "Characteristics Found Error: \(error)"
+      case .invalid: "Invalid"
+      case .connectionFailure: "Connection Failure"
+      case .disconnectionFailed: "Disconnection Failed"
+      case .didDiscoverDescriptorsError(let error): "Did Discover Descriptors Error: \(error)"
+      case .didUpdateValueForCharacteristicError(let error):
+        "Did Update Value for Characteristic Error:  \(error)"
+      case .didUpdateValueForDescriptorError(let error):
+        "Did Update Value for Descriptor Error: \(error)"
+      case .servicesFoundError(let error): "Services Found Error: \(error)"
+      case .characteristicsFoundError(let error): "Characteristics Found Error: \(error)"
+      case .writeError(let error): "Write Error: \(error)"
+      case .readRSSIError(let error): "Read RSSI Error: \(error)"
       }
     }
   }

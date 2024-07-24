@@ -74,4 +74,13 @@ extension BLEPeripheral {
   ) -> AsyncThrowingStream<BLEData, Error> {
     return observeValueUpdateAndSetNotification(for: characteristic).asyncThrowingStream
   }
+
+  public func writeValueAsync(
+    _ data: Data,
+    for characteristic: CBCharacteristic,
+    type: CBCharacteristicWriteType
+  ) async throws {
+    let stream = writeValue(data, for: characteristic, type: type).values
+    for try await _ in stream { return }
+  }
 }

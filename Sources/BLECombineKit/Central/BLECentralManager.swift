@@ -50,7 +50,7 @@ public protocol BLECentralManager: AnyObject {
   func cancelPeripheralConnection(_ peripheral: BLEPeripheral) -> AnyPublisher<Never, Never>
 
   /// Register for any connection events.
-  #if !os(macOS)
+  #if os(iOS) || os(tvOS) || os(watchOS)
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption: Any]?)
   #endif
 

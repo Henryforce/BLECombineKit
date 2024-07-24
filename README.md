@@ -27,14 +27,16 @@ import BLECombineKit
 let centralManager = BLECombineKit.buildCentralManager(with: CBCentralManager())
 
 let serviceUUID = CBUUID(string: "0x00FF")
-// Connect to the first peripheral that matches the given service UUID and observe all the
-// characteristics in that service.
+let characteristicUUID = CBUUID(string: "0xFF01")
+// Connect to the first peripheral that matches the given service UUID and observe a specific
+// characteristic in that service.
 centralManager.scanForPeripherals(withServices: [serviceUUID], options: nil)
     .first()
     .flatMap { $0.peripheral.connect(with: nil) }
     .flatMap { $0.discoverServices(serviceUUIDs: [serviceUUID]) }
     .flatMap { $0.discoverCharacteristics(characteristicUUIDs: nil) }
-    .flatMap { $0.observeValue() }
+    .filter { $0.value.uuid == characteristicUUID }
+    .flatMap { $0.observeValueUpdateAndSetNotification() }
     .sink(receiveCompletion: { completion in
         print(completion)
     }, receiveValue: { data in
@@ -55,14 +57,16 @@ import BLECombineKit
 let centralManager = BLECombineKit.buildCentralManager(with: CBCentralManager())
 
 let serviceUUID = CBUUID(string: "0x00FF")
-// Connect to the first peripheral that matches the given service UUID and observe all the
-// characteristics in that service.
+let characteristicUUID = CBUUID(string: "0xFF01")
+// Connect to the first peripheral that matches the given service UUID and observe a specific
+// characteristic in that service.
 let stream = centralManager.scanForPeripherals(withServices: [serviceUUID], options: nil)
     .first()
     .flatMap { $0.peripheral.connect(with: nil) }
     .flatMap { $0.discoverServices(serviceUUIDs: [serviceUUID]) }
     .flatMap { $0.discoverCharacteristics(characteristicUUIDs: nil) }
-    .flatMap { $0.observeValue() }
+    .filter { $0.value.uuid == characteristicUUID }
+    .flatMap { $0.observeValueUpdateAndSetNotification() }
     .values
     
 Task {

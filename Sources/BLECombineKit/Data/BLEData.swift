@@ -8,13 +8,11 @@
 
 import Foundation
 
-public struct BLEData: BLEPeripheralResult {
+public struct BLEData {
   public let value: Data
-  public let peripheral: BLEPeripheral
 
-  public init(value: Data, peripheral: BLEPeripheral) {
+  public init(value: Data) {
     self.value = value
-    self.peripheral = peripheral
   }
 
   public var floatValue: Float32? {
