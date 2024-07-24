@@ -74,8 +74,8 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
       _ central: CBCentralManager,
       didUpdateANCSAuthorizationFor peripheral: CBPeripheral
     ) {
-      let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
-      didUpdateANCSAuthorization.send(peripheralWrapper)
+      //      let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
+      didUpdateANCSAuthorization.send(peripheral)
     }
   #endif
 
