@@ -24,7 +24,6 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
   let didUpdateANCSAuthorization = PassthroughSubject<CBPeripheralWrapper, Never>()
 
   public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-    //    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
     didConnectPeripheral.send(peripheral)
   }
 
@@ -33,7 +32,6 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
     didDisconnectPeripheral peripheral: CBPeripheral,
     error: Error?
   ) {
-    //    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
     didDisconnectPeripheral.send(peripheral)
   }
 
@@ -42,7 +40,6 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
     didFailToConnect peripheral: CBPeripheral,
     error: Error?
   ) {
-    //    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
     didFailToConnect.send(peripheral)
   }
 
@@ -52,7 +49,6 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
     advertisementData: [String: Any],
     rssi RSSI: NSNumber
   ) {
-    //    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
     let result = (peripheral: peripheral, advertisementData: advertisementData, rssi: RSSI)
     didDiscoverAdvertisementData.send(result)
   }
@@ -74,7 +70,6 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
       _ central: CBCentralManager,
       didUpdateANCSAuthorizationFor peripheral: CBPeripheral
     ) {
-      //      let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
       didUpdateANCSAuthorization.send(peripheral)
     }
   #endif
