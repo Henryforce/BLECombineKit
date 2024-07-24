@@ -38,17 +38,6 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
     self.delegate = delegate
   }
 
-  convenience init(
-    peripheral: CBPeripheralWrapper,
-    centralManager: BLECentralManager?
-  ) {
-    let delegate = BLEPeripheralDelegate()
-    if let peripheral = peripheral as? StandardCBPeripheralWrapper {
-      peripheral.setupDelegate(delegate)
-    }
-    self.init(peripheral: peripheral, centralManager: centralManager, delegate: delegate)
-  }
-
   func observeConnectionState() -> AnyPublisher<Bool, Never> {
     return connectionState.eraseToAnyPublisher()
   }

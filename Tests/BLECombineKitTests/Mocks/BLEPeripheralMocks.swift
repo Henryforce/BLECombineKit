@@ -32,7 +32,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
   var connectWasCalled = false
   func connect(with options: [String: Any]?) -> AnyPublisher<BLEPeripheral, BLEError> {
     connectWasCalled = true
-    let blePeripheral = StandardBLEPeripheral(peripheral: associatedPeripheral, centralManager: nil)
+    let blePeripheral = MockBLEPeripheral()
     return Just(blePeripheral)
       .setFailureType(to: BLEError.self)
       .eraseToAnyPublisher()
@@ -148,6 +148,16 @@ final class MockCBPeripheralWrapper: CBPeripheralWrapper {
   var mockedServices: [CBService]?
   var services: [CBService]? {
     return mockedServices
+  }
+
+  var connectWasCalledStack = [CBCentralManager]()
+  func connect(manager: CBCentralManager) {
+    connectWasCalledStack.append(manager)
+  }
+
+  var cancelConnectionWasCalledStack = [CBCentralManager]()
+  func cancelConnection(manager: CBCentralManager) {
+    cancelConnectionWasCalledStack.append(manager)
   }
 
   var setupDelegateWasCalledStack = [CBPeripheralDelegate]()

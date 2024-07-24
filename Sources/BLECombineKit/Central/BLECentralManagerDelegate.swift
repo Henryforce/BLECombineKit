@@ -24,8 +24,8 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
   let didUpdateANCSAuthorization = PassthroughSubject<CBPeripheralWrapper, Never>()
 
   public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
-    didConnectPeripheral.send(peripheralWrapper)
+    //    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
+    didConnectPeripheral.send(peripheral)
   }
 
   public func centralManager(
@@ -33,8 +33,8 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
     didDisconnectPeripheral peripheral: CBPeripheral,
     error: Error?
   ) {
-    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
-    didDisconnectPeripheral.send(peripheralWrapper)
+    //    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
+    didDisconnectPeripheral.send(peripheral)
   }
 
   public func centralManager(
@@ -42,8 +42,8 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
     didFailToConnect peripheral: CBPeripheral,
     error: Error?
   ) {
-    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
-    didFailToConnect.send(peripheralWrapper)
+    //    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
+    didFailToConnect.send(peripheral)
   }
 
   public func centralManager(
@@ -52,8 +52,8 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
     advertisementData: [String: Any],
     rssi RSSI: NSNumber
   ) {
-    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
-    let result = (peripheral: peripheralWrapper, advertisementData: advertisementData, rssi: RSSI)
+    //    let peripheralWrapper = StandardCBPeripheralWrapper(peripheral: peripheral)
+    let result = (peripheral: peripheral, advertisementData: advertisementData, rssi: RSSI)
     didDiscoverAdvertisementData.send(result)
   }
 

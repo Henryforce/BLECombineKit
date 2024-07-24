@@ -12,9 +12,10 @@ import Foundation
 public enum BLECombineKit {
   /// Build a BLECentralManager from which to scan peripherals.
   ///
-  /// - parameter centralManager: An optional CBCentralManager object, if available.
+  /// - Parameters:
+  ///   - centralManager: An optional CBCentralManager object, if available.
   ///
-  /// - returns: an initialized BLECentralManager object.
+  /// - Returns: an initialized BLECentralManager object.
   static public func buildCentralManager(
     with centralManager: CBCentralManager? = nil
   ) -> BLECentralManager {

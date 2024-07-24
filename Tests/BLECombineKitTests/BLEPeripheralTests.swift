@@ -506,17 +506,6 @@ final class BLEPeripheralTests: XCTestCase {
     wait(for: [expectation], timeout: 0.005)
   }
 
-  func testConvenienceInit() {
-    // Given
-    let peripheralMock = MockCBPeripheralWrapper()
-
-    // When
-    sut = StandardBLEPeripheral(peripheral: peripheralMock, centralManager: nil)
-
-    // Then
-    XCTAssertNotNil(sut)
-  }
-
   // MARK - Private.
 
   private func commonMutableCharacteristic(
