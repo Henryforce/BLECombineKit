@@ -18,9 +18,9 @@ final class BLEPeripheralProviderTests: XCTestCase {
   var centralManager: MockBLECentralManager!
 
   override func setUpWithError() throws {
-    provider = StandardBLEPeripheralProvider()
     peripheralWrapper = MockCBPeripheralWrapper()
     centralManager = MockBLECentralManager()
+    provider = StandardBLEPeripheralProvider(centralManager: centralManager)
   }
 
   override func tearDownWithError() throws {
@@ -34,8 +34,8 @@ final class BLEPeripheralProviderTests: XCTestCase {
     let identifier = peripheralWrapper.identifier
 
     // When.
-    let firstPeripheral = provider.provide(for: peripheralWrapper, centralManager: centralManager)
-    let secondPeripheral = provider.provide(for: peripheralWrapper, centralManager: centralManager)
+    let firstPeripheral = provider.provide(for: peripheralWrapper)
+    let secondPeripheral = provider.provide(for: peripheralWrapper)
 
     // Then.
     let firstAssociatedIdentifier = firstPeripheral.associatedPeripheral.identifier

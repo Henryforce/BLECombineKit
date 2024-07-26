@@ -10,8 +10,7 @@ import Foundation
 
 protocol BLEPeripheralProvider {
   func provide(
-    for peripheralWrapper: CBPeripheralWrapper,
-    centralManager: BLECentralManager
+    for peripheralWrapper: CBPeripheralWrapper
   ) -> BLETrackedPeripheral
 }
 
@@ -24,12 +23,17 @@ final class StandardBLEPeripheralProvider: BLEPeripheralProvider {
 
   private lazy var peripherals = [UUID: StandardBLEPeripheral]()
 
+  private weak var centralManager: BLECentralManager?
+
+  init(centralManager: BLECentralManager?) {
+    self.centralManager = centralManager
+  }
+
   func provide(
-    for peripheralWrapper: CBPeripheralWrapper,
-    centralManager: BLECentralManager
+    for peripheralWrapper: CBPeripheralWrapper
   ) -> BLETrackedPeripheral {
     return existingPeripheral(id: peripheralWrapper.identifier)
-      ?? buildPeripheral(for: peripheralWrapper, centralManager: centralManager)
+      ?? buildPeripheral(for: peripheralWrapper)
   }
 
   // MARK - Private.
@@ -41,8 +45,7 @@ final class StandardBLEPeripheralProvider: BLEPeripheralProvider {
   }
 
   private func buildPeripheral(
-    for peripheralWrapper: CBPeripheralWrapper,
-    centralManager: BLECentralManager
+    for peripheralWrapper: CBPeripheralWrapper
   ) -> StandardBLEPeripheral {
     let peripheralDelegate = BLEPeripheralDelegate()
     peripheralWrapper.setupDelegate(peripheralDelegate)

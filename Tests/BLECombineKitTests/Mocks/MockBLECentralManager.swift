@@ -14,8 +14,8 @@ import Foundation
 
 final class MockBLECentralManager: BLECentralManager {
 
-  private var _state = CurrentValueSubject<ManagerState, Never>(ManagerState.unknown)
-  var state: AnyPublisher<ManagerState, Never> {
+  private var _state = CurrentValueSubject<CBManagerState, Never>(CBManagerState.unknown)
+  var state: AnyPublisher<CBManagerState, Never> {
     _state.eraseToAnyPublisher()
   }
 

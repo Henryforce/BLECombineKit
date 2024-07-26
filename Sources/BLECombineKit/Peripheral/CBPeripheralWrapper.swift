@@ -9,21 +9,11 @@
 import CoreBluetooth
 import Foundation
 
-extension CBPeripheral: CBPeripheralWrapper {
-  public func setupDelegate(_ delegate: CBPeripheralDelegate) {
-    self.delegate = delegate
-  }
-
-  public func connect(manager: CBCentralManager) {
-    manager.connect(self)
-  }
-
-  public func cancelConnection(manager: CBCentralManager) {
-    manager.cancelPeripheralConnection(self)
-  }
-}
-
 public protocol CBPeripheralWrapper {
+  /// The CBCentralManager this interface wraps to.
+  /// Note that CBPeripheral conforms to CBPeripheralWrapper and this getter interface is a convenient way to avoid an expensive downcast. That is, if you need a fixed reference to the CBPeripheral object do not run `let validPeripheral = peripheral as? CBPeripheral`, simply run `let validPeripheral = peripheral.wrappedPeripheral` which will run significantly faster.
+  var wrappedPeripheral: CBPeripheral? { get }
+
   /// The state of the wrapped CBPeripheral.
   var state: CBPeripheralState { get }
 
@@ -37,8 +27,7 @@ public protocol CBPeripheralWrapper {
   var services: [CBService]? { get }
 
   /// Set up the delegate of the wrapped CBPeripheral.
-  /// Avoid calling this method unless you explicitly want to listen to delegate events at the cost
-  /// of breaking the peripheral observable events.
+  /// Avoid calling this method unless you explicitly want to listen to delegate events at the cost of breaking the peripheral observable events.
   func setupDelegate(_ delegate: CBPeripheralDelegate)
 
   /// Connect to a CBCentralManager.
@@ -86,4 +75,22 @@ public protocol CBPeripheralWrapper {
 
   /// Open an L2CAP channel of the wrapped CBPeripheral.
   func openL2CAPChannel(_ PSM: CBL2CAPPSM)
+}
+
+extension CBPeripheral: CBPeripheralWrapper {
+  public var wrappedPeripheral: CBPeripheral? {
+    self
+  }
+
+  public func setupDelegate(_ delegate: CBPeripheralDelegate) {
+    self.delegate = delegate
+  }
+
+  public func connect(manager: CBCentralManager) {
+    manager.connect(self)
+  }
+
+  public func cancelConnection(manager: CBCentralManager) {
+    manager.cancelPeripheralConnection(self)
+  }
 }

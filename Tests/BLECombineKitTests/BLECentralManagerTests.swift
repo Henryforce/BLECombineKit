@@ -14,7 +14,7 @@ import XCTest
 
 final class BLECentralManagerTests: XCTestCase {
 
-  var sut: BLECentralManager!
+  var sut: StandardBLECentralManager!
   var delegate: BLECentralManagerDelegate!
   var centralManagerWrapper: MockCBCentralManagerWrapper!
   var peripheralProvider: MockBLEPeripheralProvider!
@@ -27,8 +27,7 @@ final class BLECentralManagerTests: XCTestCase {
 
     sut = StandardBLECentralManager(
       centralManager: centralManagerWrapper,
-      managerDelegate: delegate,
-      peripheralProvider: peripheralProvider
+      managerDelegate: delegate
     )
   }
 
@@ -74,9 +73,9 @@ final class BLECentralManagerTests: XCTestCase {
     let arrayPeripheralBuilder = MockArrayBLEPeripheralBuilder()
     sut = StandardBLECentralManager(
       centralManager: centralManagerWrapper,
-      managerDelegate: delegate,
-      peripheralProvider: arrayPeripheralBuilder
+      managerDelegate: delegate
     )
+    sut.peripheralProvider = arrayPeripheralBuilder
     let expectation = XCTestExpectation(description: self.debugDescription)
     let peripheralMock = MockCBPeripheralWrapper()
     let mockedPeripheral = MockBLEPeripheral()
@@ -232,6 +231,7 @@ final class BLECentralManagerTests: XCTestCase {
     let mockedCBPeripheralWrapper = MockCBPeripheralWrapper()
     peripheralProvider.blePeripheral = MockBLEPeripheral()
     var observedPeripheral: BLEPeripheral?
+    sut.peripheralProvider = peripheralProvider
 
     // When
     sut.observeDidUpdateANCSAuthorization()

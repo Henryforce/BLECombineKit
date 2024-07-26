@@ -135,9 +135,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
 }
 
 final class MockCBPeripheralWrapper: CBPeripheralWrapper {
-
-  var mockPeripheral: CBPeripheral!
-  var peripheral: CBPeripheral { mockPeripheral }
+  var wrappedPeripheral: CBPeripheral?
 
   var state = CBPeripheralState.connected
 
