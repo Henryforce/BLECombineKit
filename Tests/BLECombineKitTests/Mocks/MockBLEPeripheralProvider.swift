@@ -15,8 +15,7 @@ final class MockBLEPeripheralProvider: BLEPeripheralProvider {
   var blePeripheral: BLETrackedPeripheral?
 
   func provide(
-    for peripheral: CBPeripheralWrapper,
-    centralManager: BLECentralManager
+    for peripheral: CBPeripheralWrapper
   ) -> BLETrackedPeripheral {
     buildBLEPeripheralWasCalledCount += 1
     return blePeripheral ?? MockBLEPeripheral()
@@ -29,8 +28,7 @@ final class MockArrayBLEPeripheralBuilder: BLEPeripheralProvider {
   var blePeripherals = [BLETrackedPeripheral]()
 
   func provide(
-    for peripheral: CBPeripheralWrapper,
-    centralManager: BLECentralManager
+    for peripheral: CBPeripheralWrapper
   ) -> BLETrackedPeripheral {
     let peripheral = blePeripherals.element(at: buildBLEPeripheralWasCalledCount)
     buildBLEPeripheralWasCalledCount += 1

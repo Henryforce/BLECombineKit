@@ -77,16 +77,16 @@ public class BLEPeripheralManager {
 
   // MARK: State
 
-  public var state: ManagerState {
-    return ManagerState(rawValue: manager.state.rawValue) ?? .unknown
+  public var state: CBManagerState {
+    return manager.state
   }
 
-  public func observeState() -> AnyPublisher<ManagerState, Never> {
+  public func observeState() -> AnyPublisher<CBManagerState, Never> {
     return self.delegateWrapper.didUpdateState.eraseToAnyPublisher()
   }
 
-  public func observeStateWithInitialValue() -> AnyPublisher<ManagerState, Never> {
-    return Deferred<AnyPublisher<ManagerState, Never>> { [weak self] in
+  public func observeStateWithInitialValue() -> AnyPublisher<CBManagerState, Never> {
+    return Deferred<AnyPublisher<CBManagerState, Never>> { [weak self] in
       guard let self = self else {
         return Empty().eraseToAnyPublisher()
       }
@@ -421,7 +421,7 @@ public class BLEPeripheralManager {
 
 extension Publisher {
 
-  fileprivate func ensure(_ state: ManagerState, manager: BLEPeripheralManager) -> AnyPublisher<
+  fileprivate func ensure(_ state: CBManagerState, manager: BLEPeripheralManager) -> AnyPublisher<
     Self.Output, Self.Failure
   > {
     Deferred {

@@ -13,13 +13,13 @@ typealias DidDiscoverAdvertisementDataResult = (
 
 final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
 
-  let didConnectPeripheral = PassthroughSubject<CBPeripheralWrapper, Never>()
+  let didConnectPeripheral = PassthroughSubject<CBPeripheralWrapper, BLEError>()
   let didDisconnectPeripheral = PassthroughSubject<CBPeripheralWrapper, Never>()
   let didFailToConnect = PassthroughSubject<CBPeripheralWrapper, Never>()
   let didDiscoverAdvertisementData = PassthroughSubject<
     DidDiscoverAdvertisementDataResult, BLEError
   >()
-  let didUpdateState = PassthroughSubject<ManagerState, Never>()
+  let didUpdateState = PassthroughSubject<CBManagerState, Never>()
   let willRestoreState = PassthroughSubject<[String: Any], Never>()
   let didUpdateANCSAuthorization = PassthroughSubject<CBPeripheralWrapper, Never>()
 
@@ -54,8 +54,7 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
   }
 
   public func centralManagerDidUpdateState(_ central: CBCentralManager) {
-    guard let state = ManagerState(rawValue: central.state.rawValue) else { return }
-    didUpdateState.send(state)
+    didUpdateState.send(central.state)
   }
 
   public func centralManager(
@@ -65,7 +64,7 @@ final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
     willRestoreState.send(dict)
   }
 
-  #if !os(macOS)
+  #if os(iOS) || os(tvOS) || os(watchOS)
     public func centralManager(
       _ central: CBCentralManager,
       didUpdateANCSAuthorizationFor peripheral: CBPeripheral

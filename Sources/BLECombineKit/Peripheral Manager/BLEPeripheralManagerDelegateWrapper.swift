@@ -16,7 +16,7 @@ import Foundation
 ///
 final class BLEPeripheralManagerDelegateWrapper: NSObject, CBPeripheralManagerDelegate {
 
-  let didUpdateState = PassthroughSubject<ManagerState, Never>()
+  let didUpdateState = PassthroughSubject<CBManagerState, Never>()
   let isReady = PassthroughSubject<Void, Never>()
   let didStartAdvertising = PassthroughSubject<Error?, Never>()
   let didReceiveRead = PassthroughSubject<CBATTRequest, Never>()
@@ -37,8 +37,7 @@ final class BLEPeripheralManagerDelegateWrapper: NSObject, CBPeripheralManagerDe
   }
 
   func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-    guard let bleState = ManagerState(rawValue: peripheral.state.rawValue) else { return }
-    didUpdateState.send(bleState)
+    didUpdateState.send(peripheral.state)
   }
 
   func peripheralManagerIsReady(toUpdateSubscribers peripheral: CBPeripheralManager) {

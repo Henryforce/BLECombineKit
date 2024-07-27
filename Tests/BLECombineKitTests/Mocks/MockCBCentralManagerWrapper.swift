@@ -12,20 +12,28 @@ import Foundation
 @testable import BLECombineKit
 
 final class MockCBCentralManagerWrapper: CBCentralManagerWrapper {
-  var manager: CBCentralManager?
+  var wrappedManager: CBCentralManager?
 
   var isScanning: Bool = false
 
+  var delegate: CBCentralManagerDelegate?
+
+  var setupDelegateWasCalledStack = [CBCentralManagerDelegate]()
+  func setupDelegate(_ delegate: CBCentralManagerDelegate) {
+    setupDelegateWasCalledStack.append(delegate)
+  }
+
   var mockRetrieviePeripherals = [CBPeripheralWrapper]()
   var retrievePeripheralsWasCalledCount = 0
-  func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
+  func retrieveCBPeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
     retrievePeripheralsWasCalledCount += 1
     return mockRetrieviePeripherals
   }
 
   var mockRetrieveConnectedPeripherals = [CBPeripheralWrapper]()
   var retrieveConnectedPeripheralsWasCalledCount = 0
-  func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper] {
+  func retrieveConnectedCBPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper]
+  {
     retrieveConnectedPeripheralsWasCalledCount += 1
     return mockRetrieveConnectedPeripherals
   }

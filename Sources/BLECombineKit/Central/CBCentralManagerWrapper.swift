@@ -10,79 +10,71 @@ import CoreBluetooth
 import Foundation
 
 /// Interface for wrapping the CBCentralManager.
-/// This interface is critical in order to mock the CBCentralManager calls as Apple has the
-/// init restricted.
+/// This interface is critical in order to mock the CBCentralManager calls.
 public protocol CBCentralManagerWrapper {
-  var manager: CBCentralManager? { get }
+  /// The CBCentralManager this interface wraps to.
+  /// Note that CBCentralManager conforms to CBCentralManagerWrapper and this getter interface is a convenient way to avoid an expensive downcast. That is, if you need a fixed reference to the CBCentralManager object do not run `let validManager = manager as? CBCentralManager`, simply run `let validManager = manager.wrappedManager` which will run significantly faster.
+  var wrappedManager: CBCentralManager? { get }
+
+  /// The delegate object that will receive central events.
+  var delegate: CBCentralManagerDelegate? { get }
+
+  /// The scanning status of this manager.
   var isScanning: Bool { get }
 
-  func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper]
-  func retrieveConnectedPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper]
+  /// Set up the delegate of the wrapped CBCentralManager.
+  /// Avoid calling this method unless you explicitly want to listen to delegate events at the cost of breaking the manager's observable events.
+  func setupDelegate(_ delegate: CBCentralManagerDelegate)
+
+  /// Retrieve peripherals.
+  func retrieveCBPeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper]
+
+  /// Retrieve all the connected peripherals.
+  func retrieveConnectedCBPeripherals(withServices serviceUUIDs: [CBUUID]) -> [CBPeripheralWrapper]
+
+  /// Start scanning for peripherals with the given set of services and options.
   func scanForPeripherals(withServices serviceUUIDs: [CBUUID]?, options: [String: Any]?)
+
+  /// Stop scanning for peripherals.
   func stopScan()
+
+  /// Connect to a wrapped peripheral with options.
   func connect(_ wrappedPeripheral: CBPeripheralWrapper, options: [String: Any]?)
+
+  /// Cancel the connection to a wrapped peripheral.
   func cancelPeripheralConnection(_ wrappedPeripheral: CBPeripheralWrapper)
-  #if !os(macOS)
+
+  #if os(iOS) || os(tvOS) || os(watchOS)
+    /// Register for connection events with options.
     func registerForConnectionEvents(options: [CBConnectionEventMatchingOption: Any]?)
   #endif
 }
 
-final class StandardCBCentralManagerWrapper: CBCentralManagerWrapper {
-
-  var manager: CBCentralManager? {
-    wrappedManager
+extension CBCentralManager: CBCentralManagerWrapper {
+  public var wrappedManager: CBCentralManager? {
+    self
   }
 
-  var isScanning: Bool {
-    wrappedManager.isScanning
+  public func setupDelegate(_ delegate: CBCentralManagerDelegate) {
+    self.delegate = delegate
   }
 
-  let wrappedManager: CBCentralManager
-
-  init(with manager: CBCentralManager) {
-    self.wrappedManager = manager
+  public func retrieveCBPeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
+    return retrievePeripherals(withIdentifiers: identifiers)
   }
 
-  func retrievePeripherals(withIdentifiers identifiers: [UUID]) -> [CBPeripheralWrapper] {
-    wrappedManager
-      .retrievePeripherals(withIdentifiers: identifiers)
+  public func retrieveConnectedCBPeripherals(withServices serviceUUIDs: [CBUUID])
+    -> [CBPeripheralWrapper]
+  {
+    return retrieveConnectedPeripherals(withServices: serviceUUIDs)
   }
 
-  func retrieveConnectedPeripherals(
-    withServices serviceUUIDs: [CBUUID]
-  ) -> [CBPeripheralWrapper] {
-    wrappedManager
-      .retrieveConnectedPeripherals(withServices: serviceUUIDs)
+  public func connect(_ wrappedPeripheral: CBPeripheralWrapper, options: [String: Any]?) {
+    wrappedPeripheral.connect(manager: self)
   }
 
-  func scanForPeripherals(withServices serviceUUIDs: [CBUUID]?, options: [String: Any]?) {
-    wrappedManager.scanForPeripherals(withServices: serviceUUIDs, options: options)
-  }
-
-  func stopScan() {
-    wrappedManager.stopScan()
-  }
-
-  func connect(_ wrappedPeripheral: CBPeripheralWrapper, options: [String: Any]?) {
-    guard let manager else { return }
-    wrappedPeripheral.connect(manager: manager)
-  }
-
-  func cancelPeripheralConnection(_ wrappedPeripheral: CBPeripheralWrapper) {
-    guard let manager else { return }
-    wrappedPeripheral.cancelConnection(manager: manager)
-  }
-
-  #if !os(macOS)
-    func registerForConnectionEvents(options: [CBConnectionEventMatchingOption: Any]?) {
-
-      wrappedManager.registerForConnectionEvents(options: options)
-
-    }
-  #endif
-
-  func setupDelegate(_ delegate: CBCentralManagerDelegate) {
-    wrappedManager.delegate = delegate
+  public func cancelPeripheralConnection(_ wrappedPeripheral: CBPeripheralWrapper) {
+    wrappedPeripheral.cancelConnection(manager: self)
   }
 
 }

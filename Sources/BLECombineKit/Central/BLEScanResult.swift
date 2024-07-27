@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class BLEScanResult {
+public struct BLEScanResult {
   public let peripheral: BLEPeripheral
   public let advertisementData: [String: Any]
   public let rssi: NSNumber
