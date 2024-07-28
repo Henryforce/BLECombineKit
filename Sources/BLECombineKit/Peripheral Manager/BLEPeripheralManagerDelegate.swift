@@ -14,7 +14,7 @@ import Foundation
 ///
 /// See original source on [GitHub](https://github.com/Polidea/RxBluetoothKit/blob/2a95bce60fb569df57d7bec41d215fe58f56e1d4/Source/CBPeripheralManagerDelegateWrapper.swift).
 ///
-final class BLEPeripheralManagerDelegateWrapper: NSObject, CBPeripheralManagerDelegate {
+final class BLEPeripheralManagerDelegate: NSObject, CBPeripheralManagerDelegate {
 
   let didUpdateState = PassthroughSubject<CBManagerState, Never>()
   let isReady = PassthroughSubject<Void, Never>()
@@ -28,7 +28,6 @@ final class BLEPeripheralManagerDelegateWrapper: NSObject, CBPeripheralManagerDe
   let didPublishL2CAPChannel = PassthroughSubject<(CBL2CAPPSM, Error?), Never>()
   let didUnpublishL2CAPChannel = PassthroughSubject<(CBL2CAPPSM, Error?), Never>()
   private var _didOpenChannel: Any?
-  @available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)
   var didOpenChannel: PassthroughSubject<(CBL2CAPChannel?, Error?), Never> {
     if _didOpenChannel == nil {
       _didOpenChannel = PassthroughSubject<(CBL2CAPChannel?, Error?), Never>()
@@ -103,7 +102,6 @@ final class BLEPeripheralManagerDelegateWrapper: NSObject, CBPeripheralManagerDe
     didUnpublishL2CAPChannel.send((PSM, error))
   }
 
-  @available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)
   func peripheralManager(
     _ peripheral: CBPeripheralManager,
     didOpen channel: CBL2CAPChannel?,

@@ -21,4 +21,11 @@ public enum BLECombineKit {
   ) -> BLECentralManager {
     return StandardBLECentralManager(with: centralManager ?? CBCentralManager())
   }
+
+  /// Build a BLEPeripheralManager.
+  ///
+  /// - Returns: an initialized BLEPeripheralManager object.
+  static public func buildPeripheralManager() -> BLEPeripheralManager {
+    return StandardBLEPeripheralManager()
+  }
 }
