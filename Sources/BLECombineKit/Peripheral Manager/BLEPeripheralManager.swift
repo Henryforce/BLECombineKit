@@ -96,7 +96,7 @@ public protocol BLEPeripheralManager {
   /// * `BLEError.bluetoothPoweredOff`
   /// * `BLEError.bluetoothInUnknownState`
   /// * `BLEError.bluetoothResetting`
-  func observeDidReceiveRead() -> AnyPublisher<CBATTRequest, Never>
+  func observeDidReceiveRead() -> AnyPublisher<BLEATTRequest, Never>
 
   /// Continuous observer for `CBPeripheralManagerDelegate.peripheralManager(_:didReceiveWrite:)` results
   /// - Returns: Observable that emits `next` event whenever didReceiveWrite occurs.
@@ -110,10 +110,10 @@ public protocol BLEPeripheralManager {
   /// * `BLEError.bluetoothPoweredOff`
   /// * `BLEError.bluetoothInUnknownState`
   /// * `BLEError.bluetoothResetting`
-  func observeDidReceiveWrite() -> AnyPublisher<[CBATTRequest], Never>
+  func observeDidReceiveWrite() -> AnyPublisher<[BLEATTRequest], Never>
 
   /// Wrapper for `CBPeripheralManager.respond(to:withResult:)` method
-  func respond(to request: CBATTRequest, withResult result: CBATTError.Code)
+  func respond(to request: BLEATTRequest, withResult result: CBATTError.Code)
 
   /// Wrapper for `CBPeripheralManager.updateValue(_:for:onSubscribedCentrals:)` method
   func updateValue(

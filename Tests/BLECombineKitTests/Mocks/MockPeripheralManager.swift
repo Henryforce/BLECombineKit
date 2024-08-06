@@ -6,6 +6,7 @@
 //  Copyright © 2024 Henry Serrano. All rights reserved.
 //
 
+import BLECombineKit
 import CoreBluetooth
 
 final class MockCBPeripheralManager: CBPeripheralManager {
@@ -28,4 +29,33 @@ final class MockCBPeripheralManager: CBPeripheralManager {
   override func removeAllServices() {
     removeAllServicesCount += 1
   }
+}
+
+final class MockBLECentral: BLECentral {
+  var associatedCentral: CBCentral?
+
+  var identifier = UUID()
+
+  var maximumUpdateValueLength: Int = 0
+}
+
+final class MockBLEATTRequest: BLEATTRequest {
+  var associatedRequest: CBATTRequest?
+
+  var centralWrapper: BLECentral = MockBLECentral()
+
+  var mutableCharacteristic = CBMutableCharacteristic(
+    type: CBUUID(string: "0x00FF"),
+    properties: .read,
+    value: nil,
+    permissions: .readable
+  )
+  var characteristic: CBCharacteristic {
+    mutableCharacteristic
+  }
+
+  var offset: Int = 0
+
+  var value: Data?
+
 }
