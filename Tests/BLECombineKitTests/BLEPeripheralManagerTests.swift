@@ -123,4 +123,25 @@ final class BLEPeripheralManagerTests: XCTestCase {
     XCTAssertEqual(managerWrapper.removeAllServicesCount, 1)
   }
 
+  func testObserveDidReceiveRead() throws {
+    // Given.
+    let expectation = XCTestExpectation(description: #function)
+    let mockRequest = MockBLEATTRequest()
+    var expectedRequest: BLEATTRequest?
+    managerWrapper.mutableState = .poweredOn
+
+    // When.
+    manager.observeDidReceiveRead()
+      .sink { request in
+        expectedRequest = request
+        expectation.fulfill()
+      }.store(in: &cancellables)
+    delegate.didReceiveRead.send(mockRequest)
+
+    // Then.
+    wait(for: [expectation], timeout: 0.01)
+    let validRequest = try XCTUnwrap(expectedRequest)
+    XCTAssertEqual(validRequest.centralWrapper.identifier, mockRequest.centralWrapper.identifier)
+  }
+
 }

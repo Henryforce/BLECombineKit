@@ -172,16 +172,17 @@ final class StandardBLEPeripheralManager: BLEPeripheralManager {
 
   // MARK: Read & Write
 
-  func observeDidReceiveRead() -> AnyPublisher<CBATTRequest, Never> {
+  func observeDidReceiveRead() -> AnyPublisher<BLEATTRequest, Never> {
     delegate.didReceiveRead.ensure(.poweredOn, manager: self)
   }
 
-  func observeDidReceiveWrite() -> AnyPublisher<[CBATTRequest], Never> {
+  func observeDidReceiveWrite() -> AnyPublisher<[BLEATTRequest], Never> {
     delegate.didReceiveWrite.ensure(.poweredOn, manager: self)
   }
 
-  func respond(to request: CBATTRequest, withResult result: CBATTError.Code) {
-    manager.respond(to: request, withResult: result)
+  func respond(to request: BLEATTRequest, withResult result: CBATTError.Code) {
+    guard let validRequest = request.associatedRequest else { return }
+    manager.respond(to: validRequest, withResult: result)
   }
 
   // MARK: Updating value
