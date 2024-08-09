@@ -167,4 +167,32 @@ final class BLEPeripheralManagerTests: XCTestCase {
     XCTAssertEqual(receivedRequests.count, mockRequests.count)
   }
 
+  func testUpdateValue() {
+    // Given.
+    let data = Data()
+    let uuid = CBUUID(string: "0xFF00")
+    let characteristic = CBMutableCharacteristic(
+      type: uuid,
+      properties: .read,
+      value: nil,
+      permissions: .readable
+    )
+    let expectedStatus = true
+    managerWrapper.updateValueReturnStatus = expectedStatus
+    let expectedStack: [MockCBPeripheralManager.UpdateValueStackValue] = [
+      MockCBPeripheralManager.UpdateValueStackValue(
+        value: data,
+        characteristic: characteristic,
+        centrals: nil
+      )
+    ]
+
+    // When.
+    let status = manager.updateValue(data, for: characteristic, onSubscribedCentrals: nil)
+
+    // Then.
+    XCTAssertEqual(status, expectedStatus)
+    XCTAssertEqual(managerWrapper.updateValueStack, expectedStack)
+  }
+
 }

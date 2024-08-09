@@ -10,6 +10,12 @@ import BLECombineKit
 import CoreBluetooth
 
 final class MockCBPeripheralManager: CBPeripheralManager {
+  struct UpdateValueStackValue: Equatable {
+    let value: Data
+    let characteristic: CBMutableCharacteristic
+    let centrals: [CBCentral]?
+  }
+
   var mutableState = CBManagerState.unknown
   override var state: CBManagerState {
     mutableState
@@ -28,6 +34,22 @@ final class MockCBPeripheralManager: CBPeripheralManager {
   var removeAllServicesCount = 0
   override func removeAllServices() {
     removeAllServicesCount += 1
+  }
+
+  var updateValueReturnStatus = false
+  var updateValueStack = [UpdateValueStackValue]()
+  override func updateValue(
+    _ value: Data,
+    for characteristic: CBMutableCharacteristic,
+    onSubscribedCentrals centrals: [CBCentral]?
+  ) -> Bool {
+    let stackValue = UpdateValueStackValue(
+      value: value,
+      characteristic: characteristic,
+      centrals: centrals
+    )
+    updateValueStack.append(stackValue)
+    return updateValueReturnStatus
   }
 }
 
