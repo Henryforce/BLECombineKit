@@ -190,9 +190,10 @@ final class StandardBLEPeripheralManager: BLEPeripheralManager {
   func updateValue(
     _ value: Data,
     for characteristic: CBMutableCharacteristic,
-    onSubscribedCentrals centrals: [CBCentral]?
+    onSubscribedCentrals centrals: [BLECentral]?
   ) -> Bool {
-    return manager.updateValue(value, for: characteristic, onSubscribedCentrals: centrals)
+    let validCentrals = centrals?.compactMap { $0.associatedCentral }
+    return manager.updateValue(value, for: characteristic, onSubscribedCentrals: validCentrals)
   }
 
   func observeIsReadyToUpdateSubscribers() -> AnyPublisher<Void, Never> {
@@ -201,11 +202,11 @@ final class StandardBLEPeripheralManager: BLEPeripheralManager {
 
   // MARK: Subscribing
 
-  func observeOnSubscribe() -> AnyPublisher<(CBCentral, CBCharacteristic), Never> {
+  func observeOnSubscribe() -> AnyPublisher<(BLECentral, CBCharacteristic), Never> {
     delegate.didSubscribeTo.ensure(.poweredOn, manager: self)
   }
 
-  func observeOnUnsubscribe() -> AnyPublisher<(CBCentral, CBCharacteristic), Never> {
+  func observeOnUnsubscribe() -> AnyPublisher<(BLECentral, CBCharacteristic), Never> {
     delegate.didUnsubscribeFrom.ensure(.poweredOn, manager: self)
   }
 

@@ -195,4 +195,80 @@ final class BLEPeripheralManagerTests: XCTestCase {
     XCTAssertEqual(managerWrapper.updateValueStack, expectedStack)
   }
 
+  func testObserveIsReadyToUpdateSubscribers() {
+    // Given.
+    let expectation = XCTestExpectation(description: #function)
+    managerWrapper.mutableState = .poweredOn
+
+    // When.
+    manager.observeIsReadyToUpdateSubscribers()
+      .sink { _ in
+        expectation.fulfill()
+      }.store(in: &cancellables)
+    delegate.isReady.send()
+
+    // Then.
+    wait(for: [expectation], timeout: 0.01)
+  }
+
+  func testObserveOnSubscribe() {
+    // Given.
+    let expectation = XCTestExpectation(description: #function)
+    let uuid = CBUUID(string: "0xFF00")
+    let expectedCentral = MockBLECentral()
+    let expectedCharacteristic = CBMutableCharacteristic(
+      type: uuid,
+      properties: .read,
+      value: nil,
+      permissions: .readable
+    )
+    var receivedCentral: BLECentral?
+    var receivedCharacteristic: CBCharacteristic?
+    managerWrapper.mutableState = .poweredOn
+
+    // When.
+    manager.observeOnSubscribe()
+      .sink { (central, characteristic) in
+        receivedCentral = central
+        receivedCharacteristic = characteristic
+        expectation.fulfill()
+      }.store(in: &cancellables)
+    delegate.didSubscribeTo.send((expectedCentral, expectedCharacteristic))
+
+    // Then.
+    wait(for: [expectation], timeout: 0.01)
+    XCTAssertEqual(receivedCentral?.identifier, expectedCentral.identifier)
+    XCTAssertEqual(receivedCharacteristic, expectedCharacteristic)
+  }
+
+  func testObserveOnUnsubscribe() {
+    // Given.
+    let expectation = XCTestExpectation(description: #function)
+    let uuid = CBUUID(string: "0xFF00")
+    let expectedCentral = MockBLECentral()
+    let expectedCharacteristic = CBMutableCharacteristic(
+      type: uuid,
+      properties: .read,
+      value: nil,
+      permissions: .readable
+    )
+    var receivedCentral: BLECentral?
+    var receivedCharacteristic: CBCharacteristic?
+    managerWrapper.mutableState = .poweredOn
+
+    // When.
+    manager.observeOnUnsubscribe()
+      .sink { (central, characteristic) in
+        receivedCentral = central
+        receivedCharacteristic = characteristic
+        expectation.fulfill()
+      }.store(in: &cancellables)
+    delegate.didUnsubscribeFrom.send((expectedCentral, expectedCharacteristic))
+
+    // Then.
+    wait(for: [expectation], timeout: 0.01)
+    XCTAssertEqual(receivedCentral?.identifier, expectedCentral.identifier)
+    XCTAssertEqual(receivedCharacteristic, expectedCharacteristic)
+  }
+
 }
