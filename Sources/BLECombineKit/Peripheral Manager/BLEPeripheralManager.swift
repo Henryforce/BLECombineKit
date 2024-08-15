@@ -119,7 +119,7 @@ public protocol BLEPeripheralManager {
   func updateValue(
     _ value: Data,
     for characteristic: CBMutableCharacteristic,
-    onSubscribedCentrals centrals: [CBCentral]?
+    onSubscribedCentrals centrals: [BLECentral]?
   ) -> Bool
 
   /// Continuous observer for `CBPeripheralManagerDelegate.peripheralManagerIsReady(toUpdateSubscribers:)` results
@@ -148,7 +148,7 @@ public protocol BLEPeripheralManager {
   /// * `BLEError.bluetoothPoweredOff`
   /// * `BLEError.bluetoothInUnknownState`
   /// * `BLEError.bluetoothResetting`
-  func observeOnSubscribe() -> AnyPublisher<(CBCentral, CBCharacteristic), Never>
+  func observeOnSubscribe() -> AnyPublisher<(BLECentral, CBCharacteristic), Never>
 
   /// Continuous observer for `CBPeripheralManagerDelegate.peripheralManager(_:central:didUnsubscribeFrom:)` results
   /// - Returns: Observable that emits `next` event whenever didUnsubscribeFrom occurs.
@@ -162,7 +162,7 @@ public protocol BLEPeripheralManager {
   /// * `BLEError.bluetoothPoweredOff`
   /// * `BLEError.bluetoothInUnknownState`
   /// * `BLEError.bluetoothResetting`
-  func observeOnUnsubscribe() -> AnyPublisher<(CBCentral, CBCharacteristic), Never>
+  func observeOnUnsubscribe() -> AnyPublisher<(BLECentral, CBCharacteristic), Never>
 
   #if os(iOS) || os(tvOS) || os(watchOS)
     /// Starts publishing L2CAP channel on a subscription. It creates an infinite observable

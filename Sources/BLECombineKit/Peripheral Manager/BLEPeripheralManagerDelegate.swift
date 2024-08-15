@@ -23,17 +23,11 @@ final class BLEPeripheralManagerDelegate: NSObject, CBPeripheralManagerDelegate 
   let willRestoreState = CurrentValueSubject<[String: Any], Never>([:])
   let didAddService = PassthroughSubject<(CBService, Error?), Never>()
   let didReceiveWrite = PassthroughSubject<[BLEATTRequest], Never>()
-  let didSubscribeTo = PassthroughSubject<(CBCentral, CBCharacteristic), Never>()
-  let didUnsubscribeFrom = PassthroughSubject<(CBCentral, CBCharacteristic), Never>()
+  let didSubscribeTo = PassthroughSubject<(BLECentral, CBCharacteristic), Never>()
+  let didUnsubscribeFrom = PassthroughSubject<(BLECentral, CBCharacteristic), Never>()
   let didPublishL2CAPChannel = PassthroughSubject<(CBL2CAPPSM, Error?), Never>()
   let didUnpublishL2CAPChannel = PassthroughSubject<(CBL2CAPPSM, Error?), Never>()
-  private var _didOpenChannel: Any?
-  var didOpenChannel: PassthroughSubject<(CBL2CAPChannel?, Error?), Never> {
-    if _didOpenChannel == nil {
-      _didOpenChannel = PassthroughSubject<(CBL2CAPChannel?, Error?), Never>()
-    }
-    return _didOpenChannel as! PassthroughSubject<(CBL2CAPChannel?, Error?), Never>
-  }
+  let didOpenChannel = PassthroughSubject<(CBL2CAPChannel?, Error?), Never>()
 
   func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
     didUpdateState.send(peripheral.state)
