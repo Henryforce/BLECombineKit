@@ -224,7 +224,7 @@ final class StandardBLEPeripheralManager: BLEPeripheralManager {
         }
 
         var result: CBL2CAPPSM?
-        let cancellable = strongSelf.delegateWrapper.didPublishL2CAPChannel
+        let cancellable = strongSelf.delegate.didPublishL2CAPChannel
           .prefix(1)
           .tryMap { (cbl2cappSm, error) throws -> (CBL2CAPPSM) in
             if let error = error {
@@ -251,7 +251,7 @@ final class StandardBLEPeripheralManager: BLEPeripheralManager {
     }
 
     func observeDidOpenL2CAPChannel() -> AnyPublisher<(CBL2CAPChannel?, Error?), Never> {
-      delegateWrapper.didOpenChannel.ensure(.poweredOn, manager: self)
+      delegate.didOpenChannel.ensure(.poweredOn, manager: self)
     }
   #endif
 
