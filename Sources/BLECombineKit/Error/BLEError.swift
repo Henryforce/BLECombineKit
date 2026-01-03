@@ -6,18 +6,18 @@
 //  Copyright © 2020 Henry Serrano. All rights reserved.
 //
 
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 import Foundation
 
-extension NSError: Identifiable {
+extension NSError: @retroactive Identifiable {
 
 }
 
-extension CBError: Hashable, Identifiable {
+extension CBError: @retroactive Hashable, @retroactive Identifiable {
   public var id: Self { self }
 }
 
-extension CBATTError: Hashable, Identifiable {
+extension CBATTError: @retroactive Hashable, @retroactive Identifiable {
   public var id: Self { self }
 }
 

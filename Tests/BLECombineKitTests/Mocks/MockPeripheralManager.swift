@@ -7,9 +7,10 @@
 //
 
 import BLECombineKit
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
+import Foundation
 
-final class MockCBPeripheralManager: CBPeripheralManager {
+final class MockCBPeripheralManager: CBPeripheralManager, @unchecked Sendable {
   struct UpdateValueStackValue: Equatable {
     let value: Data
     let characteristic: CBMutableCharacteristic
@@ -53,7 +54,7 @@ final class MockCBPeripheralManager: CBPeripheralManager {
   }
 }
 
-final class MockBLECentral: BLECentral {
+final class MockBLECentral: BLECentral, @unchecked Sendable {
   var associatedCentral: CBCentral?
 
   var identifier = UUID()
@@ -61,7 +62,7 @@ final class MockBLECentral: BLECentral {
   var maximumUpdateValueLength: Int = 0
 }
 
-final class MockBLEATTRequest: BLEATTRequest {
+final class MockBLEATTRequest: BLEATTRequest, @unchecked Sendable {
   var associatedRequest: CBATTRequest?
 
   var centralWrapper: BLECentral = MockBLECentral()

@@ -10,7 +10,7 @@ import Foundation
 
 @testable import BLECombineKit
 
-final class MockBLEPeripheralProvider: BLEPeripheralProvider {
+final class MockBLEPeripheralProvider: BLEPeripheralProvider, @unchecked Sendable {
   var buildBLEPeripheralWasCalledCount = 0
   var blePeripheral: BLETrackedPeripheral?
 
@@ -23,7 +23,7 @@ final class MockBLEPeripheralProvider: BLEPeripheralProvider {
 }
 
 /// Internal only: Used for returning nil peripheral on multiple build calls
-final class MockArrayBLEPeripheralBuilder: BLEPeripheralProvider {
+final class MockArrayBLEPeripheralBuilder: BLEPeripheralProvider, @unchecked Sendable {
   var buildBLEPeripheralWasCalledCount = 0
   var blePeripherals = [BLETrackedPeripheral]()
 

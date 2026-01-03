@@ -7,10 +7,10 @@
 //
 
 import Combine
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 import Foundation
 
-public struct BLEService {
+public struct BLEService: Sendable {
   public let value: CBService
   private let peripheral: BLEPeripheral
 

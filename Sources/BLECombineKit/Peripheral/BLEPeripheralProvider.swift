@@ -8,22 +8,22 @@
 
 import Foundation
 
-protocol BLEPeripheralProvider {
+protocol BLEPeripheralProvider: Sendable {
   func provide(
     for peripheralWrapper: CBPeripheralWrapper
   ) -> BLETrackedPeripheral
 }
 
-final class StandardBLEPeripheralProvider: BLEPeripheralProvider {
+final class StandardBLEPeripheralProvider: BLEPeripheralProvider, @unchecked Sendable {
 
   private lazy var queue = DispatchQueue(
     label: String(describing: StandardBLEPeripheralProvider.self),
     attributes: .concurrent
   )
 
-  private lazy var peripherals = [UUID: StandardBLEPeripheral]()
+  private var peripherals = [UUID: StandardBLEPeripheral]()
 
-  private weak var centralManager: BLECentralManager?
+  weak var centralManager: BLECentralManager?
 
   init(centralManager: BLECentralManager?) {
     self.centralManager = centralManager
@@ -55,9 +55,15 @@ final class StandardBLEPeripheralProvider: BLEPeripheralProvider {
       centralManager: centralManager,
       delegate: peripheralDelegate
     )
-    queue.async(flags: .barrier) { [weak self] in
-      self?.peripherals[peripheralWrapper.identifier] = blePeripheral
+    let uncheckedPeripheralWrapper = UncheckedSendable(peripheralWrapper)
+    queue.sync(flags: .barrier) {
+      self.peripherals[uncheckedPeripheralWrapper.value.identifier] = blePeripheral
     }
     return blePeripheral
   }
+}
+
+private struct UncheckedSendable<T>: @unchecked Sendable {
+  let value: T
+  init(_ value: T) { self.value = value }
 }

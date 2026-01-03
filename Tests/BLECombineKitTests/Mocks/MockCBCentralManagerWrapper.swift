@@ -6,12 +6,12 @@
 //  Copyright © 2021 Henry Serrano. All rights reserved.
 //
 
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 import Foundation
 
 @testable import BLECombineKit
 
-final class MockCBCentralManagerWrapper: CBCentralManagerWrapper {
+final class MockCBCentralManagerWrapper: CBCentralManagerWrapper, @unchecked Sendable {
   var wrappedManager: CBCentralManager?
 
   var isScanning: Bool = false

@@ -29,7 +29,7 @@ typealias DidWriteValueForCharacteristicResult = (
   peripheral: CBPeripheralWrapper, characteristic: CBCharacteristic, error: BLEError?
 )
 
-final class BLEPeripheralDelegate: NSObject {
+final class BLEPeripheralDelegate: NSObject, @unchecked Sendable {
 
   /// Subject for the name update callback.
   let didUpdateName = PassthroughSubject<DidUpdateName, Never>()

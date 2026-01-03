@@ -24,7 +24,7 @@ import CoreBluetooth
 /// ```
 /// cancellable.cancel()
 /// ```
-public protocol BLEPeripheralManager {
+public protocol BLEPeripheralManager: Sendable {
   var state: CBManagerState { get }
 
   func observeState() -> AnyPublisher<CBManagerState, Never>

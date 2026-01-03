@@ -11,7 +11,7 @@ import CoreBluetooth
 import Foundation
 
 /// Interface definining the Bluetooth Peripheral that provides Combine APIs.
-public protocol BLEPeripheral {
+public protocol BLEPeripheral: Sendable {
   /// Reference to the actual Bluetooth peripheral, via a wrapper.
   var associatedPeripheral: CBPeripheralWrapper { get }
 

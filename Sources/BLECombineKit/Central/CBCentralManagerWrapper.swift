@@ -11,7 +11,7 @@ import Foundation
 
 /// Interface for wrapping the CBCentralManager.
 /// This interface is critical in order to mock the CBCentralManager calls.
-public protocol CBCentralManagerWrapper {
+public protocol CBCentralManagerWrapper: Sendable {
   /// The CBCentralManager this interface wraps to.
   /// Note that CBCentralManager conforms to CBCentralManagerWrapper and this getter interface is a convenient way to avoid an expensive downcast. That is, if you need a fixed reference to the CBCentralManager object do not run `let validManager = manager as? CBCentralManager`, simply run `let validManager = manager.wrappedManager` which will run significantly faster.
   var wrappedManager: CBCentralManager? { get }

@@ -10,7 +10,7 @@ import Combine
 import CoreBluetooth
 import Foundation
 
-final class StandardBLECentralManager: BLECentralManager {
+final class StandardBLECentralManager: BLECentralManager, @unchecked Sendable {
   /// The wrapped CBCentralManager.
   let associatedCentralManager: CBCentralManagerWrapper
 

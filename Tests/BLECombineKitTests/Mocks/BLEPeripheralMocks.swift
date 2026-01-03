@@ -6,18 +6,18 @@
 //  Copyright © 2020 Henry Serrano. All rights reserved.
 //
 
-import Combine
-import CoreBluetooth
+@preconcurrency import Combine
+@preconcurrency import CoreBluetooth
 import Foundation
 
 @testable import BLECombineKit
 
-struct SetNotifyValueWasCalledStackValue: Equatable {
+struct SetNotifyValueWasCalledStackValue: Equatable, @unchecked Sendable {
   let enabled: Bool
   let characteristic: CBCharacteristic
 }
 
-final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
+final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral, @unchecked Sendable {
   let connectionState = CurrentValueSubject<Bool, Never>(false)
   var associatedPeripheral: CBPeripheralWrapper
 
@@ -134,7 +134,7 @@ final class MockBLEPeripheral: BLEPeripheral, BLETrackedPeripheral {
 
 }
 
-final class MockCBPeripheralWrapper: CBPeripheralWrapper {
+final class MockCBPeripheralWrapper: CBPeripheralWrapper, @unchecked Sendable {
   var wrappedPeripheral: CBPeripheral?
 
   var state = CBPeripheralState.connected
