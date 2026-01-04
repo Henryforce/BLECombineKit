@@ -39,8 +39,7 @@ final class BLEDataTests: XCTestCase {
 
     if let result = data.to(type: Float32.self) {
       XCTAssertEqual(float32, result, accuracy: 0.000001)
-    }
-    else {
+    } else {
       XCTFail()
     }
   }

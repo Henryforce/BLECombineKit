@@ -21,8 +21,10 @@ extension CBATTError: @retroactive Hashable, @retroactive Identifiable {
   public var id: Self { self }
 }
 
+/// Represents errors that can occur within the BLECombineKit framework.
 public enum BLEError: Error, CustomStringConvertible {
 
+  /// Errors related to the underlying CoreBluetooth framework.
   public enum CoreBluetoothError: Error, Hashable, Identifiable, CustomStringConvertible {
     case base(code: CBError.Code, description: String), ATT(
       code: CBATTError.Code,
@@ -62,6 +64,7 @@ public enum BLEError: Error, CustomStringConvertible {
     }
   }
 
+  /// Errors related to the Bluetooth manager's state.
   public enum ManagerStateError: Error, Hashable, Identifiable, CustomStringConvertible {
     public var id: Self { self }
     case unknown
@@ -81,6 +84,7 @@ public enum BLEError: Error, CustomStringConvertible {
     }
   }
 
+  /// Errors related to peripheral operations.
   public enum PeripheralError: Error, Hashable, Identifiable, CustomStringConvertible {
     public var id: Self { self }
     case invalid
@@ -112,6 +116,7 @@ public enum BLEError: Error, CustomStringConvertible {
     }
   }
 
+  /// Errors related to data conversion or validation.
   public enum DataError: Error, Hashable, Identifiable, CustomStringConvertible {
     public var id: Self { self }
     case invalid
@@ -127,30 +132,34 @@ public enum BLEError: Error, CustomStringConvertible {
 
   public var id: Self { self }
 
+  /// Error emitted when advertising is already in progress.
   case advertisingInProgress
 
+  /// Error emitted when advertising fails to start.
   case advertisingStartFailed(Error)
 
+  /// Error emitted when adding a service fails.
   case addingServiceFailed(CBMutableService, Error)
 
+  /// Error emitted when publishing an L2CAP channel fails.
   case publishingL2CAPChannelFailed(CBL2CAPPSM, Error)
 
   /// Generic error for handling `unknown` cases.
   case unknown
 
-  /// Error emitted when publisher turns out to be `nil`.
+  /// Error emitted when the underlying manager or peripheral is deallocated.
   case deallocated
 
-  // ManagerState
+  /// Error related to the manager state.
   case managerState(ManagerStateError)
 
-  // Peripheral
+  /// Error related to a peripheral.
   case peripheral(PeripheralError)
 
-  // Data
+  /// Error related to data operations.
   case data(DataError)
 
-  // Write
+  /// Error emitted when a write operation fails.
   case writeFailed(CoreBluetoothError)
 
   public var description: String {

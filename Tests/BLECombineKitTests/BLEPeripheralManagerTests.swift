@@ -86,8 +86,7 @@ final class BLEPeripheralManagerTests: XCTestCase {
       .sink { completion in
         if case .failure(let error) = completion {
           XCTFail("\(#function): \(error)")
-        }
-        else {
+        } else {
           expectation.fulfill()
         }
       } receiveValue: { service in
