@@ -6,13 +6,13 @@
 //  Copyright © 2020 Henry Serrano. All rights reserved.
 //
 
-import Combine
-import CoreBluetooth
+@preconcurrency import Combine
+@preconcurrency import CoreBluetooth
 import Foundation
 
 @testable import BLECombineKit
 
-final class MockBLECentralManager: BLECentralManager {
+final class MockBLECentralManager: BLECentralManager, @unchecked Sendable {
 
   private var _state = CurrentValueSubject<CBManagerState, Never>(CBManagerState.unknown)
   var state: AnyPublisher<CBManagerState, Never> {

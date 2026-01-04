@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct BLEData {
+public struct BLEData: Sendable {
   public let value: Data
 
   public init(value: Data) {

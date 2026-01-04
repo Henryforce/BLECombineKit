@@ -11,7 +11,7 @@ import CoreBluetooth
 import Foundation
 
 /// Interface definining the Bluetooth Central Manager that provides Combine APIs.
-public protocol BLECentralManager: AnyObject {
+public protocol BLECentralManager: AnyObject, Sendable {
   /// Reference to the actual Bluetooth Manager, which is conveniently wrapped.
   var associatedCentralManager: CBCentralManagerWrapper { get }
 

@@ -8,7 +8,7 @@
 
 import CoreBluetooth
 
-public protocol BLEATTRequest {
+public protocol BLEATTRequest: Sendable {
   /// Reference to the actual request. Use this getter to obtain the CBATTRequest if needed. Note that CBATTRequest conforms to BLEATTRequest.
   var associatedRequest: CBATTRequest? { get }
 

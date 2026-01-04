@@ -9,7 +9,7 @@
 import Combine
 import CoreBluetooth
 
-final class StandardBLEPeripheral: BLETrackedPeripheral {
+final class StandardBLEPeripheral: BLETrackedPeripheral, @unchecked Sendable {
 
   /// Subject used for tracking the lateset connection state.
   let connectionState = CurrentValueSubject<Bool, Never>(false)
@@ -20,7 +20,10 @@ final class StandardBLEPeripheral: BLETrackedPeripheral {
   /// Reference to the wrapper delegate used for tracking BLE events.
   private let delegate: BLEPeripheralDelegate
 
+  // Following SE-0481, this will need to become `weak let` to conform with strict concurrency.
+  // See https://github.com/swiftlang/swift-evolution/blob/main/proposals/0481-weak-let.md
   /// Reference to te BLECentralManager.
+  // nonisolated(unsafe) 
   private weak var centralManager: BLECentralManager?
 
   /// Cancellable reference to the connect publisher.

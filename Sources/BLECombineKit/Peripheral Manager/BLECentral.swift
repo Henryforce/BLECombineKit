@@ -8,7 +8,7 @@
 
 import CoreBluetooth
 
-public protocol BLECentral {
+public protocol BLECentral: Sendable {
   /// Reference to the actual central. Use this getter to obtain the CBCentral if needed. Note that CBCentral conforms to BLECentral.
   var associatedCentral: CBCentral? { get }
 

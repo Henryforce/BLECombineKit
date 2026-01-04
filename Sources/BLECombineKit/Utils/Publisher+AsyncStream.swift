@@ -6,9 +6,9 @@
 //  Copyright © 2024 Henry Serrano. All rights reserved.
 //
 
-import Combine
+@preconcurrency import Combine
 
-extension AnyPublisher {
+extension AnyPublisher where Output: Sendable {
   var asyncThrowingStream: AsyncThrowingStream<Output, Error> {
     return AsyncThrowingStream { continuation in
       let cancellable =
@@ -23,9 +23,16 @@ extension AnyPublisher {
         } receiveValue: { data in
           continuation.yield(data)
         }
+      
+      let uncheckedCancellable = UncheckedSendable(cancellable)
       continuation.onTermination = { _ in
-        cancellable.cancel()
+        uncheckedCancellable.value.cancel()
       }
     }
   }
+}
+
+private struct UncheckedSendable<T>: @unchecked Sendable {
+  let value: T
+  init(_ value: T) { self.value = value }
 }

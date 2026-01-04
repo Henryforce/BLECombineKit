@@ -7,9 +7,9 @@
 //
 
 import Combine
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 
-public struct BLECharacteristic {
+public struct BLECharacteristic: Sendable {
   public let value: CBCharacteristic
   private let peripheral: BLEPeripheral
 

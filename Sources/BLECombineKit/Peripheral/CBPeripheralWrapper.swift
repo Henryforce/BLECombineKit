@@ -9,7 +9,7 @@
 import CoreBluetooth
 import Foundation
 
-public protocol CBPeripheralWrapper {
+public protocol CBPeripheralWrapper: Sendable {
   /// The CBCentralManager this interface wraps to.
   /// Note that CBPeripheral conforms to CBPeripheralWrapper and this getter interface is a convenient way to avoid an expensive downcast. That is, if you need a fixed reference to the CBPeripheral object do not run `let validPeripheral = peripheral as? CBPeripheral`, simply run `let validPeripheral = peripheral.wrappedPeripheral` which will run significantly faster.
   var wrappedPeripheral: CBPeripheral? { get }

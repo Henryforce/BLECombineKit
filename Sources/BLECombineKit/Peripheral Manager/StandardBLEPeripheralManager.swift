@@ -9,7 +9,7 @@
 import Combine
 import CoreBluetooth
 
-final class StandardBLEPeripheralManager: BLEPeripheralManager {
+final class StandardBLEPeripheralManager: BLEPeripheralManager, @unchecked Sendable {
 
   /// Implementation of the CBPeripheralManager.
   public let manager: CBPeripheralManager

@@ -11,7 +11,7 @@ typealias DidDiscoverAdvertisementDataResult = (
   peripheral: CBPeripheralWrapper, advertisementData: [String: Any], rssi: NSNumber
 )
 
-final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate {
+final class BLECentralManagerDelegate: NSObject, CBCentralManagerDelegate, @unchecked Sendable {
 
   let didConnectPeripheral = PassthroughSubject<CBPeripheralWrapper, BLEError>()
   let didDisconnectPeripheral = PassthroughSubject<CBPeripheralWrapper, Never>()
