@@ -23,7 +23,7 @@ final class StandardBLEPeripheral: BLETrackedPeripheral, @unchecked Sendable {
   // Following SE-0481, this will need to become `weak let` to conform with strict concurrency.
   // See https://github.com/swiftlang/swift-evolution/blob/main/proposals/0481-weak-let.md
   /// Reference to te BLECentralManager.
-  // nonisolated(unsafe) 
+  // nonisolated(unsafe)
   private weak var centralManager: BLECentralManager?
 
   /// Cancellable reference to the connect publisher.
@@ -58,8 +58,7 @@ final class StandardBLEPeripheral: BLETrackedPeripheral, @unchecked Sendable {
       let makeDisconnected: AnyPublisher<Never, Never> =
         if self.connectionState.value {
           self.disconnect().ignoreFailure()
-        }
-        else {
+        } else {
           Empty().eraseToAnyPublisher()
         }
 
@@ -81,8 +80,7 @@ final class StandardBLEPeripheral: BLETrackedPeripheral, @unchecked Sendable {
         .sink { [weak self] successfullyConnected in
           if let self, successfullyConnected {
             promise(.success(self))
-          }
-          else {
+          } else {
             promise(.failure(BLEError.peripheral(.connectionFailure)))
           }
         }

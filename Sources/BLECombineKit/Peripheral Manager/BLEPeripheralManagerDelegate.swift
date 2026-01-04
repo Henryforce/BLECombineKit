@@ -14,7 +14,8 @@ import Foundation
 ///
 /// See original source on [GitHub](https://github.com/Polidea/RxBluetoothKit/blob/2a95bce60fb569df57d7bec41d215fe58f56e1d4/Source/CBPeripheralManagerDelegateWrapper.swift).
 ///
-final class BLEPeripheralManagerDelegate: NSObject, CBPeripheralManagerDelegate, @unchecked Sendable {
+final class BLEPeripheralManagerDelegate: NSObject, CBPeripheralManagerDelegate, @unchecked Sendable
+{
 
   let didUpdateState = PassthroughSubject<CBManagerState, Never>()
   let isReady = PassthroughSubject<Void, Never>()

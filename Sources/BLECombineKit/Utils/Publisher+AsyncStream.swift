@@ -16,14 +16,13 @@ extension AnyPublisher where Output: Sendable {
         .sink { completion in
           if case .failure(let error) = completion {
             continuation.finish(throwing: error)
-          }
-          else {
+          } else {
             continuation.finish()
           }
         } receiveValue: { data in
           continuation.yield(data)
         }
-      
+
       let uncheckedCancellable = UncheckedSendable(cancellable)
       continuation.onTermination = { _ in
         uncheckedCancellable.value.cancel()

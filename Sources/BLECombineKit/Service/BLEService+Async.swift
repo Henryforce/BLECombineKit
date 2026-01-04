@@ -12,6 +12,9 @@ import Foundation
 
 @available(iOS 15, macOS 12.0, *)
 extension BLEService {
+  /// Discovers characteristics for the service asynchronously.
+  /// - Parameter characteristicUUIDs: Optional list of characteristic UUIDs to discover.
+  /// - Returns: An array of discovered characteristics.
   public func discoverCharacteristicsAsync(
     characteristicUUIDs: [CBUUID]?
   ) async throws -> [BLECharacteristic] {

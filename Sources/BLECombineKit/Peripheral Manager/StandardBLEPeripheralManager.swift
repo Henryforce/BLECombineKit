@@ -104,8 +104,7 @@ final class StandardBLEPeripheralManager: BLEPeripheralManager, @unchecked Senda
       if strongSelf.manager.isAdvertising {
         observer.send(.attachedToExternalAdvertising(strongSelf.restoredAdvertisementData))
         strongSelf.restoredAdvertisementData = nil
-      }
-      else {
+      } else {
         cancelable = strongSelf.delegate.didStartAdvertising
           .prefix(1)
           .tryMap { error throws -> StartAdvertisingResult in
